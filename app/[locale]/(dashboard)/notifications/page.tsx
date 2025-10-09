@@ -40,18 +40,18 @@ export default function NotificationsPage() {
     }
   }
 
-  const getPriorityColor = (priority: Notification['priority']) => {
+  const getPriorityBadge = (priority: Notification['priority']) => {
     switch (priority) {
       case 'urgent':
-        return 'bg-red-600 text-white'
+        return { variant: 'destructive' as const, className: 'bg-red-600' }
       case 'high':
-        return 'bg-orange-600 text-white'
+        return { variant: 'default' as const, className: 'bg-orange-600 text-white' }
       case 'medium':
-        return 'bg-blue-600 text-white'
+        return { variant: 'default' as const, className: 'bg-blue-600 text-white' }
       case 'low':
-        return 'bg-gray-600 text-white'
+        return { variant: 'secondary' as const, className: '' }
       default:
-        return 'outline'
+        return { variant: 'outline' as const, className: '' }
     }
   }
 
@@ -173,7 +173,10 @@ export default function NotificationsPage() {
                           <div className="flex-1 space-y-2">
                             <div className="flex items-center gap-2">
                               <h4 className="font-semibold">{notification.title}</h4>
-                              <Badge variant={getPriorityColor(notification.priority)} className="capitalize">
+                              <Badge 
+                                variant={getPriorityBadge(notification.priority).variant}
+                                className={`capitalize ${getPriorityBadge(notification.priority).className}`}
+                              >
                                 {notification.priority}
                               </Badge>
                               {!notification.read && (

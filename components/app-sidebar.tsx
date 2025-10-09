@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useTranslations, useLocale } from 'next-intl'
 import {
   Command,
   LayoutDashboard,
@@ -13,6 +14,7 @@ import {
 
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
+import { LanguageSwitcher } from "@/components/language-switcher"
 import {
   Sidebar,
   SidebarContent,
@@ -24,40 +26,43 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
-const navMainData = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "AI Recognition",
-    url: "/ai-recognition",
-    icon: Brain,
-  },
-  {
-    title: "Assets",
-    url: "/assets",
-    icon: Building2,
-  },
-  {
-    title: "Contractors",
-    url: "/contractors",
-    icon: Users,
-  },
-  {
-    title: "Contracts",
-    url: "/contracts",
-    icon: FileText,
-  },
-  {
-    title: "Notifications",
-    url: "/notifications",
-    icon: Bell,
-  },
-]
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const t = useTranslations('common')
+  const locale = useLocale()
+  
+  const navMainData = [
+    {
+      title: t('dashboard'),
+      url: `/${locale}/dashboard`,
+      icon: LayoutDashboard,
+    },
+    {
+      title: t('aiRecognition'),
+      url: `/${locale}/ai-recognition`,
+      icon: Brain,
+    },
+    {
+      title: t('assets'),
+      url: `/${locale}/assets`,
+      icon: Building2,
+    },
+    {
+      title: t('contractors'),
+      url: `/${locale}/contractors`,
+      icon: Users,
+    },
+    {
+      title: t('contracts'),
+      url: `/${locale}/contracts`,
+      icon: FileText,
+    },
+    {
+      title: t('notifications'),
+      url: `/${locale}/notifications`,
+      icon: Bell,
+    },
+  ]
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -68,7 +73,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   <Command className="size-4" />
                 </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
+                <div className="grid flex-1 text-sm leading-tight ltr:text-left rtl:text-right">
                   <span className="truncate font-medium">Infra Command Center</span>
                   <span className="truncate text-xs">Infrastructure Management Platform</span>
                 </div>
@@ -81,6 +86,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={navMainData} />
       </SidebarContent>
       <SidebarFooter>
+        <div className="p-2">
+          <LanguageSwitcher />
+        </div>
         <NavUser />
       </SidebarFooter>
       <SidebarRail />
