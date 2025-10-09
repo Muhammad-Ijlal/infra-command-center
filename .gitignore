@@ -1,4 +1,3 @@
-/.ml-generated-assets/*
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
@@ -40,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+#code formater
+
+.eslintrc.json
+.prettierrc

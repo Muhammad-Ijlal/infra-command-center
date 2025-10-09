@@ -1,5 +1,3 @@
-import { redirect } from "next/navigation"
-import { isAuthenticated } from "@/src/lib/auth/server"
 import { AppSidebar } from "@/components/app-sidebar"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -8,17 +6,11 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
-export default async function DashboardLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  // Перевірка автентифікації на сервері
-  const authenticated = await isAuthenticated()
-
-  if (!authenticated) {
-    redirect('/login')
-  }
   return (
     <SidebarProvider>
       <AppSidebar />

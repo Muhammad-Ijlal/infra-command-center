@@ -98,22 +98,22 @@ export default function ContractsPage() {
     )
   }
 
-  const getStatusColor = (status: Contract['status']) => {
+  const getStatusBadge = (status: Contract['status']) => {
     switch (status) {
       case 'active':
-        return 'default'
+        return { variant: 'default' as const, className: '' }
       case 'approved':
-        return 'bg-green-600 text-white'
+        return { variant: 'default' as const, className: 'bg-green-600 text-white' }
       case 'sent_to_contractor':
-        return 'bg-blue-600 text-white'
+        return { variant: 'default' as const, className: 'bg-blue-600 text-white' }
       case 'pending_approval':
-        return 'bg-yellow-600 text-white'
+        return { variant: 'default' as const, className: 'bg-yellow-600 text-white' }
       case 'draft':
-        return 'outline'
+        return { variant: 'outline' as const, className: '' }
       case 'completed':
-        return 'bg-gray-600 text-white'
+        return { variant: 'default' as const, className: 'bg-gray-600 text-white' }
       default:
-        return 'outline'
+        return { variant: 'outline' as const, className: '' }
     }
   }
 
@@ -204,7 +204,10 @@ export default function ContractsPage() {
                   </TableCell>
                   <TableCell>{contract.contractor_name || '-'}</TableCell>
                   <TableCell>
-                    <Badge variant={getStatusColor(contract.status)} className="capitalize">
+                    <Badge 
+                      variant={getStatusBadge(contract.status).variant} 
+                      className={`capitalize ${getStatusBadge(contract.status).className}`}
+                    >
                       {contract.status.replace(/_/g, ' ')}
                     </Badge>
                   </TableCell>
@@ -438,7 +441,10 @@ export default function ContractsPage() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Status</p>
-                  <Badge variant={getStatusColor(selectedContract.status)}>
+                  <Badge 
+                    variant={getStatusBadge(selectedContract.status).variant}
+                    className={getStatusBadge(selectedContract.status).className}
+                  >
                     {selectedContract.status.replace(/_/g, ' ')}
                   </Badge>
                 </div>
