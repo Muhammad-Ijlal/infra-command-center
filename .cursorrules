@@ -1,0 +1,93 @@
+Project: infra-command-center
+
+Purpose: Provide Cursor with clear, high-signal guidance for coding, reviews, commits, and PRs in this repository. This mirrors prior Claude configuration and adapts it for Cursor.
+
+Development Commands
+- Dev: pnpm run dev
+- Build: pnpm run build
+- Start: pnpm start
+- Lint: pnpm run lint
+
+Tech Stack
+- Next.js 15.4.6 (App Router, Turbopack)
+- React 19.1.0 (RSC)
+- TypeScript 5 (strict)
+- Tailwind CSS v4
+- shadcn/ui + Radix UI + Lucide React
+- Motion (Framer Motion) animations
+- next-themes (default: light)
+
+Architecture & Routes
+- App Router with route groups
+- Key structure:
+  app/
+  - layout.tsx (root layout: theme provider, fonts)
+  - page.tsx (landing page)
+  - globals.css (Tailwind + theme variables)
+  - (dashboard)/ (admin route group without URL segment)
+    - layout.tsx (sidebar + dashboard chrome)
+    - contract-module
+
+Key Pattern
+- The (dashboard) group provides consistent sidebar navigation across admin pages without affecting URLs.
+
+Component & Code Organization
+- Prefer feature-based structure when features have ≥3 components, custom hooks, self-contained logic, or their own APIs.
+- See: @.cursor/docs/file-structure-guidelines.md for detailed structure guidance
+- Recommended feature layout:
+  src/features/[feature-name]/
+  - components/
+  - hooks/
+  - services/
+  - stores/
+  - utils/
+  - types/
+  - constants/
+  - __tests__/
+  - index.ts
+- Global-only when truly shared:
+  - components/ui/ (reusable shadcn/ui)
+  - components/ (shared feature components)
+  - lib/utils.ts (helpers like cn())
+
+Styling
+- Tailwind v4 with @import "tailwindcss" and @theme inline
+- Prefer CSS variables for theming; OKLCH color space
+- Use class-variance-authority for component variants
+- Use cn() from @/lib/utils for className merging
+- Font: Inter, sans-serif (load via next/font)
+- Header gradient: #003366 → #0055A4
+- Status colors: Safe #28A745, At Risk #FFC107, Critical #DC3545
+- Card UI: radius 12px, padding 20px
+- Light theme only (white/transparent backgrounds)
+
+shadcn/ui Conventions
+- RSC-compatible components; add "use client" where required
+- Path aliases: @/components, @/lib, @/hooks, @/ui
+- Base color: neutral; icons via lucide-react
+
+TypeScript
+- Strict mode enabled
+- Path mapping: @/* → project root
+- Target: ES2017; bundler resolution
+
+Dashboard Components
+- AppSidebar: collapsible navigation
+- NavMain, NavUser: main nav and user profile
+
+Important Notes
+- Root layout may use suppressHydrationWarning for theme switching
+- Fonts loaded via next/font (Inter)
+- Default theme: light only
+
+Documentation & File Creation
+- NEVER create documentation files (*.md, *.txt, README, CHANGELOG, etc.) unless explicitly requested by the user
+- NEVER create summary files, migration guides, or overview documents proactively
+- Focus on code implementation rather than documentation
+- If user wants documentation, they will ask for it specifically
+- Exception: Code comments and JSDoc are encouraged for complex logic
+
+Cursor Usage Notes
+- Use this file as primary guidance while coding and generating commits/PRs.
+- Supplemental references mirrored under .cursor/docs and .cursor/templates.
+- When completing tasks, prioritize working code over documentation
