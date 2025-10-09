@@ -6,7 +6,12 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "type-check": "tsc --noEmit",
+    "build:production": "pnpm run lint && pnpm run type-check && pnpm run build",
+    "start:production": "NODE_ENV=production pnpm start",
+    "clean": "rm -rf .next out node_modules/.cache"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
