@@ -6,21 +6,29 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
-export default function DashboardLayout({
-  children,
-}: {
+type Props = {
   children: React.ReactNode
-}) {
+  params: Promise<{ locale: string }>
+}
+
+export default async function DashboardLayout({
+  children,
+  params,
+}: Props) {
+  const { locale } = await params
+  const isRTL = locale === 'ar'
+  const sidebarSide = isRTL ? 'right' : 'left'
+
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar side={sidebarSide} />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b">
           <div className="flex items-center gap-2 px-4 py-2 w-full">
-            <SidebarTrigger className="-ml-1" />
+            <SidebarTrigger className={isRTL ? "-mr-1" : "-ml-1"} />
             <Separator
               orientation="vertical"
-              className="mr-2 data-[orientation=vertical]:h-4"
+              className={isRTL ? "ml-2 data-[orientation=vertical]:h-4" : "mr-2 data-[orientation=vertical]:h-4"}
             />
           </div>
         </header>

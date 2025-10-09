@@ -22,7 +22,7 @@ export function NavUser() {
               <User2 className="h-4 w-4" />
             </AvatarFallback>
           </Avatar>
-          <div className="grid flex-1 text-left text-sm leading-tight">
+          <div className="grid flex-1 ltr:text-left rtl:text-right text-sm leading-tight">
             <span className="truncate font-medium">Demo User</span>
             <span className="truncate text-xs text-muted-foreground">demo@infracommand.sa</span>
           </div>

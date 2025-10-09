@@ -26,7 +26,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations('common')
   const locale = useLocale()
   
@@ -64,7 +64,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   ]
 
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon" side={side} {...props}>
       <SidebarHeader>
       <SidebarMenu>
           <SidebarMenuItem>
