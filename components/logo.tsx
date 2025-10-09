@@ -3,7 +3,7 @@ import { cn } from "../lib/utils";
 export const Logo = ({ className = "" }: { className?: string }) => {
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      <span className="text-2xl font-bold tracking-tight">Infra Command Center</span>
+      <span className="text-2xl font-bold tracking-tight">Peak and Peer</span>
     </div>
   );
 };

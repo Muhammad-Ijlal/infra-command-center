@@ -19,7 +19,7 @@
     "markAllAsRead": "Mark All as Read"
   },
   "landing": {
-    "title": "Infra Command Center",
+    "title": "Peak and Peer",
     "subtitle": "Infrastructure Management Platform",
     "description": "AI-powered infrastructure defect detection, asset management, contractor matching, and contract automation for Vision 2030 compliance.",
     "aiRecognition": "AI Recognition",
@@ -30,7 +30,7 @@
     "dashboard": "Dashboard"
   },
   "dashboard": {
-    "title": "Infrastructure Command Center",
+    "title": "Peak and Peer",
     "subtitle": "Monitor and manage infrastructure assets, detections, contractors, and contracts",
     "openDetections": "Open Detections",
     "criticalIssues": "critical issues",
