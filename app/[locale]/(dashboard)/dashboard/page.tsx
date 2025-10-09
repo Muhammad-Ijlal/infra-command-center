@@ -8,6 +8,7 @@ import { mockDetections } from "@/src/data/mock-detections"
 import { mockAssets } from "@/src/data/mock-assets"
 import { mockContractors } from "@/src/data/mock-contractors"
 import { mockContracts } from "@/src/data/mock-contracts"
+import { AssetMap } from "@/components/asset-map"
 
 export default function DashboardPage() {
   // Calculate summary statistics
@@ -100,6 +101,17 @@ export default function DashboardPage() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
+          {/* Asset Map */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Asset Locations</CardTitle>
+              <CardDescription>Interactive map showing all infrastructure assets</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AssetMap assets={mockAssets} height="500px" />
+            </CardContent>
+          </Card>
+
           <div className="grid gap-4 md:grid-cols-2">
             <Card>
               <CardHeader>

@@ -1,7 +1,10 @@
 {
-    "mcpServers": {
-      "shadcn": {
-        "url": "https://www.shadcn.io/api/mcp"
-      }
+  "mcpServers": {
+    "shadcn": {
+      "url": "https://www.shadcn.io/api/mcp"
+    },
+    "supabase": {
+      "url": "https://mcp.supabase.com/mcp"
     }
+  }
 }
