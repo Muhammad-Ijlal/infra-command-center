@@ -1,5 +1,6 @@
 {
   "common": {
+    "infrastructureManagement": "Infrastructure Management",
     "dashboard": "Dashboard",
     "aiRecognition": "AI Recognition",
     "assets": "Assets",
@@ -19,7 +20,7 @@
     "markAllAsRead": "Mark All as Read"
   },
   "landing": {
-    "title": "Peak and Peer",
+    "title": "Peak&Peek",
     "subtitle": "Infrastructure Management Platform",
     "description": "AI-powered infrastructure defect detection, asset management, contractor matching, and contract automation for Vision 2030 compliance.",
     "aiRecognition": "AI Recognition",
@@ -30,7 +31,7 @@
     "dashboard": "Dashboard"
   },
   "dashboard": {
-    "title": "Peak and Peer",
+    "title": "Peak&Peek",
     "subtitle": "Monitor and manage infrastructure assets, detections, contractors, and contracts",
     "openDetections": "Open Detections",
     "criticalIssues": "critical issues",

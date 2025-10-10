@@ -1,9 +1,33 @@
+"use client"
+
 import { cn } from "../lib/utils";
+import Image from "next/image";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 export const Logo = ({ className = "" }: { className?: string }) => {
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Determine which logo to show
+  const logoSrc = mounted && (resolvedTheme === "dark" || theme === "dark")
+    ? "/logo_dark.png"
+    : "/logo_light.png";
+
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      <span className="text-2xl font-bold tracking-tight">Peak and Peer</span>
+      <Image
+        src={logoSrc}
+        alt="Peak&Peek"
+        width={120}
+        height={40}
+        className="object-contain"
+        priority
+      />
     </div>
   );
 };

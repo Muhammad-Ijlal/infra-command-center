@@ -2,8 +2,9 @@
 
 import * as React from "react"
 import { useTranslations, useLocale } from 'next-intl'
+import Image from "next/image"
+import { useTheme } from "next-themes"
 import {
-  Command,
   LayoutDashboard,
   Brain,
   Building2,
@@ -29,6 +30,17 @@ import {
 export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations('common')
   const locale = useLocale()
+  const { theme, resolvedTheme } = useTheme()
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Determine which logo to show
+  const logoSrc = mounted && (resolvedTheme === "dark" || theme === "dark")
+    ? "/logo_dark.png"
+    : "/logo_light.png"
   
   const navMainData = [
     {
@@ -66,16 +78,28 @@ export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typ
   return (
     <Sidebar collapsible="icon" side={side} {...props}>
       <SidebarHeader>
-      <SidebarMenu>
+        <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Command className="size-4" />
+              <a href={`/${locale}/dashboard`}>
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:size-8 hidden">
+                  <Image
+                    src={logoSrc}
+                    alt="Peak&Peek"
+                    width={32}
+                    height={32}
+                    className="object-contain"
+                  />
                 </div>
-                <div className="grid flex-1 text-sm leading-tight ltr:text-left rtl:text-right">
-                  <span className="truncate font-medium">Peak and Peer</span>
-                  <span className="truncate text-xs">Infrastructure Management</span>
+                <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
+                  <Image
+                    src={logoSrc}
+                    alt="Peak&Peek"
+                    width={100}
+                    height={32}
+                    className="object-contain mb-1"
+                  />
+                  <span className="text-xs text-muted-foreground">{t('infrastructureManagement')}</span>
                 </div>
               </a>
             </SidebarMenuButton>
