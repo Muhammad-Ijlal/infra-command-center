@@ -7,7 +7,6 @@ import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Section } from "@/components/ui/section"
-import { LogoVolindo } from "@/components/logo-volindo"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { LocaleDebug } from "@/components/locale-debug"
 import LogosMarquee from "@/components/sections/logos/marquee"
@@ -79,26 +78,28 @@ export default function Home() {
           <div className="flex flex-col items-center gap-6 text-center sm:gap-10">
             {/* Logo */}
             <div className="animate-appear opacity-0">
-              <LogoVolindo width={140} height={140} color="#E07A3F" />
+              <Image
+                src={logoSrc}
+                alt="Peak&Peek"
+                width={300}
+                height={100}
+                className="h-auto w-[250px] object-contain sm:w-[300px] md:w-[350px]"
+                priority
+              />
             </div>
 
-            {/* Title */}
-            <h1 className="animate-appear from-foreground to-foreground dark:to-muted-foreground relative z-10 inline-block bg-linear-to-r bg-clip-text text-4xl font-semibold leading-tight text-balance text-transparent drop-shadow-2xl opacity-0 delay-100 sm:text-6xl sm:leading-tight md:text-7xl md:leading-tight">
-              {t('title')}
-            </h1>
-
             {/* Subtitle */}
-            <p className="animate-appear text-xl font-semibold opacity-0 delay-200 sm:text-2xl">
+            <p className="animate-appear text-xl font-semibold opacity-0 delay-100 sm:text-2xl">
               {t('subtitle')}
             </p>
 
             {/* Description */}
-            <p className="text-md animate-appear text-muted-foreground relative z-10 max-w-[740px] font-medium text-balance opacity-0 delay-300 sm:text-xl">
+            <p className="text-md animate-appear text-muted-foreground relative z-10 max-w-[740px] font-medium text-balance opacity-0 delay-200 sm:text-xl">
               {t('description')}
             </p>
 
             {/* CTA Button */}
-            <div className="animate-appear relative z-10 flex justify-center gap-4 opacity-0 delay-500">
+            <div className="animate-appear relative z-10 flex justify-center gap-4 opacity-0 delay-300">
               <Button size="lg" variant="default" asChild>
                 <Link href="/dashboard">
                   {tc('launchDemo')}
@@ -107,7 +108,7 @@ export default function Home() {
             </div>
 
             {/* Feature Icons Grid */}
-            <div className="animate-appear relative z-10 mt-8 grid w-full max-w-3xl grid-cols-2 gap-6 opacity-0 delay-700 md:grid-cols-3">
+            <div className="animate-appear relative z-10 mt-8 grid w-full max-w-3xl grid-cols-2 gap-6 opacity-0 delay-500 md:grid-cols-3">
               {features.map((feature, index) => (
                 <div
                   key={index}
@@ -125,7 +126,7 @@ export default function Home() {
 
         {/* Background Glow */}
         <div className="pointer-events-none absolute top-0 left-0 h-full w-full">
-          <Glow variant="top" className="animate-appear-zoom opacity-0 delay-1000" />
+          <Glow variant="top" className="animate-appear-zoom opacity-0 delay-700" />
         </div>
       </Section>
 
@@ -139,10 +140,13 @@ export default function Home() {
       <footer className="border-border/15 bg-background border-t py-12">
         <div className="max-w-container mx-auto px-4">
           <div className="flex flex-col items-center gap-4 text-center">
-            <div className="flex items-center gap-2">
-              <LogoVolindo width={28} height={28} color="#E07A3F" />
-              <span className="text-lg font-semibold">Peak&Peek</span>
-            </div>
+            <Image
+              src={logoSrc}
+              alt="Peak&Peek"
+              width={150}
+              height={50}
+              className="h-auto w-[120px] object-contain"
+            />
             <p className="text-muted-foreground text-sm">
               Infrastructure Management Platform for Vision 2030
             </p>
