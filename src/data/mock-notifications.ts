@@ -1,4 +1,4 @@
-import { Notification } from '@/src/types/notification'
+import { Notification } from '@/types/notification'
 
 export const mockNotifications: Notification[] = [
   {

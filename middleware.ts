@@ -1,13 +1,12 @@
 import createMiddleware from 'next-intl/middleware';
-import { locales } from './i18n/request';
+import { routing } from './src/i18n/routing';
 
-export default createMiddleware({
-  locales,
-  defaultLocale: 'en',
-  localePrefix: 'always'
-});
+export default createMiddleware(routing);
 
 export const config = {
-  matcher: ['/', '/(ar|en)/:path*']
+  // Match all pathnames except for
+  // - … if they start with `/api`, `/_next` or `/_vercel`
+  // - … the ones containing a dot (e.g. `favicon.ico`)
+  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)']
 };
 

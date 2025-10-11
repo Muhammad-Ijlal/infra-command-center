@@ -1,4 +1,4 @@
-import { Asset, AssetPassport, MaintenanceRecord } from '@/src/types/asset'
+import { Asset, AssetPassport, MaintenanceRecord } from '@/types/asset'
 
 export const mockAssets: Asset[] = [
   {

@@ -1,4 +1,4 @@
-import { AIDetection } from '@/src/types/detection'
+import { AIDetection } from '@/types/detection'
 
 export const mockDetections: AIDetection[] = [
   {

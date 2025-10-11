@@ -1,4 +1,4 @@
-import { Contract } from '@/src/types/contract'
+import { Contract } from '@/types/contract'
 
 export const mockContracts: Contract[] = [
   {
