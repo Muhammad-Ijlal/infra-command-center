@@ -29,7 +29,7 @@ export default function LogosMarquee({
       logo: <TrustedLogo src="/trusted_by/Boskalis.png" alt="Boskalis" />,
     },
     {
-      logo: <TrustedLogo src="/trusted_by/DEME.png" alt="DEME" />,
+      logo: <TrustedLogo src="/trusted_by/Deme.png" alt="DEME" />,
     },
     {
       logo: <TrustedLogo src="/trusted_by/Gementee.svg" alt="Gemente" />,
