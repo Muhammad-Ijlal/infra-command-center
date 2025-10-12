@@ -2,12 +2,12 @@
 
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
-import { ThemeToggleButton, useThemeTransition } from "@/components/ui/shadcn-io/theme-toggle-button"
+import { Button } from "@/components/ui/button"
+import { Moon, Sun } from "lucide-react"
 
 export function ThemeToggle() {
   const [mounted, setMounted] = useState(false)
   const { theme, setTheme } = useTheme()
-  const { startTransition } = useThemeTransition()
 
   useEffect(() => {
     setMounted(true)
@@ -18,17 +18,22 @@ export function ThemeToggle() {
   }
 
   const handleToggle = () => {
-    startTransition(() => {
-      setTheme(theme === "dark" ? "light" : "dark")
-    })
+    setTheme(theme === "dark" ? "light" : "dark")
   }
 
   return (
-    <ThemeToggleButton
-      theme={theme as "light" | "dark"}
-      variant="circle"
-      start="top-right"
+    <Button
+      variant="ghost"
+      size="icon"
       onClick={handleToggle}
-    />
+      className="rounded-full"
+    >
+      {theme === "dark" ? (
+        <Sun className="h-5 w-5" />
+      ) : (
+        <Moon className="h-5 w-5" />
+      )}
+      <span className="sr-only">Toggle theme</span>
+    </Button>
   )
 }
