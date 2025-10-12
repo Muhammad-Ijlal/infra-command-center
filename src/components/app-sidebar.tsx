@@ -29,7 +29,6 @@ import {
 
 export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations('landing')
-  const tCommon = useTranslations('common')
   const locale = useLocale()
   const { theme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = React.useState(false)

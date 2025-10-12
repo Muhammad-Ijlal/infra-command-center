@@ -24,7 +24,7 @@ export default function TrustedLogo({
         width={width}
         height={height}
         className={cn(
-          "h-12 w-auto",
+          "h-15 w-auto",
           className
         )}
       />

@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useTranslations, useLocale } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -388,9 +389,11 @@ export default function AIDetectionsPage() {
                       Detection Image
                     </h3>
                     <div className="rounded-lg overflow-hidden border">
-                      <img 
+                      <Image 
                         src={selectedDetection.image_url} 
                         alt={`Detection ${selectedDetection.detection_id}`}
+                        width={600}
+                        height={300}
                         className="w-full h-[300px] object-cover"
                       />
                     </div>

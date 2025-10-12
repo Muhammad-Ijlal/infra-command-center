@@ -3,18 +3,23 @@ import { cn } from "@/lib/utils";
 
 import { Section } from "@/components/ui/section";
 import TrustedLogo from "@/components/ui/trusted-logo";
+import Marquee from "@/components/ui/marquee";
 
 interface LogoItemProps {
   logo: ReactNode;
 }
 
-interface LogosProps {
+interface LogosMarqueeProps {
   title?: string;
   logoItems?: LogoItemProps[];
+  duration?: string;
+  gap?: string;
+  pauseOnHover?: boolean;
+  showGradients?: boolean;
   className?: string;
 }
 
-export default function LogosGrid({
+export default function LogosMarquee({
   title = "Trusted by Leading Names in the Industry",
   logoItems = [
     {
@@ -27,7 +32,7 @@ export default function LogosGrid({
       logo: <TrustedLogo src="/trusted_by/DEME.png" alt="DEME" />,
     },
     {
-      logo: <TrustedLogo src="/trusted_by/Gemente.png" alt="Gemente" />,
+      logo: <TrustedLogo src="/trusted_by/Gementee.svg" alt="Gemente" />,
     },
     {
       logo: <TrustedLogo src="/trusted_by/heijmans.svg" alt="Heijmans" />,
@@ -42,21 +47,34 @@ export default function LogosGrid({
       logo: <TrustedLogo src="/trusted_by/YUNEX.svg" alt="YUNEX" />,
     },
   ],
+  duration = "20s",
+  gap = "3rem",
+  pauseOnHover = true,
+  showGradients = true,
   className,
-}: LogosProps) {
+}: LogosMarqueeProps) {
   return (
     <Section className={cn(className)}>
       <div className="max-w-container mx-auto flex flex-col items-center gap-8 text-center">
         <h2 className="text-md text-muted-foreground font-semibold">{title}</h2>
-        <div className="bg-border dark:bg-border/20 relative grid w-full auto-rows-fr grid-cols-2 gap-[1px] text-center md:grid-cols-3">
-          {logoItems.map((item, index) => (
-            <div
-              key={index}
-              className="bg-background flex aspect-2/1 items-center justify-center p-6"
-            >
-              {item.logo}
-            </div>
-          ))}
+        <div className="relative flex w-full flex-col items-center justify-center overflow-hidden">
+          <Marquee
+            pauseOnHover={pauseOnHover}
+            className={`[--duration:${duration}] [--gap:${gap}]`}
+            style={{ '--duration': duration, '--gap': gap } as React.CSSProperties}
+          >
+            {logoItems.map((item, index) => (
+              <div key={index} className="flex items-center justify-center">
+                {item.logo}
+              </div>
+            ))}
+          </Marquee>
+          {showGradients && (
+            <>
+              <div className="from-background pointer-events-none absolute inset-y-0 left-0 hidden w-1/3 bg-linear-to-r sm:block" />
+              <div className="from-background pointer-events-none absolute inset-y-0 right-0 hidden w-1/3 bg-linear-to-l sm:block" />
+            </>
+          )}
         </div>
       </div>
     </Section>
