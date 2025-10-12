@@ -3,13 +3,13 @@ import { Contract } from '@/types/contract'
 export const mockContracts: Contract[] = [
   {
     contract_id: 'CTR-001',
-    title: 'King Fahd Road Emergency Repair',
+    title: 'Corniche Road Emergency Repair',
     type: 'direct_award',
     status: 'active',
     asset_id: 'ASSET-R-001',
     contractor_id: 'CNT-001',
-    contractor_name: 'AlRajhi Construction',
-    description: 'Emergency repair works for critical crack on King Fahd Road',
+    contractor_name: 'Qatari Construction Co.',
+    description: 'Emergency repair works for critical crack on Corniche Road',
     sla_terms: {
       response_time: 4,
       completion_time: 10,
@@ -57,18 +57,18 @@ export const mockContracts: Contract[] = [
         }
       ],
       total_estimated_cost: 125000,
-      currency: 'SAR'
+      currency: 'QAR'
     },
     approvals: [
       {
-        approver_name: 'Eng. Mohammed Al-Saud',
+        approver_name: 'Eng. Mohammed Al-Thani',
         approver_role: 'Technical Director',
         status: 'approved',
         date: '2025-10-08',
         comments: 'Approved for immediate execution'
       },
       {
-        approver_name: 'Dr. Sarah Al-Mutairi',
+        approver_name: 'Dr. Fatima Al-Kuwari',
         approver_role: 'Operations Manager',
         status: 'approved',
         date: '2025-10-08',
@@ -78,12 +78,12 @@ export const mockContracts: Contract[] = [
   },
   {
     contract_id: 'CTR-002',
-    title: 'Bridge Corrosion Treatment - Al-Murooj',
+    title: 'Bridge Corrosion Treatment - Al Sadd',
     type: 'tender',
     status: 'pending_approval',
     asset_id: 'ASSET-B-003',
-    contractor_id: 'CNT-002',
-    contractor_name: 'Saudi Infrastructure Co.',
+    detection_id: 'DET-002',
+    suitable_contractors: ['CNT-002', 'CNT-003'], // AI-matched contractors for bridge repair
     description: 'Corrosion treatment and protective coating for bridge support structures',
     sla_terms: {
       response_time: 3,
@@ -130,18 +130,18 @@ export const mockContracts: Contract[] = [
         }
       ],
       total_estimated_cost: 285000,
-      currency: 'SAR'
+      currency: 'QAR'
     },
     approvals: [
       {
-        approver_name: 'Eng. Mohammed Al-Saud',
+        approver_name: 'Eng. Mohammed Al-Thani',
         approver_role: 'Technical Director',
         status: 'approved',
         date: '2025-10-07',
         comments: 'Technical specifications approved'
       },
       {
-        approver_name: 'Dr. Sarah Al-Mutairi',
+        approver_name: 'Dr. Fatima Al-Kuwari',
         approver_role: 'Operations Manager',
         status: 'pending',
         comments: ''
@@ -150,17 +150,17 @@ export const mockContracts: Contract[] = [
   },
   {
     contract_id: 'CTR-003',
-    title: 'Streetlight Maintenance - Olaya Zone 12',
+    title: 'Streetlight Maintenance - C-Ring Zone 12',
     type: 'framework',
     status: 'sent_to_contractor',
     asset_id: 'ASSET-L-012',
     contractor_id: 'CNT-004',
-    contractor_name: 'ElectroTech Solutions',
-    description: 'Repair and upgrade of streetlight system in Olaya Zone 12',
+    contractor_name: 'Qatar ElectroTech Solutions',
+    description: 'Repair and upgrade of streetlight system in C-Ring Road Zone 12',
     sla_terms: {
       response_time: 2,
       completion_time: 7,
-      quality_standards: ['IEC 60598', 'Saudi Electrical Code'],
+      quality_standards: ['IEC 60598', 'Qatar Electrical Code'],
       penalties: '2% per day for critical failures',
       warranty_period: 12
     },
@@ -170,13 +170,13 @@ export const mockContracts: Contract[] = [
     value: 45000,
     approvals: [
       {
-        approver_name: 'Eng. Mohammed Al-Saud',
+        approver_name: 'Eng. Mohammed Al-Thani',
         approver_role: 'Technical Director',
         status: 'approved',
         date: '2025-10-06'
       },
       {
-        approver_name: 'Dr. Sarah Al-Mutairi',
+        approver_name: 'Dr. Fatima Al-Kuwari',
         approver_role: 'Operations Manager',
         status: 'approved',
         date: '2025-10-06'
@@ -185,20 +185,79 @@ export const mockContracts: Contract[] = [
   },
   {
     contract_id: 'CTR-004',
-    title: 'Pothole Repair - Olaya Intersection',
-    type: 'tender',
-    status: 'draft',
+    title: 'Pothole Repair - Al Waab Intersection',
+    type: 'direct_award',
+    status: 'active',
     asset_id: 'ASSET-R-002',
-    description: 'Pothole repair and surface restoration at Olaya Street intersection',
+    detection_id: 'DET-003',
+    contractor_id: 'CNT-001',
+    contractor_name: 'Qatari Construction Co.',
+    description: 'Emergency pothole repair and surface restoration at Al Waab Street intersection',
     sla_terms: {
       response_time: 4,
       completion_time: 5,
       quality_standards: ['ASTM D6433', 'QCS 2014'],
+      penalties: '1% per day delay after SLA breach',
       warranty_period: 18
     },
     created_date: '2025-10-08',
+    start_date: '2025-10-09',
+    end_date: '2025-10-14',
     value: 35000,
-    approvals: []
+    boq: {
+      items: [
+        {
+          item_id: 'BOQ-009',
+          description: 'Pothole patching and filling',
+          unit: 'sq meter',
+          quantity: 25,
+          unit_price: 600,
+          total_price: 15000
+        },
+        {
+          item_id: 'BOQ-010',
+          description: 'Surface leveling',
+          unit: 'sq meter',
+          quantity: 25,
+          unit_price: 400,
+          total_price: 10000
+        },
+        {
+          item_id: 'BOQ-011',
+          description: 'Road marking restoration',
+          unit: 'linear meter',
+          quantity: 20,
+          unit_price: 200,
+          total_price: 4000
+        },
+        {
+          item_id: 'BOQ-012',
+          description: 'Traffic control and safety',
+          unit: 'lump sum',
+          quantity: 1,
+          unit_price: 6000,
+          total_price: 6000
+        }
+      ],
+      total_estimated_cost: 35000,
+      currency: 'QAR'
+    },
+    approvals: [
+      {
+        approver_name: 'Eng. Mohammed Al-Thani',
+        approver_role: 'Technical Director',
+        status: 'approved',
+        date: '2025-10-08',
+        comments: 'Approved for immediate execution'
+      },
+      {
+        approver_name: 'Dr. Fatima Al-Kuwari',
+        approver_role: 'Operations Manager',
+        status: 'approved',
+        date: '2025-10-08',
+        comments: 'Budget allocated - emergency response'
+      }
+    ]
   }
 ]
 

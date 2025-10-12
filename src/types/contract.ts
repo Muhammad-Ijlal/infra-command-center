@@ -7,8 +7,10 @@ export interface Contract {
   type: ContractType
   status: ContractStatus
   asset_id?: string
+  detection_id?: string
   contractor_id?: string
   contractor_name?: string
+  suitable_contractors?: string[] // Array of contractor IDs for tenders
   description: string
   sla_terms: SLATerms
   created_date: string

@@ -23,17 +23,24 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
+import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { FileText, Clock, CheckCircle2, Send, Plus } from "lucide-react"
+import { FileText, Clock, CheckCircle2, Send, Plus, Users, Pencil } from "lucide-react"
 import { mockContracts } from "@/data/mock-contracts"
 import { mockAssets } from "@/data/mock-assets"
 import { mockContractors } from "@/data/mock-contractors"
 import { Contract } from "@/types/contract"
+import { Contractor } from "@/types/contractor"
 
 export default function CommandCenterPage() {
   const t = useTranslations('commandCenter')
@@ -101,6 +108,17 @@ export default function CommandCenterPage() {
     )
   }
 
+  const getSuitableContractors = (contractorIds: string[]): Contractor[] => {
+    return contractorIds
+      .map(id => mockContractors.find(c => c.contractor_id === id))
+      .filter((c): c is Contractor => c !== undefined)
+  }
+
+  const handleSendApprovalRequest = (approverName: string) => {
+    // In a real app, this would send an email/notification to the approver
+    alert(`Approval request sent to ${approverName}`)
+  }
+
   const getStatusBadge = (status: Contract['status']) => {
     switch (status) {
       case 'active':
@@ -120,193 +138,329 @@ export default function CommandCenterPage() {
     }
   }
 
+  // Separate contracts and tenders
+  const contractsOnly = contracts.filter(c => c.type === 'direct_award' || c.type === 'framework')
+  const tendersOnly = contracts.filter(c => c.type === 'tender')
+
   const draftCount = contracts.filter(c => c.status === 'draft').length
   const pendingCount = contracts.filter(c => c.status === 'pending_approval').length
   const activeCount = contracts.filter(c => c.status === 'active' || c.status === 'sent_to_contractor').length
+  
+  const tenderDraftCount = tendersOnly.filter(t => t.status === 'draft').length
+  const tenderPendingCount = tendersOnly.filter(t => t.status === 'pending_approval').length
+  const tenderActiveCount = tendersOnly.filter(t => t.status === 'approved' || t.status === 'sent_to_contractor').length
+  
+  const contractActiveCount = contractsOnly.filter(c => c.status === 'active').length
+  const contractCompletedCount = contractsOnly.filter(c => c.status === 'completed').length
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
-          <p className="text-muted-foreground mt-1">
-            {t('subtitle')}
-          </p>
-        </div>
-        <Button onClick={() => setShowCreateDialog(true)} className="gap-2">
-          <Plus className="h-4 w-4" />
-          {t('createContract')}
-        </Button>
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
+        <p className="text-muted-foreground mt-1">
+          {t('subtitle')}
+        </p>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
+      {/* Tabs for Contracts and Tenders */}
+      <Tabs defaultValue="contracts" className="space-y-6">
+        <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsTrigger value="contracts">{t('contracts')}</TabsTrigger>
+          <TabsTrigger value="tenders">{t('tenders')}</TabsTrigger>
+        </TabsList>
+
+        {/* Contracts Tab */}
+        <TabsContent value="contracts" className="space-y-6">
+          {/* Contract Summary Cards */}
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{t('draftContracts')}</CardTitle>
+                <FileText className="h-4 w-4 text-gray-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{draftCount}</div>
+                <p className="text-xs text-muted-foreground">{t('beingPrepared')}</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{t('pendingApproval')}</CardTitle>
+                <Clock className="h-4 w-4 text-yellow-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-yellow-600">{pendingCount}</div>
+                <p className="text-xs text-muted-foreground">{t('awaitingReview')}</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{t('activeContracts')}</CardTitle>
+                <CheckCircle2 className="h-4 w-4 text-green-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600">{activeCount}</div>
+                <p className="text-xs text-muted-foreground">{t('inExecution')}</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Contract Registry */}
+          <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>{t('contractRegistry')}</CardTitle>
+              <CardDescription>
+                {t('allContracts')}
+              </CardDescription>
+            </div>
+            <div className="flex gap-2">
+              <Badge variant="outline" className="bg-green-50 text-green-700">
+                {t('active')}: {contractActiveCount}
+              </Badge>
+              <Badge variant="outline" className="bg-gray-50">
+                {t('completed')}: {contractCompletedCount}
+              </Badge>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {contractsOnly.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t('contractId')}</TableHead>
+                  <TableHead>{t('itemTitle')}</TableHead>
+                  <TableHead>{t('type')}</TableHead>
+                  <TableHead>{t('contractor')}</TableHead>
+                  <TableHead>{t('status')}</TableHead>
+                  <TableHead>{t('startDate')}</TableHead>
+                  <TableHead>{t('endDate')}</TableHead>
+                  <TableHead>{t('value')}</TableHead>
+                  <TableHead>{t('actions')}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {contractsOnly.map((contract) => (
+                  <TableRow key={contract.contract_id}>
+                    <TableCell className="font-medium">{contract.contract_id}</TableCell>
+                    <TableCell>{contract.title}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="capitalize">{contract.type.replace(/_/g, ' ')}</Badge>
+                    </TableCell>
+                    <TableCell>{contract.contractor_name || t('notAssigned')}</TableCell>
+                    <TableCell>
+                      <Badge 
+                        variant={getStatusBadge(contract.status).variant} 
+                        className={`capitalize ${getStatusBadge(contract.status).className}`}
+                      >
+                        {contract.status.replace(/_/g, ' ')}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {contract.start_date ? new Date(contract.start_date).toLocaleDateString() : '-'}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {contract.end_date ? new Date(contract.end_date).toLocaleDateString() : '-'}
+                    </TableCell>
+                    <TableCell>
+                      {contract.value ? `${contract.value.toLocaleString()} QAR` : '-'}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setSelectedContract(contract)}
+                        >
+                          {t('view')}
+                        </Button>
+                        {contract.status === 'pending_approval' && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {/* TODO: Implement edit functionality */}}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              {t('noContractsFound')}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+        </TabsContent>
+
+        {/* Tenders Tab */}
+        <TabsContent value="tenders" className="space-y-6">
+          {/* Tender Summary Cards */}
+          <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('draftContracts')}</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('draftTenders')}</CardTitle>
             <FileText className="h-4 w-4 text-gray-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{draftCount}</div>
+            <div className="text-2xl font-bold">{tenderDraftCount}</div>
             <p className="text-xs text-muted-foreground">{t('beingPrepared')}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('pendingApproval')}</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('pendingTenders')}</CardTitle>
             <Clock className="h-4 w-4 text-yellow-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{pendingCount}</div>
-            <p className="text-xs text-muted-foreground">{t('awaitingReview')}</p>
+            <div className="text-2xl font-bold text-yellow-600">{tenderPendingCount}</div>
+            <p className="text-xs text-muted-foreground">{t('awaitingApproval')}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('activeContracts')}</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-green-600" />
+            <CardTitle className="text-sm font-medium">{t('activeTenders')}</CardTitle>
+            <Users className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{activeCount}</div>
-            <p className="text-xs text-muted-foreground">{t('inExecution')}</p>
+            <div className="text-2xl font-bold text-blue-600">{tenderActiveCount}</div>
+            <p className="text-xs text-muted-foreground">{t('openForBidding')}</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Contracts Table */}
+      {/* Tender Registry */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('contractRegistry')}</CardTitle>
-          <CardDescription>
-            {t('allContracts')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t('contractId')}</TableHead>
-                <TableHead>{t('title')}</TableHead>
-                <TableHead>{t('type')}</TableHead>
-                <TableHead>{t('contractor')}</TableHead>
-                <TableHead>{t('status')}</TableHead>
-                <TableHead>{t('createdDate')}</TableHead>
-                <TableHead>{t('value')}</TableHead>
-                <TableHead>{t('actions')}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {contracts.map((contract) => (
-                <TableRow key={contract.contract_id}>
-                  <TableCell className="font-medium">{contract.contract_id}</TableCell>
-                  <TableCell>{contract.title}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="capitalize">{contract.type}</Badge>
-                  </TableCell>
-                  <TableCell>{contract.contractor_name || '-'}</TableCell>
-                  <TableCell>
-                    <Badge 
-                      variant={getStatusBadge(contract.status).variant} 
-                      className={`capitalize ${getStatusBadge(contract.status).className}`}
-                    >
-                      {contract.status.replace(/_/g, ' ')}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-sm">
-                    {new Date(contract.created_date).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    {contract.value ? contract.value.toLocaleString() : '-'}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setSelectedContract(contract)}
-                      >
-                        {t('view')}
-                      </Button>
-                      {contract.status === 'draft' && (
-                        <Button
-                          size="sm"
-                          variant="default"
-                          onClick={() => handleUpdateStatus(contract.contract_id, 'pending_approval')}
-                        >
-                          {t('submit')}
-                        </Button>
-                      )}
-                      {contract.status === 'pending_approval' && (
-                        <Button
-                          size="sm"
-                          variant="default"
-                          onClick={() => handleUpdateStatus(contract.contract_id, 'approved')}
-                        >
-                          {t('approve')}
-                        </Button>
-                      )}
-                      {contract.status === 'approved' && (
-                        <Button
-                          size="sm"
-                          variant="default"
-                          onClick={() => handleUpdateStatus(contract.contract_id, 'sent_to_contractor')}
-                        >
-                          {t('send')}
-                        </Button>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
-      {/* Workflow Info */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('contractWorkflow')}</CardTitle>
-          <CardDescription>{t('approvalProcess')}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
-            <div className="flex flex-col items-center text-center space-y-2">
-              <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
-                <FileText className="h-6 w-6 text-gray-600" />
-              </div>
-              <p className="text-sm font-medium">{t('draft')}</p>
-              <p className="text-xs text-muted-foreground">{t('createContract')}</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>{t('tenderRegistry')}</CardTitle>
+              <CardDescription>
+                {t('allTenders')}
+              </CardDescription>
             </div>
-            <div className="hidden md:block text-muted-foreground">→</div>
-            <div className="flex flex-col items-center text-center space-y-2">
-              <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
-                <Clock className="h-6 w-6 text-yellow-600" />
-              </div>
-              <p className="text-sm font-medium">{t('pendingApprovalStep')}</p>
-              <p className="text-xs text-muted-foreground">{t('reviewRequired')}</p>
-            </div>
-            <div className="hidden md:block text-muted-foreground">→</div>
-            <div className="flex flex-col items-center text-center space-y-2">
-              <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-                <CheckCircle2 className="h-6 w-6 text-green-600" />
-              </div>
-              <p className="text-sm font-medium">{t('approved')}</p>
-              <p className="text-xs text-muted-foreground">{t('readyToSend')}</p>
-            </div>
-            <div className="hidden md:block text-muted-foreground">→</div>
-            <div className="flex flex-col items-center text-center space-y-2">
-              <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-                <Send className="h-6 w-6 text-blue-600" />
-              </div>
-              <p className="text-sm font-medium">{t('sent')}</p>
-              <p className="text-xs text-muted-foreground">{t('toContractor')}</p>
+            <div className="flex gap-2">
+              <Badge variant="outline" className="bg-gray-50">
+                {t('draft')}: {tenderDraftCount}
+              </Badge>
+              <Badge variant="outline" className="bg-yellow-50 text-yellow-700">
+                {t('pending')}: {tenderPendingCount}
+              </Badge>
+              <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                {t('active')}: {tenderActiveCount}
+              </Badge>
             </div>
           </div>
+        </CardHeader>
+        <CardContent>
+          {tendersOnly.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t('tenderId')}</TableHead>
+                  <TableHead>{t('itemTitle')}</TableHead>
+                  <TableHead>{t('suitableContractors')}</TableHead>
+                  <TableHead>{t('status')}</TableHead>
+                  <TableHead>{t('createdDate')}</TableHead>
+                  <TableHead>{t('value')}</TableHead>
+                  <TableHead>{t('actions')}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {tendersOnly.map((tender) => {
+                  const suitableContractors = tender.suitable_contractors 
+                    ? getSuitableContractors(tender.suitable_contractors)
+                    : []
+                  
+                  return (
+                    <TableRow key={tender.contract_id}>
+                      <TableCell className="font-medium">{tender.contract_id}</TableCell>
+                      <TableCell>{tender.title}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Users className="h-4 w-4 text-blue-600" />
+                          <span className="text-sm font-medium text-blue-600">
+                            {suitableContractors.length} {t('matched')}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge 
+                          variant={getStatusBadge(tender.status).variant} 
+                          className={`capitalize ${getStatusBadge(tender.status).className}`}
+                        >
+                          {tender.status.replace(/_/g, ' ')}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {new Date(tender.created_date).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        {tender.value ? `${tender.value.toLocaleString()} QAR` : '-'}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setSelectedContract(tender)}
+                          >
+                            {t('view')}
+                          </Button>
+                          {tender.status === 'pending_approval' && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => {/* TODO: Implement edit functionality */}}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {tender.status === 'draft' && (
+                            <Button
+                              size="sm"
+                              variant="default"
+                              onClick={() => handleUpdateStatus(tender.contract_id, 'pending_approval')}
+                            >
+                              {t('submit')}
+                            </Button>
+                          )}
+                          {tender.status === 'approved' && (
+                            <Button
+                              size="sm"
+                              variant="default"
+                              onClick={() => handleUpdateStatus(tender.contract_id, 'sent_to_contractor')}
+                            >
+                              {t('send')}
+                            </Button>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              {t('noTendersFound')}
+            </div>
+          )}
         </CardContent>
       </Card>
+        </TabsContent>
+      </Tabs>
 
       {/* Create Contract Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -451,17 +605,89 @@ export default function CommandCenterPage() {
                     {selectedContract.status.replace(/_/g, ' ')}
                   </Badge>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">{t('contractor')}</p>
-                  <p className="font-medium">{selectedContract.contractor_name || t('notAssigned')}</p>
-                </div>
+                {selectedContract.type !== 'tender' && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">{t('contractor')}</p>
+                    <p className="font-medium">{selectedContract.contractor_name || t('notAssigned')}</p>
+                  </div>
+                )}
                 <div>
                   <p className="text-sm text-muted-foreground">{t('value')}</p>
                   <p className="font-medium">
-                    {selectedContract.value ? `${selectedContract.value.toLocaleString()} SAR` : t('tbd')}
+                    {selectedContract.value ? `${selectedContract.value.toLocaleString()} QAR` : t('tbd')}
                   </p>
                 </div>
               </div>
+
+              {/* Suitable Contractors for Tenders */}
+              {selectedContract.type === 'tender' && selectedContract.suitable_contractors && (
+                <div className="border-t pt-4">
+                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                    <Users className="h-5 w-5 text-blue-600" />
+                    {t('suitableContractors')}
+                  </h4>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {t('aiMatchedContractors')}
+                  </p>
+                  <div className="space-y-3">
+                    {getSuitableContractors(selectedContract.suitable_contractors).map((contractor) => (
+                      <div 
+                        key={contractor.contractor_id}
+                        className="border rounded-lg p-4 bg-blue-50/50 dark:bg-blue-950/20"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h5 className="font-semibold">{contractor.name}</h5>
+                              <Badge variant="outline" className="bg-white">
+                                ⭐ {contractor.rating}
+                              </Badge>
+                              <Badge 
+                                variant="outline" 
+                                className={
+                                  contractor.sla_compliance === 'excellent' ? 'bg-green-50 text-green-700 border-green-200' :
+                                  contractor.sla_compliance === 'good' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                                  'bg-gray-50'
+                                }
+                              >
+                                {contractor.sla_compliance}
+                              </Badge>
+                            </div>
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                              <div>
+                                <span className="text-muted-foreground">{t('avgResponseTime')}:</span>
+                                <span className="font-medium ml-1">{contractor.avg_response_time}h</span>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">{t('capacity')}:</span>
+                                <span className="font-medium ml-1">{contractor.capacity}%</span>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">{t('activeContracts')}:</span>
+                                <span className="font-medium ml-1">{contractor.active_contracts}</span>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">{t('completed')}:</span>
+                                <span className="font-medium ml-1">{contractor.completed_contracts}</span>
+                              </div>
+                            </div>
+                            <div className="mt-2">
+                              <span className="text-sm text-muted-foreground">{t('capabilities')}:</span>
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {contractor.scope.map((scope) => (
+                                  <Badge key={scope} variant="secondary" className="text-xs">
+                                    {scope.replace(/_/g, ' ')}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {selectedContract.sla_terms && (
                 <div>
@@ -482,16 +708,32 @@ export default function CommandCenterPage() {
               {selectedContract.approvals && selectedContract.approvals.length > 0 && (
                 <div>
                   <h4 className="font-semibold mb-2">{t('approvals')}</h4>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {selectedContract.approvals.map((approval, idx) => (
-                      <div key={idx} className="flex items-center justify-between border-b pb-2">
-                        <div>
+                      <div key={idx} className="flex items-center justify-between border rounded-lg p-3 bg-muted/30">
+                        <div className="flex-1">
                           <p className="font-medium">{approval.approver_name}</p>
                           <p className="text-sm text-muted-foreground">{approval.approver_role}</p>
+                          {approval.comments && (
+                            <p className="text-sm text-muted-foreground mt-1 italic">"{approval.comments}"</p>
+                          )}
                         </div>
-                        <Badge variant={approval.status === 'approved' ? 'default' : 'secondary'}>
-                          {approval.status}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={approval.status === 'approved' ? 'default' : approval.status === 'rejected' ? 'destructive' : 'secondary'}>
+                            {approval.status}
+                          </Badge>
+                          {approval.status === 'pending' && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleSendApprovalRequest(approval.approver_name)}
+                              className="gap-2"
+                            >
+                              <Send className="h-3 w-3" />
+                              {t('sendRequest')}
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>

@@ -9,8 +9,9 @@ export const mockDetections: AIDetection[] = [
     timestamp: '2025-10-08T14:30:00Z',
     status: 'pending',
     severity: 'critical',
-    description: 'Major crack detected on King Fahd Road, requires immediate attention',
-    location: { lat: 24.7136, lng: 46.6753 }
+    description: 'Major crack detected on Corniche Road, requires immediate attention',
+    location: { lat: 25.2854, lng: 51.5310 },
+    image_url: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=800&auto=format&fit=crop&q=80'
   },
   {
     detection_id: 'DET-002',
@@ -20,8 +21,9 @@ export const mockDetections: AIDetection[] = [
     timestamp: '2025-10-08T10:15:00Z',
     status: 'validated',
     severity: 'warning',
-    description: 'Corrosion detected on bridge support structure',
-    location: { lat: 24.7200, lng: 46.6800 }
+    description: 'Corrosion detected on Al Sadd Bridge support structure',
+    location: { lat: 25.2866, lng: 51.5362 },
+    image_url: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&auto=format&fit=crop&q=80'
   },
   {
     detection_id: 'DET-003',
@@ -31,8 +33,9 @@ export const mockDetections: AIDetection[] = [
     timestamp: '2025-10-08T08:45:00Z',
     status: 'validated',
     severity: 'warning',
-    description: 'Pothole formation on Olaya Street intersection',
-    location: { lat: 24.7250, lng: 46.6700 }
+    description: 'Pothole formation on Al Waab Street intersection',
+    location: { lat: 25.2500, lng: 51.4500 },
+    image_url: 'https://images.unsplash.com/photo-1625047509168-a7026f36de04?w=800&auto=format&fit=crop&q=80'
   },
   {
     detection_id: 'DET-004',
@@ -42,8 +45,9 @@ export const mockDetections: AIDetection[] = [
     timestamp: '2025-10-07T22:30:00Z',
     status: 'pending',
     severity: 'warning',
-    description: 'Streetlight malfunction detected',
-    location: { lat: 24.7100, lng: 46.6850 }
+    description: 'Streetlight malfunction detected on C-Ring Road',
+    location: { lat: 25.2760, lng: 51.5250 },
+    image_url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&auto=format&fit=crop&q=80'
   },
   {
     detection_id: 'DET-005',
@@ -53,8 +57,9 @@ export const mockDetections: AIDetection[] = [
     timestamp: '2025-10-07T16:20:00Z',
     status: 'resolved',
     severity: 'normal',
-    description: 'Surface wear on pedestrian crossing',
-    location: { lat: 24.7300, lng: 46.6650 }
+    description: 'Surface wear on pedestrian crossing at West Bay',
+    location: { lat: 25.3200, lng: 51.5300 },
+    image_url: 'https://images.unsplash.com/photo-1580674285054-bed31e145f59?w=800&auto=format&fit=crop&q=80'
   },
   {
     detection_id: 'DET-006',
@@ -64,8 +69,9 @@ export const mockDetections: AIDetection[] = [
     timestamp: '2025-10-07T12:00:00Z',
     status: 'pending',
     severity: 'critical',
-    description: 'Structural integrity concern on highway bridge',
-    location: { lat: 24.7400, lng: 46.6900 }
+    description: 'Structural integrity concern on Lusail Expressway bridge',
+    location: { lat: 25.4200, lng: 51.4900 },
+    image_url: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&auto=format&fit=crop&q=80'
   }
 ]
 

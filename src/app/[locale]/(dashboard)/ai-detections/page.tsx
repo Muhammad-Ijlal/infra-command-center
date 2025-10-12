@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useTranslations, useLocale } from 'next-intl'
 import { useRouter } from 'next/navigation'
+import dynamic from 'next/dynamic'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -22,10 +23,20 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
-import { CheckCircle2, AlertTriangle, Clock, Eye, MapPin, Calendar, Activity, FileText, ArrowRight } from "lucide-react"
+import { CheckCircle2, AlertTriangle, Clock, Eye, MapPin, Calendar, Activity, FileText, ArrowRight, Image as ImageIcon } from "lucide-react"
 import { mockDetections } from "@/data/mock-detections"
 import { mockAssets } from "@/data/mock-assets"
+import { mockContracts } from "@/data/mock-contracts"
 import { AIDetection } from "@/types/detection"
+import { Contract } from "@/types/contract"
+import 'mapbox-gl/dist/mapbox-gl.css'
+
+// Dynamically import Map components to avoid SSR issues
+const Map = dynamic(() => import('react-map-gl/mapbox').then(mod => mod.default), { ssr: false })
+const Marker = dynamic(() => import('react-map-gl/mapbox').then(mod => mod.Marker), { ssr: false })
+const NavigationControl = dynamic(() => import('react-map-gl/mapbox').then(mod => mod.NavigationControl), { ssr: false })
+
+const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
 
 export default function AIDetectionsPage() {
   const t = useTranslations('aiDetections')
@@ -53,8 +64,17 @@ export default function AIDetectionsPage() {
     router.push(`/${locale}/command-center?asset=${detection.asset_id}&detection=${detection.detection_id}`)
   }
 
+  const handleViewContract = (contractId: string) => {
+    // Navigate to contract details in command center
+    router.push(`/${locale}/command-center?contract=${contractId}`)
+  }
+
   const getLinkedAsset = (assetId: string) => {
     return mockAssets.find(a => a.asset_id === assetId)
+  }
+
+  const getLinkedContract = (detectionId: string): Contract | undefined => {
+    return mockContracts.find(c => c.detection_id === detectionId)
   }
 
   const getStatusColor = (status: AIDetection['status']) => {
@@ -277,16 +297,36 @@ export default function AIDetectionsPage() {
                       {t('validate')}
                     </Button>
                   )}
-                  {selectedDetection.status === 'validated' && (
-                    <Button
-                      onClick={() => handleCreateTender(selectedDetection)}
-                      className="gap-2"
-                    >
-                      <FileText className="h-4 w-4" />
-                      {t('createTender')}
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  )}
+                  {selectedDetection.status === 'validated' && (() => {
+                    const linkedContract = getLinkedContract(selectedDetection.detection_id)
+                    if (linkedContract) {
+                      // Show "View Contract" or "View Tender" button
+                      const buttonText = linkedContract.type === 'tender' ? t('viewTender') : t('viewContract')
+                      return (
+                        <Button
+                          onClick={() => handleViewContract(linkedContract.contract_id)}
+                          className="gap-2"
+                          variant="default"
+                        >
+                          <FileText className="h-4 w-4" />
+                          {buttonText}
+                          <ArrowRight className="h-4 w-4" />
+                        </Button>
+                      )
+                    } else {
+                      // Show "Create Tender/Contract" button
+                      return (
+                        <Button
+                          onClick={() => handleCreateTender(selectedDetection)}
+                          className="gap-2"
+                        >
+                          <FileText className="h-4 w-4" />
+                          {t('createTender')}
+                          <ArrowRight className="h-4 w-4" />
+                        </Button>
+                      )
+                    }
+                  })()}
                 </div>
               </div>
 
@@ -339,39 +379,95 @@ export default function AIDetectionsPage() {
 
               <Separator />
 
-              {/* Detection Method */}
-              <div>
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <Activity className="h-5 w-5" />
-                  {t('detectionMethod')}
-                </h3>
-                <div className="grid grid-cols-2 gap-4 bg-muted/50 p-4 rounded-lg">
+              {/* Detection Image */}
+              {selectedDetection.image_url && (
+                <>
                   <div>
-                    <p className="text-sm text-muted-foreground">{t('aiModel')}</p>
-                    <p className="font-medium">InfraVision AI v3.2</p>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <ImageIcon className="h-5 w-5" />
+                      Detection Image
+                    </h3>
+                    <div className="rounded-lg overflow-hidden border">
+                      <img 
+                        src={selectedDetection.image_url} 
+                        alt={`Detection ${selectedDetection.detection_id}`}
+                        className="w-full h-[300px] object-cover"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">{t('modelVersion')}</p>
-                    <p className="font-medium">3.2.1-stable</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">{t('detectionAlgorithm')}</p>
-                    <p className="font-medium">Deep CNN + Transfer Learning</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">{t('processingTime')}</p>
-                    <p className="font-medium">2.3s</p>
-                  </div>
-                  <div className="col-span-2">
-                    <p className="text-sm text-muted-foreground">{t('imageAnalysis')}</p>
-                    <p className="font-medium">
-                      Multi-scale feature extraction with attention mechanism
-                    </p>
-                  </div>
-                </div>
-              </div>
+                  <Separator />
+                </>
+              )}
 
-              <Separator />
+              {/* Location Map */}
+              {selectedDetection.location && (
+                <>
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <MapPin className="h-5 w-5" />
+                      Asset Location
+                    </h3>
+                    <div style={{ height: '350px', width: '100%', borderRadius: '12px', overflow: 'hidden', border: '1px solid hsl(var(--border))' }}>
+                      <Map
+                        initialViewState={{
+                          longitude: selectedDetection.location.lng,
+                          latitude: selectedDetection.location.lat,
+                          zoom: 14
+                        }}
+                        mapStyle="mapbox://styles/mapbox/streets-v12"
+                        mapboxAccessToken={MAPBOX_TOKEN}
+                        style={{ width: '100%', height: '100%' }}
+                      >
+                        <NavigationControl position="top-right" />
+                        <Marker
+                          longitude={selectedDetection.location.lng}
+                          latitude={selectedDetection.location.lat}
+                          anchor="bottom"
+                        >
+                          <div
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center'
+                            }}
+                          >
+                            <div
+                              style={{
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '50%',
+                                backgroundColor: selectedDetection.severity === 'critical' ? '#DC3545' : selectedDetection.severity === 'warning' ? '#FFC107' : '#28A745',
+                                border: '3px solid white',
+                                boxShadow: '0 2px 12px rgba(0,0,0,0.4)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: 'white',
+                                fontWeight: 'bold',
+                                fontSize: '20px'
+                              }}
+                            >
+                              !
+                            </div>
+                            <div
+                              style={{
+                                width: 0,
+                                height: 0,
+                                borderLeft: '8px solid transparent',
+                                borderRight: '8px solid transparent',
+                                borderTop: `10px solid ${selectedDetection.severity === 'critical' ? '#DC3545' : selectedDetection.severity === 'warning' ? '#FFC107' : '#28A745'}`,
+                                marginTop: '-2px'
+                              }}
+                            />
+                          </div>
+                        </Marker>
+                      </Map>
+                    </div>
+                  </div>
+                  <Separator />
+                </>
+              )}
+
 
               {/* Linked Asset Information */}
               {(() => {
@@ -424,19 +520,25 @@ export default function AIDetectionsPage() {
               })()}
 
               {/* Validation Success Message */}
-              {selectedDetection.status === 'validated' && (
-                <div className="bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 p-4 rounded-lg flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5" />
-                  <div>
-                    <p className="font-medium text-green-900 dark:text-green-100">
-                      {t('detectionsValidated')}
-                    </p>
-                    <p className="text-sm text-green-700 dark:text-green-300 mt-1">
-                      You can now create a tender/contract for this detection
-                    </p>
+              {selectedDetection.status === 'validated' && (() => {
+                const linkedContract = getLinkedContract(selectedDetection.detection_id)
+                return (
+                  <div className="bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 p-4 rounded-lg flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-green-900 dark:text-green-100">
+                        {t('detectionsValidated')}
+                      </p>
+                      <p className="text-sm text-green-700 dark:text-green-300 mt-1">
+                        {linkedContract 
+                          ? `A ${linkedContract.type === 'tender' ? 'tender' : 'contract'} (${linkedContract.contract_id}) has been created for this detection`
+                          : 'You can now create a tender/contract for this detection'
+                        }
+                      </p>
+                    </div>
                   </div>
-                </div>
-              )}
+                )
+              })()}
 
               {/* Close Button */}
               <div className="flex justify-end pt-4">
