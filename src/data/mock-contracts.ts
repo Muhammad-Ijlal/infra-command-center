@@ -61,14 +61,14 @@ export const mockContracts: Contract[] = [
     },
     approvals: [
       {
-        approver_name: 'Eng. Mohammed Al-Thani',
+        approver_name: 'James Thompson',
         approver_role: 'Technical Director',
         status: 'approved',
         date: '2025-10-08',
         comments: 'Approved for immediate execution'
       },
       {
-        approver_name: 'Dr. Fatima Al-Kuwari',
+        approver_name: 'Sarah Mitchell',
         approver_role: 'Operations Manager',
         status: 'approved',
         date: '2025-10-08',
@@ -134,14 +134,14 @@ export const mockContracts: Contract[] = [
     },
     approvals: [
       {
-        approver_name: 'Eng. Mohammed Al-Thani',
+        approver_name: 'James Thompson',
         approver_role: 'Technical Director',
         status: 'approved',
         date: '2025-10-07',
         comments: 'Technical specifications approved'
       },
       {
-        approver_name: 'Dr. Fatima Al-Kuwari',
+        approver_name: 'Sarah Mitchell',
         approver_role: 'Operations Manager',
         status: 'pending',
         comments: ''
@@ -170,13 +170,13 @@ export const mockContracts: Contract[] = [
     value: 45000,
     approvals: [
       {
-        approver_name: 'Eng. Mohammed Al-Thani',
+        approver_name: 'James Thompson',
         approver_role: 'Technical Director',
         status: 'approved',
         date: '2025-10-06'
       },
       {
-        approver_name: 'Dr. Fatima Al-Kuwari',
+        approver_name: 'Sarah Mitchell',
         approver_role: 'Operations Manager',
         status: 'approved',
         date: '2025-10-06'
@@ -244,14 +244,14 @@ export const mockContracts: Contract[] = [
     },
     approvals: [
       {
-        approver_name: 'Eng. Mohammed Al-Thani',
+        approver_name: 'James Thompson',
         approver_role: 'Technical Director',
         status: 'approved',
         date: '2025-10-08',
         comments: 'Approved for immediate execution'
       },
       {
-        approver_name: 'Dr. Fatima Al-Kuwari',
+        approver_name: 'Sarah Mitchell',
         approver_role: 'Operations Manager',
         status: 'approved',
         date: '2025-10-08',

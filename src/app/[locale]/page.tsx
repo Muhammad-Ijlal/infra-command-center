@@ -8,7 +8,6 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Section } from "@/components/ui/section"
 import { LanguageSwitcher } from "@/components/language-switcher"
-import { LocaleDebug } from "@/components/locale-debug"
 import LogosMarquee from "@/components/sections/logos/marquee"
 import StickyNavbar from "@/components/sections/navbar/sticky"
 import Glow from "@/components/ui/glow"
@@ -132,9 +131,6 @@ export default function Home() {
 
       {/* Logo Marquee Section */}
       <LogosMarquee title={t('trustedBy')} />
-
-      {/* Debug Component */}
-      <LocaleDebug />
 
       {/* Footer */}
       <footer className="border-border/15 bg-background border-t py-12">
