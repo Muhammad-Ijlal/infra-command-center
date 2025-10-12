@@ -107,8 +107,36 @@ export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typ
       <SidebarFooter>
         <div className="p-2">
           <LanguageSwitcher />
-        </div>
+        </div>        
         <NavUser />
+        {/* Standards & Compliance */}
+        <div className="border-sidebar-border group-data-[collapsible=icon]:hidden border-t px-3 py-3">
+          <p className="text-muted-foreground mb-2 text-[10px] font-semibold uppercase tracking-wider">
+            Built to Meet Standards
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            <div className="bg-sidebar-accent/50 border-sidebar-border flex items-center gap-1 rounded border px-2 py-0.5">
+              <span className="text-primary text-[10px] font-bold">ISO</span>
+              <span className="text-muted-foreground text-[10px]">55001</span>
+            </div>
+            <div className="bg-sidebar-accent/50 border-sidebar-border flex items-center gap-1 rounded border px-2 py-0.5">
+              <span className="text-primary text-[10px] font-bold">ISO</span>
+              <span className="text-muted-foreground text-[10px]">9001</span>
+            </div>
+            <div className="bg-sidebar-accent/50 border-sidebar-border flex items-center gap-1 rounded border px-2 py-0.5">
+              <span className="text-primary text-[10px] font-bold">ISO</span>
+              <span className="text-muted-foreground text-[10px]">27001</span>
+            </div>
+            <div className="bg-sidebar-accent/50 border-sidebar-border flex items-center gap-1 rounded border px-2 py-0.5">
+              <span className="text-primary text-[10px] font-bold">QCS</span>
+              <span className="text-muted-foreground text-[10px]">Ready</span>
+            </div>
+            <div className="bg-sidebar-accent/50 border-sidebar-border flex items-center gap-1 rounded border px-2 py-0.5">
+              <span className="text-[10px]">🇸🇦</span>
+              <span className="text-muted-foreground text-[10px]">2030</span>
+            </div>
+          </div>
+        </div>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

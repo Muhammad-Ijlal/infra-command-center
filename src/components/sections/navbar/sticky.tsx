@@ -49,8 +49,7 @@ export default function StickyNavbar({
         "fade-bottom sticky top-0 z-50 px-4 pb-4 backdrop-blur-lg",
         className,
       )}
-    >
-      <div className="bg-background/15 absolute left-0 h-24 w-full"></div>
+    > 
       <div className="max-w-container relative mx-auto">
         <NavbarComponent>
           <NavbarLeft>

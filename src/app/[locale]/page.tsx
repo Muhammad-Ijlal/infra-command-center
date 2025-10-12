@@ -135,7 +135,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-border/15 bg-background border-t py-12">
         <div className="max-w-container mx-auto px-4">
-          <div className="flex flex-col items-center gap-4 text-center">
+          <div className="flex flex-col items-center gap-6 text-center">
             <Image
               src={logoSrc}
               alt="Peak&Peek"
@@ -143,9 +143,36 @@ export default function Home() {
               height={50}
               className="h-auto w-[120px] object-contain"
             />
-            <p className="text-muted-foreground text-sm">
-              Infrastructure Management Platform for Vision 2030
-            </p>
+            
+            {/* Standards & Compliance Targets */}
+            <div className="flex flex-col items-center gap-3">
+              <p className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">
+                Built to Meet Standards
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-4">
+                <div className="bg-card/50 border-border/50 flex items-center gap-2 rounded-md border px-3 py-1.5">
+                  <span className="text-primary text-xs font-bold">ISO</span>
+                  <span className="text-muted-foreground text-xs">55001</span>
+                </div>
+                <div className="bg-card/50 border-border/50 flex items-center gap-2 rounded-md border px-3 py-1.5">
+                  <span className="text-primary text-xs font-bold">ISO</span>
+                  <span className="text-muted-foreground text-xs">9001</span>
+                </div>
+                <div className="bg-card/50 border-border/50 flex items-center gap-2 rounded-md border px-3 py-1.5">
+                  <span className="text-primary text-xs font-bold">ISO</span>
+                  <span className="text-muted-foreground text-xs">27001</span>
+                </div>
+                <div className="bg-card/50 border-border/50 flex items-center gap-2 rounded-md border px-3 py-1.5">
+                  <span className="text-primary text-xs font-bold">QCS</span>
+                  <span className="text-muted-foreground text-xs">Ready</span>
+                </div>
+                <div className="bg-card/50 border-border/50 flex items-center gap-2 rounded-md border px-3 py-1.5">
+                  <span className="text-primary text-xs font-bold">🇸🇦</span>
+                  <span className="text-muted-foreground text-xs">Vision 2030</span>
+                </div>
+              </div>
+            </div>
+
             <p className="text-muted-foreground text-xs">
               © 2025 Peak&Peek. All rights reserved.
             </p>
