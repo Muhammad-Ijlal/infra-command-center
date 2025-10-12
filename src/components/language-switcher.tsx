@@ -26,7 +26,7 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <DropdownMenu key={locale}>
+    <DropdownMenu key={locale} modal={false}>
       <DropdownMenuTrigger asChild>
         <Button 
           variant="ghost" 

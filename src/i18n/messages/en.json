@@ -2,10 +2,10 @@
   "common": {
     "infrastructureManagement": "Infrastructure Management",
     "dashboard": "Dashboard",
-    "aiRecognition": "AI Recognition",
+    "aiDetections": "AI Detections",
     "assets": "Assets",
     "contractors": "Contractors",
-    "contracts": "Contracts",
+    "commandCenter": "Command Center",
     "notifications": "Notifications",
     "demoUser": "Demo User",
     "launchDemo": "Launch Demo",
@@ -24,10 +24,10 @@
     "subtitle": "Infrastructure Management Platform",
     "description": "AI-powered infrastructure defect detection, asset management, contractor matching, and contract automation for Vision 2030 compliance.",
     "trustedBy": "Trusted by Leading Names in the Industry",
-    "aiRecognition": "AI Recognition",
+    "aiDetections": "AI Detections",
     "assetManagement": "Asset Management",
     "contractors": "Contractors",
-    "contracts": "Contracts",
+    "commandCenter": "Command Center",
     "notifications": "Notifications",
     "dashboard": "Dashboard"
   },
@@ -52,8 +52,8 @@
     "maintenanceRequired": "Maintenance Required",
     "underMaintenance": "Under Maintenance"
   },
-  "aiRecognition": {
-    "title": "AI Recognition",
+  "aiDetections": {
+    "title": "AI Detections",
     "subtitle": "AI-detected infrastructure defects and anomalies",
     "criticalIssues": "Critical Issues",
     "requireImmediate": "Require immediate attention",
@@ -157,8 +157,8 @@
     "limited": "limited",
     "unavailable": "unavailable"
   },
-  "contracts": {
-    "title": "Contract & Tender Management",
+  "commandCenter": {
+    "title": "Command Center",
     "subtitle": "Create, manage, and track contracts and tenders",
     "createContract": "Create Contract",
     "draftContracts": "Draft Contracts",

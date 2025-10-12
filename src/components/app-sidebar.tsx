@@ -11,7 +11,6 @@ import {
   Building2,
   Users,
   FileText,
-  Bell
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -50,14 +49,14 @@ export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typ
       icon: LayoutDashboard,
     },
     {
-      title: t('aiRecognition'),
-      url: `/${locale}/ai-recognition`,
+      title: t('aiDetections'),
+      url: `/${locale}/ai-detections`,
       icon: Brain,
     },
     {
-      title: t('assets'),
-      url: `/${locale}/assets`,
-      icon: Building2,
+      title: t('commandCenter'),
+      url: `/${locale}/command-center`,
+      icon: FileText,
     },
     {
       title: t('contractors'),
@@ -65,14 +64,9 @@ export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typ
       icon: Users,
     },
     {
-      title: t('contracts'),
-      url: `/${locale}/contracts`,
-      icon: FileText,
-    },
-    {
-      title: t('notifications'),
-      url: `/${locale}/notifications`,
-      icon: Bell,
+      title: t('assets'),
+      url: `/${locale}/assets`,
+      icon: Building2,
     },
   ]
 

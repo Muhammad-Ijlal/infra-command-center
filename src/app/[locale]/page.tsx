@@ -37,10 +37,10 @@ export default function Home() {
     : "/logo_light.png"
 
   const features = [
-    { icon: Brain, label: t('aiRecognition') },
+    { icon: Brain, label: t('aiDetections') },
     { icon: Building2, label: t('assetManagement') },
     { icon: Users, label: t('contractors') },
-    { icon: FileText, label: t('contracts') },
+    { icon: FileText, label: t('commandCenter') },
     { icon: Bell, label: t('notifications') },
     { icon: LayoutDashboard, label: t('dashboard') },
   ]

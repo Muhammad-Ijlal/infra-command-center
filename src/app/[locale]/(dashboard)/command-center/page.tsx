@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from 'next-intl'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -34,7 +35,9 @@ import { mockAssets } from "@/data/mock-assets"
 import { mockContractors } from "@/data/mock-contractors"
 import { Contract } from "@/types/contract"
 
-export default function ContractsPage() {
+export default function CommandCenterPage() {
+  const t = useTranslations('commandCenter')
+  const tCommon = useTranslations('common')
   const [contracts, setContracts] = useState<Contract[]>(mockContracts)
   const [showCreateDialog, setShowCreateDialog] = useState(false)
   const [selectedContract, setSelectedContract] = useState<Contract | null>(null)
@@ -125,14 +128,14 @@ export default function ContractsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Contract & Tender Management</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
           <p className="text-muted-foreground mt-1">
-            Create, manage, and track contracts and tenders
+            {t('subtitle')}
           </p>
         </div>
         <Button onClick={() => setShowCreateDialog(true)} className="gap-2">
           <Plus className="h-4 w-4" />
-          Create Contract
+          {t('createContract')}
         </Button>
       </div>
 
@@ -140,34 +143,34 @@ export default function ContractsPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Draft Contracts</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('draftContracts')}</CardTitle>
             <FileText className="h-4 w-4 text-gray-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{draftCount}</div>
-            <p className="text-xs text-muted-foreground">Being prepared</p>
+            <p className="text-xs text-muted-foreground">{t('beingPrepared')}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Approval</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('pendingApproval')}</CardTitle>
             <Clock className="h-4 w-4 text-yellow-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-yellow-600">{pendingCount}</div>
-            <p className="text-xs text-muted-foreground">Awaiting review</p>
+            <p className="text-xs text-muted-foreground">{t('awaitingReview')}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Contracts</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('activeContracts')}</CardTitle>
             <CheckCircle2 className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">{activeCount}</div>
-            <p className="text-xs text-muted-foreground">In execution</p>
+            <p className="text-xs text-muted-foreground">{t('inExecution')}</p>
           </CardContent>
         </Card>
       </div>
@@ -175,23 +178,23 @@ export default function ContractsPage() {
       {/* Contracts Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Contract Registry</CardTitle>
+          <CardTitle>{t('contractRegistry')}</CardTitle>
           <CardDescription>
-            All contracts and tenders with status tracking
+            {t('allContracts')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Contract ID</TableHead>
-                <TableHead>Title</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Contractor</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Created Date</TableHead>
-                <TableHead>Value (SAR)</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>{t('contractId')}</TableHead>
+                <TableHead>{t('title')}</TableHead>
+                <TableHead>{t('type')}</TableHead>
+                <TableHead>{t('contractor')}</TableHead>
+                <TableHead>{t('status')}</TableHead>
+                <TableHead>{t('createdDate')}</TableHead>
+                <TableHead>{t('value')}</TableHead>
+                <TableHead>{t('actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -224,7 +227,7 @@ export default function ContractsPage() {
                         variant="outline"
                         onClick={() => setSelectedContract(contract)}
                       >
-                        View
+                        {t('view')}
                       </Button>
                       {contract.status === 'draft' && (
                         <Button
@@ -232,7 +235,7 @@ export default function ContractsPage() {
                           variant="default"
                           onClick={() => handleUpdateStatus(contract.contract_id, 'pending_approval')}
                         >
-                          Submit
+                          {t('submit')}
                         </Button>
                       )}
                       {contract.status === 'pending_approval' && (
@@ -241,7 +244,7 @@ export default function ContractsPage() {
                           variant="default"
                           onClick={() => handleUpdateStatus(contract.contract_id, 'approved')}
                         >
-                          Approve
+                          {t('approve')}
                         </Button>
                       )}
                       {contract.status === 'approved' && (
@@ -250,7 +253,7 @@ export default function ContractsPage() {
                           variant="default"
                           onClick={() => handleUpdateStatus(contract.contract_id, 'sent_to_contractor')}
                         >
-                          Send
+                          {t('send')}
                         </Button>
                       )}
                     </div>
@@ -265,8 +268,8 @@ export default function ContractsPage() {
       {/* Workflow Info */}
       <Card>
         <CardHeader>
-          <CardTitle>Contract Workflow</CardTitle>
-          <CardDescription>Standard approval and execution process</CardDescription>
+          <CardTitle>{t('contractWorkflow')}</CardTitle>
+          <CardDescription>{t('approvalProcess')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
@@ -274,32 +277,32 @@ export default function ContractsPage() {
               <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
                 <FileText className="h-6 w-6 text-gray-600" />
               </div>
-              <p className="text-sm font-medium">Draft</p>
-              <p className="text-xs text-muted-foreground">Create contract</p>
+              <p className="text-sm font-medium">{t('draft')}</p>
+              <p className="text-xs text-muted-foreground">{t('createContract')}</p>
             </div>
             <div className="hidden md:block text-muted-foreground">→</div>
             <div className="flex flex-col items-center text-center space-y-2">
               <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
                 <Clock className="h-6 w-6 text-yellow-600" />
               </div>
-              <p className="text-sm font-medium">Pending Approval</p>
-              <p className="text-xs text-muted-foreground">Review required</p>
+              <p className="text-sm font-medium">{t('pendingApprovalStep')}</p>
+              <p className="text-xs text-muted-foreground">{t('reviewRequired')}</p>
             </div>
             <div className="hidden md:block text-muted-foreground">→</div>
             <div className="flex flex-col items-center text-center space-y-2">
               <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
                 <CheckCircle2 className="h-6 w-6 text-green-600" />
               </div>
-              <p className="text-sm font-medium">Approved</p>
-              <p className="text-xs text-muted-foreground">Ready to send</p>
+              <p className="text-sm font-medium">{t('approved')}</p>
+              <p className="text-xs text-muted-foreground">{t('readyToSend')}</p>
             </div>
             <div className="hidden md:block text-muted-foreground">→</div>
             <div className="flex flex-col items-center text-center space-y-2">
               <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
                 <Send className="h-6 w-6 text-blue-600" />
               </div>
-              <p className="text-sm font-medium">Sent</p>
-              <p className="text-xs text-muted-foreground">To contractor</p>
+              <p className="text-sm font-medium">{t('sent')}</p>
+              <p className="text-xs text-muted-foreground">{t('toContractor')}</p>
             </div>
           </div>
         </CardContent>
@@ -309,19 +312,19 @@ export default function ContractsPage() {
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Create New Contract</DialogTitle>
+            <DialogTitle>{t('createNewContract')}</DialogTitle>
             <DialogDescription>
-              Fill in contract details or use auto-generate to populate from asset data
+              {t('fillDetails')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="asset">Asset *</Label>
+                <Label htmlFor="asset">{t('asset')} *</Label>
                 <Select value={formData.asset_id} onValueChange={(value) => setFormData(prev => ({ ...prev, asset_id: value }))}>
                   <SelectTrigger id="asset">
-                    <SelectValue placeholder="Select asset" />
+                    <SelectValue placeholder={t('selectAsset')} />
                   </SelectTrigger>
                   <SelectContent>
                     {mockAssets.map(asset => (
@@ -334,10 +337,10 @@ export default function ContractsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="contractor">Contractor</Label>
+                <Label htmlFor="contractor">{t('contractor')}</Label>
                 <Select value={formData.contractor_id} onValueChange={(value) => setFormData(prev => ({ ...prev, contractor_id: value }))}>
                   <SelectTrigger id="contractor">
-                    <SelectValue placeholder="Select contractor" />
+                    <SelectValue placeholder={t('selectContractor')} />
                   </SelectTrigger>
                   <SelectContent>
                     {mockContractors.map(contractor => (
@@ -352,7 +355,7 @@ export default function ContractsPage() {
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="title">Contract Title *</Label>
+                <Label htmlFor="title">{t('contractTitle')} *</Label>
                 <Button
                   type="button"
                   variant="outline"
@@ -360,31 +363,31 @@ export default function ContractsPage() {
                   onClick={handleAutoGenerate}
                   disabled={!formData.asset_id}
                 >
-                  Auto Generate
+                  {t('autoGenerate')}
                 </Button>
               </div>
               <Input
                 id="title"
                 value={formData.title}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="Enter contract title"
+                placeholder={t('enterTitle')}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">{t('description')}</Label>
               <textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 className="w-full min-h-[100px] px-3 py-2 text-sm border rounded-md"
-                placeholder="Enter contract description"
+                placeholder={t('enterDescription')}
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="response">Response Time (hours)</Label>
+                <Label htmlFor="response">{t('responseTimeHours')}</Label>
                 <Input
                   id="response"
                   type="number"
@@ -394,7 +397,7 @@ export default function ContractsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="completion">Completion Time (days)</Label>
+                <Label htmlFor="completion">{t('completionTimeDays')}</Label>
                 <Input
                   id="completion"
                   type="number"
@@ -406,13 +409,13 @@ export default function ContractsPage() {
 
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
-                Cancel
+                {tCommon('cancel')}
               </Button>
               <Button
                 onClick={handleCreateContract}
                 disabled={!formData.title || !formData.asset_id}
               >
-                Create Contract
+                {t('createContract')}
               </Button>
             </div>
           </div>
@@ -423,7 +426,7 @@ export default function ContractsPage() {
       <Dialog open={!!selectedContract} onOpenChange={() => setSelectedContract(null)}>
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Contract Details</DialogTitle>
+            <DialogTitle>{t('contractDetails')}</DialogTitle>
             <DialogDescription>{selectedContract?.contract_id}</DialogDescription>
           </DialogHeader>
 
@@ -436,11 +439,11 @@ export default function ContractsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-muted-foreground">Type</p>
+                  <p className="text-sm text-muted-foreground">{t('type')}</p>
                   <Badge className="capitalize">{selectedContract.type}</Badge>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Status</p>
+                  <p className="text-sm text-muted-foreground">{t('status')}</p>
                   <Badge 
                     variant={getStatusBadge(selectedContract.status).variant}
                     className={getStatusBadge(selectedContract.status).className}
@@ -449,28 +452,28 @@ export default function ContractsPage() {
                   </Badge>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Contractor</p>
-                  <p className="font-medium">{selectedContract.contractor_name || 'Not assigned'}</p>
+                  <p className="text-sm text-muted-foreground">{t('contractor')}</p>
+                  <p className="font-medium">{selectedContract.contractor_name || t('notAssigned')}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Value</p>
+                  <p className="text-sm text-muted-foreground">{t('value')}</p>
                   <p className="font-medium">
-                    {selectedContract.value ? `${selectedContract.value.toLocaleString()} SAR` : 'TBD'}
+                    {selectedContract.value ? `${selectedContract.value.toLocaleString()} SAR` : t('tbd')}
                   </p>
                 </div>
               </div>
 
               {selectedContract.sla_terms && (
                 <div>
-                  <h4 className="font-semibold mb-2">SLA Terms</h4>
+                  <h4 className="font-semibold mb-2">{t('slaTerms')}</h4>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <p className="text-muted-foreground">Response Time</p>
-                      <p>{selectedContract.sla_terms.response_time} hours</p>
+                      <p className="text-muted-foreground">{t('responseTime')}</p>
+                      <p>{selectedContract.sla_terms.response_time} {t('hours')}</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground">Completion Time</p>
-                      <p>{selectedContract.sla_terms.completion_time} days</p>
+                      <p className="text-muted-foreground">{t('completionTime')}</p>
+                      <p>{selectedContract.sla_terms.completion_time} {t('days')}</p>
                     </div>
                   </div>
                 </div>
@@ -478,7 +481,7 @@ export default function ContractsPage() {
 
               {selectedContract.approvals && selectedContract.approvals.length > 0 && (
                 <div>
-                  <h4 className="font-semibold mb-2">Approvals</h4>
+                  <h4 className="font-semibold mb-2">{t('approvals')}</h4>
                   <div className="space-y-2">
                     {selectedContract.approvals.map((approval, idx) => (
                       <div key={idx} className="flex items-center justify-between border-b pb-2">
@@ -496,7 +499,7 @@ export default function ContractsPage() {
               )}
 
               <div className="flex justify-end">
-                <Button onClick={() => setSelectedContract(null)}>Close</Button>
+                <Button onClick={() => setSelectedContract(null)}>{tCommon('close')}</Button>
               </div>
             </div>
           )}

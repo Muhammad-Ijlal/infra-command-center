@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslations } from 'next-intl'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
@@ -11,6 +12,7 @@ import { mockContracts } from "@/data/mock-contracts"
 import { AssetMap } from "@/components/asset-map"
 
 export default function DashboardPage() {
+  const t = useTranslations('dashboard')
   // Calculate summary statistics
   const openDetections = mockDetections.filter(d => d.status === 'pending' || d.status === 'validated').length
   const criticalDetections = mockDetections.filter(d => d.severity === 'critical').length
@@ -26,9 +28,9 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Infrastructure Command Center</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
           <p className="text-muted-foreground mt-1">
-            Monitor and manage infrastructure assets, detections, contractors, and contracts
+            {t('subtitle')}
           </p>
         </div>
       </div>
@@ -37,54 +39,54 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Open Detections</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('openDetections')}</CardTitle>
             <Brain className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{openDetections}</div>
             <p className="text-xs text-muted-foreground flex items-center mt-1">
               <AlertTriangle className="h-3 w-3 mr-1 text-red-500" />
-              {criticalDetections} critical issues
+              {criticalDetections} {t('criticalIssues')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Contracts</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('activeContracts')}</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{activeContracts}</div>
             <p className="text-xs text-muted-foreground flex items-center mt-1">
               <CheckCircle2 className="h-3 w-3 mr-1 text-green-500" />
-              In progress
+              {t('inProgress')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Tenders</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('pendingTenders')}</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{pendingTenders}</div>
             <p className="text-xs text-muted-foreground">
-              Awaiting approval
+              {t('awaitingApproval')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">SLA Compliance</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('slaCompliance')}</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{slaCompliancePercent}%</div>
             <p className="text-xs text-muted-foreground">
-              Contractor performance
+              {t('contractorPerformance')}
             </p>
           </CardContent>
         </Card>
@@ -94,10 +96,10 @@ export default function DashboardPage() {
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="ai">AI Recognition</TabsTrigger>
+          <TabsTrigger value="ai">AI Detections</TabsTrigger>
           <TabsTrigger value="assets">Assets</TabsTrigger>
           <TabsTrigger value="contractors">Contractors</TabsTrigger>
-          <TabsTrigger value="contracts">Contracts</TabsTrigger>
+          <TabsTrigger value="contracts">Command Center</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
@@ -115,8 +117,8 @@ export default function DashboardPage() {
           <div className="grid gap-4 md:grid-cols-2">
             <Card>
               <CardHeader>
-                <CardTitle>Recent Detections</CardTitle>
-                <CardDescription>Latest AI-detected infrastructure issues</CardDescription>
+                <CardTitle>{t('recentDetections')}</CardTitle>
+                <CardDescription>{t('latestAiDetected')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -137,8 +139,8 @@ export default function DashboardPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Active Contracts</CardTitle>
-                <CardDescription>Contracts currently in progress</CardDescription>
+                <CardTitle>{t('activeContractsTitle')}</CardTitle>
+                <CardDescription>{t('contractsInProgress')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -160,25 +162,25 @@ export default function DashboardPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Asset Health Overview</CardTitle>
-              <CardDescription>Infrastructure asset status summary</CardDescription>
+              <CardTitle>{t('assetHealthOverview')}</CardTitle>
+              <CardDescription>{t('assetStatusSummary')}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 md:grid-cols-3">
                 <div className="flex flex-col space-y-2">
-                  <span className="text-sm text-muted-foreground">Operational</span>
+                  <span className="text-sm text-muted-foreground">{t('operational')}</span>
                   <span className="text-2xl font-bold text-green-600">
                     {mockAssets.filter(a => a.status === 'operational').length}
                   </span>
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <span className="text-sm text-muted-foreground">Maintenance Required</span>
+                  <span className="text-sm text-muted-foreground">{t('maintenanceRequired')}</span>
                   <span className="text-2xl font-bold text-orange-600">
                     {mockAssets.filter(a => a.status === 'maintenance_required').length}
                   </span>
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <span className="text-sm text-muted-foreground">Under Maintenance</span>
+                  <span className="text-sm text-muted-foreground">{t('underMaintenance')}</span>
                   <span className="text-2xl font-bold text-blue-600">
                     {mockAssets.filter(a => a.status === 'under_maintenance').length}
                   </span>
@@ -193,12 +195,12 @@ export default function DashboardPage() {
             <CardHeader>
               <CardTitle>AI Detection Module</CardTitle>
               <CardDescription>
-                Access detailed AI recognition features from the sidebar navigation
+                Access detailed AI detection features from the sidebar navigation
               </CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Navigate to <strong>AI Recognition</strong> in the sidebar to view all detections, validate issues, and manage detection workflows.
+                Navigate to <strong>AI Detections</strong> in the sidebar to view all detections, validate issues, and manage detection workflows.
               </p>
             </CardContent>
           </Card>
@@ -239,14 +241,14 @@ export default function DashboardPage() {
         <TabsContent value="contracts">
           <Card>
             <CardHeader>
-              <CardTitle>Contract & Tender Module</CardTitle>
+              <CardTitle>Command Center</CardTitle>
               <CardDescription>
                 Access contract creation and tender management from the sidebar navigation
               </CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Navigate to <strong>Contracts</strong> in the sidebar to create contracts, manage tenders, and track approval workflows.
+                Navigate to <strong>Command Center</strong> in the sidebar to create contracts, manage tenders, and track approval workflows.
               </p>
             </CardContent>
           </Card>

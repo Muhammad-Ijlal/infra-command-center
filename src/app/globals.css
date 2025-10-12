@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "../styles/pro.css";
+@import "../../launch-ui-pro/styles/pro.css";
 
 @import "tw-animate-css";
 

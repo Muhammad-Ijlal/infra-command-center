@@ -2,10 +2,10 @@
   "common": {
     "infrastructureManagement": "إدارة البنية التحتية",
     "dashboard": "لوحة التحكم",
-    "aiRecognition": "التعرف بالذكاء الاصطناعي",
+    "aiDetections": "كشوفات الذكاء الاصطناعي",
     "assets": "الأصول",
     "contractors": "المقاولون",
-    "contracts": "العقود",
+    "commandCenter": "مركز القيادة",
     "notifications": "الإشعارات",
     "demoUser": "مستخدم تجريبي",
     "launchDemo": "تشغيل العرض التوضيحي",
@@ -24,10 +24,10 @@
     "subtitle": "منصة إدارة البنية التحتية",
     "description": "الكشف عن عيوب البنية التحتية بالذكاء الاصطناعي، وإدارة الأصول، ومطابقة المقاولين، وأتمتة العقود لامتثال رؤية 2030.",
     "trustedBy": "موثوق به من قبل الأسماء الرائدة في الصناعة",
-    "aiRecognition": "التعرف بالذكاء الاصطناعي",
+    "aiDetections": "كشوفات الذكاء الاصطناعي",
     "assetManagement": "إدارة الأصول",
     "contractors": "المقاولون",
-    "contracts": "العقود",
+    "commandCenter": "مركز القيادة",
     "notifications": "الإشعارات",
     "dashboard": "لوحة التحكم"
   },
@@ -52,8 +52,8 @@
     "maintenanceRequired": "يتطلب صيانة",
     "underMaintenance": "تحت الصيانة"
   },
-  "aiRecognition": {
-    "title": "التعرف بالذكاء الاصطناعي",
+  "aiDetections": {
+    "title": "كشوفات الذكاء الاصطناعي",
     "subtitle": "عيوب البنية التحتية المكتشفة بالذكاء الاصطناعي",
     "criticalIssues": "مشاكل حرجة",
     "requireImmediate": "تتطلب اهتمامًا فوريًا",
@@ -157,8 +157,8 @@
     "limited": "محدود",
     "unavailable": "غير متاح"
   },
-  "contracts": {
-    "title": "إدارة العقود والمناقصات",
+  "commandCenter": {
+    "title": "مركز القيادة",
     "subtitle": "إنشاء وإدارة وتتبع العقود والمناقصات",
     "createContract": "إنشاء عقد",
     "draftContracts": "مسودات العقود",
