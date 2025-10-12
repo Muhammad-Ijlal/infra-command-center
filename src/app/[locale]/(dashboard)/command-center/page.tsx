@@ -35,7 +35,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { FileText, Clock, CheckCircle2, Send, Plus, Users, Pencil } from "lucide-react"
+import { FileText, Clock, CheckCircle2, Send, Users, Pencil } from "lucide-react"
 import { mockContracts } from "@/data/mock-contracts"
 import { mockAssets } from "@/data/mock-assets"
 import { mockContractors } from "@/data/mock-contractors"
@@ -715,7 +715,7 @@ export default function CommandCenterPage() {
                           <p className="font-medium">{approval.approver_name}</p>
                           <p className="text-sm text-muted-foreground">{approval.approver_role}</p>
                           {approval.comments && (
-                            <p className="text-sm text-muted-foreground mt-1 italic">"{approval.comments}"</p>
+                            <p className="text-sm text-muted-foreground mt-1 italic">&ldquo;{approval.comments}&rdquo;</p>
                           )}
                         </div>
                         <div className="flex items-center gap-2">

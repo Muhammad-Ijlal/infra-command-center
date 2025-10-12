@@ -23,7 +23,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
-import { CheckCircle2, AlertTriangle, Clock, Eye, MapPin, Calendar, Activity, FileText, ArrowRight, Image as ImageIcon } from "lucide-react"
+import { CheckCircle2, AlertTriangle, Clock, Eye, MapPin, Activity, FileText, ArrowRight, Image as ImageIcon } from "lucide-react"
 import { mockDetections } from "@/data/mock-detections"
 import { mockAssets } from "@/data/mock-assets"
 import { mockContracts } from "@/data/mock-contracts"
