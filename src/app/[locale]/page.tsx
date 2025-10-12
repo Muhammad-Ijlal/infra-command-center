@@ -147,9 +147,9 @@ export default function Home() {
             {/* Standards & Compliance Targets */}
             <div className="flex flex-col items-center gap-3">
               <p className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">
-                Built to Meet Standards
+                {t('builtToMeetStandards')}
               </p>
-              <div className="flex flex-wrap items-center justify-center gap-4">
+              <div className="flex flex-wrap items-center justify-center gap-4" dir="ltr">
                 <div className="bg-card/50 border-border/50 flex items-center gap-2 rounded-md border px-3 py-1.5">
                   <span className="text-primary text-xs font-bold">ISO</span>
                   <span className="text-muted-foreground text-xs">55001</span>
