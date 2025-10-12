@@ -8,7 +8,7 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Section } from "@/components/ui/section"
 import { LanguageSwitcher } from "@/components/language-switcher"
-import LogosMarquee from "@/components/sections/logos/marquee"
+import LogosGrid from "@/components/sections/logos/grid"
 import StickyNavbar from "@/components/sections/navbar/sticky"
 import Glow from "@/components/ui/glow"
 import { 
@@ -130,10 +130,10 @@ export default function Home() {
       </Section>
 
       {/* Logo Marquee Section */}
-      <LogosMarquee title={t('trustedBy')} />
+      <LogosGrid title={t('trustedBy')} />
 
       {/* Footer */}
-      <footer className="border-border/15 bg-background border-t py-12">
+      <footer className="border-border/15 bg-background border-t pb-12">
         <div className="max-w-container mx-auto px-4">
           <div className="flex flex-col items-center gap-6 text-center">
             <Image
