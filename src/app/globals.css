@@ -110,22 +110,22 @@
 }
 
 :root {
-  /* Accent colors */
-  --brand: oklch(66.5% 0.1804 47.04);
-  --brand-foreground: oklch(75.77% 0.159 55.91);
+  /* Accent colors - Ice Theme (referenced from theme.css) */
+  --brand: var(--brand-ice);
+  --brand-foreground: var(--brand-ice-foreground);
 
   /* Customized shadcn/ui colors */
-  --background: oklch(97.65% 0.001 17.18);
+  --background: var(--background-ice);
   --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(66.5% 0.1804 47.04);
+  --primary: var(--brand-ice);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
+  --muted: var(--background-ice);
   --muted-foreground: oklch(0.552 0.016 285.938);
   --accent: oklch(0.927 0.001 286.375);
   --accent-foreground: oklch(0.21 0.006 285.885);
@@ -159,12 +159,12 @@
 }
 
 .dark {
-  /* Accent colors */
-  --brand: oklch(83.6% 0.1177 66.87);
-  --brand-foreground: oklch(75.77% 0.159 55.91);
+  /* Accent colors - Ice Theme (referenced from theme.css) */
+  --brand: var(--brand-ice);
+  --brand-foreground: var(--brand-ice-foreground);
 
   /* Customized shadcn/ui colors */
-  --background: oklch(0.141 0.005 285.823);
+  --background: var(--background-ice);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.141 0.005 285.823);
   --card-foreground: oklch(0.985 0 0);
