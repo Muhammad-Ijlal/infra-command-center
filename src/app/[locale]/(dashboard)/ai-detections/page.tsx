@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -13,13 +14,26 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { CheckCircle2, AlertTriangle, Clock } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Separator } from "@/components/ui/separator"
+import { CheckCircle2, AlertTriangle, Clock, Eye, MapPin, Calendar, Activity, FileText, ArrowRight } from "lucide-react"
 import { mockDetections } from "@/data/mock-detections"
+import { mockAssets } from "@/data/mock-assets"
 import { AIDetection } from "@/types/detection"
 
 export default function AIDetectionsPage() {
   const t = useTranslations('aiDetections')
+  const tCommon = useTranslations('common')
+  const locale = useLocale()
+  const router = useRouter()
   const [detections, setDetections] = useState<AIDetection[]>(mockDetections)
+  const [selectedDetection, setSelectedDetection] = useState<AIDetection | null>(null)
 
   const handleValidate = (detectionId: string) => {
     setDetections(prev =>
@@ -29,6 +43,18 @@ export default function AIDetectionsPage() {
           : d
       )
     )
+    if (selectedDetection && selectedDetection.detection_id === detectionId) {
+      setSelectedDetection({ ...selectedDetection, status: 'validated' as const })
+    }
+  }
+
+  const handleCreateTender = (detection: AIDetection) => {
+    // Navigate to command center with pre-filled data
+    router.push(`/${locale}/command-center?asset=${detection.asset_id}&detection=${detection.detection_id}`)
+  }
+
+  const getLinkedAsset = (assetId: string) => {
+    return mockAssets.find(a => a.asset_id === assetId)
   }
 
   const getStatusColor = (status: AIDetection['status']) => {
@@ -159,21 +185,15 @@ export default function AIDetectionsPage() {
                     })}
                   </TableCell>
                   <TableCell>
-                    {detection.status === 'pending' && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleValidate(detection.detection_id)}
-                      >
-                        {t('validate')}
-                      </Button>
-                    )}
-                    {detection.status === 'validated' && (
-                      <Badge variant="secondary" className="text-xs">
-                        <CheckCircle2 className="h-3 w-3 mr-1" />
-                        {t('validated')}
-                      </Badge>
-                    )}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setSelectedDetection(detection)}
+                      className="gap-2"
+                    >
+                      <Eye className="h-4 w-4" />
+                      {t('viewDetails')}
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -224,6 +244,210 @@ export default function AIDetectionsPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Detection Details Modal */}
+      <Dialog open={!!selectedDetection} onOpenChange={() => setSelectedDetection(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{t('detectionDetails')}</DialogTitle>
+            <DialogDescription>
+              {selectedDetection?.detection_id}
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedDetection && (
+            <div className="space-y-6">
+              {/* Detection Status and Actions */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Badge className={getSeverityColor(selectedDetection.severity)} variant="outline">
+                    {selectedDetection.severity}
+                  </Badge>
+                  <Badge variant={getStatusColor(selectedDetection.status)}>
+                    {selectedDetection.status}
+                  </Badge>
+                </div>
+                <div className="flex gap-2">
+                  {selectedDetection.status === 'pending' && (
+                    <Button
+                      onClick={() => handleValidate(selectedDetection.detection_id)}
+                      className="gap-2"
+                    >
+                      <CheckCircle2 className="h-4 w-4" />
+                      {t('validate')}
+                    </Button>
+                  )}
+                  {selectedDetection.status === 'validated' && (
+                    <Button
+                      onClick={() => handleCreateTender(selectedDetection)}
+                      className="gap-2"
+                    >
+                      <FileText className="h-4 w-4" />
+                      {t('createTender')}
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Detection Information */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Activity className="h-5 w-5" />
+                  {t('detectionDetails')}
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">{t('defectType')}</p>
+                    <p className="font-medium capitalize">{selectedDetection.defect_type.replace(/_/g, ' ')}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">{t('confidence')}</p>
+                    <p className="font-medium">{Math.round(selectedDetection.confidence_score * 100)}%</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">{t('timestamp')}</p>
+                    <p className="font-medium">
+                      {new Date(selectedDetection.timestamp).toLocaleString()}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">{t('severity')}</p>
+                    <p className="font-medium capitalize">{selectedDetection.severity}</p>
+                  </div>
+                </div>
+                {selectedDetection.description && (
+                  <div className="mt-4">
+                    <p className="text-sm text-muted-foreground">{t('description')}</p>
+                    <p className="font-medium">{selectedDetection.description}</p>
+                  </div>
+                )}
+                {selectedDetection.location && (
+                  <div className="mt-4 flex items-start gap-2">
+                    <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">{t('location')}</p>
+                      <p className="font-medium">
+                        {selectedDetection.location.lat.toFixed(6)}, {selectedDetection.location.lng.toFixed(6)}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <Separator />
+
+              {/* Detection Method */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Activity className="h-5 w-5" />
+                  {t('detectionMethod')}
+                </h3>
+                <div className="grid grid-cols-2 gap-4 bg-muted/50 p-4 rounded-lg">
+                  <div>
+                    <p className="text-sm text-muted-foreground">{t('aiModel')}</p>
+                    <p className="font-medium">InfraVision AI v3.2</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">{t('modelVersion')}</p>
+                    <p className="font-medium">3.2.1-stable</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">{t('detectionAlgorithm')}</p>
+                    <p className="font-medium">Deep CNN + Transfer Learning</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">{t('processingTime')}</p>
+                    <p className="font-medium">2.3s</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-sm text-muted-foreground">{t('imageAnalysis')}</p>
+                    <p className="font-medium">
+                      Multi-scale feature extraction with attention mechanism
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Linked Asset Information */}
+              {(() => {
+                const linkedAsset = getLinkedAsset(selectedDetection.asset_id)
+                return linkedAsset ? (
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <FileText className="h-5 w-5" />
+                      {t('linkedAsset')}
+                    </h3>
+                    <div className="bg-muted/50 p-4 rounded-lg space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-muted-foreground">{t('assetName')}</p>
+                          <p className="font-semibold text-lg">{linkedAsset.name}</p>
+                        </div>
+                        <Badge variant="outline" className="capitalize">
+                          {linkedAsset.category}
+                        </Badge>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-muted-foreground">{t('assetStatus')}</p>
+                          <p className="font-medium capitalize">{linkedAsset.status.replace(/_/g, ' ')}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">{t('impactScore')}</p>
+                          <p className="font-medium">{linkedAsset.impact_score}/100</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">{t('lastMaintenance')}</p>
+                          <p className="font-medium">
+                            {new Date(linkedAsset.last_maintenance_date).toLocaleDateString()}
+                          </p>
+                        </div>
+                        {linkedAsset.location?.address && (
+                          <div>
+                            <p className="text-sm text-muted-foreground">{t('location')}</p>
+                            <p className="font-medium">{linkedAsset.location.address}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center text-muted-foreground py-4">
+                    No linked asset information available
+                  </div>
+                )
+              })()}
+
+              {/* Validation Success Message */}
+              {selectedDetection.status === 'validated' && (
+                <div className="bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 p-4 rounded-lg flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-green-900 dark:text-green-100">
+                      {t('detectionsValidated')}
+                    </p>
+                    <p className="text-sm text-green-700 dark:text-green-300 mt-1">
+                      You can now create a tender/contract for this detection
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Close Button */}
+              <div className="flex justify-end pt-4">
+                <Button variant="outline" onClick={() => setSelectedDetection(null)}>
+                  {tCommon('close')}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
