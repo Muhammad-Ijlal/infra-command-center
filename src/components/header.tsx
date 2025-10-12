@@ -5,7 +5,6 @@ import { Menu, X } from 'lucide-react'
 import React from 'react'
 import { cn } from '@/lib/utils'
 import { useScroll } from 'motion/react'
-import { ThemeToggle } from '@/components/theme-toggle'
 
 const menuItems = [
     { name: 'Features', href: '#link' },
@@ -78,12 +77,6 @@ export const HeroHeader = () => {
                                         </li>
                                     ))}
                                 </ul>
-                                <div className="pt-4">
-                                    <ThemeToggle />
-                                </div>
-                            </div>
-                            <div className="hidden lg:block">
-                                <ThemeToggle />
                             </div>
                         </div>
                     </div>
