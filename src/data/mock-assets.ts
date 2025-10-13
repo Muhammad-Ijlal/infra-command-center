@@ -143,6 +143,60 @@ export const mockAssetPassports: Record<string, AssetPassport> = {
       certifications: ['ISO 9001', 'QCS 2014', 'Bridge Safety Cert']
     },
     related_detections: ['DET-002']
+  },
+  'ASSET-R-002': {
+    asset_id: 'ASSET-R-002',
+    asset: mockAssets[3],
+    material_info: {
+      primary_material: 'Asphalt Concrete',
+      secondary_materials: ['Aggregate Base', 'Drainage System'],
+      manufacturer: 'Qatar Asphalt Industries',
+      installation_date: '2019-08-10'
+    },
+    maintenance_history: [],
+    compliance: {
+      vision_2030_compliant: true,
+      qcs_certified: true,
+      last_inspection_date: '2024-07-10',
+      certifications: ['ISO 9001', 'QCS 2014']
+    },
+    related_detections: ['DET-003']
+  },
+  'ASSET-L-012': {
+    asset_id: 'ASSET-L-012',
+    asset: mockAssets[2],
+    material_info: {
+      primary_material: 'Electrical Systems',
+      secondary_materials: ['Steel Poles', 'Concrete Base', 'Surveillance Camera'],
+      manufacturer: 'Qatar Lighting Solutions',
+      installation_date: '2021-05-15'
+    },
+    maintenance_history: [],
+    compliance: {
+      vision_2030_compliant: true,
+      qcs_certified: true,
+      last_inspection_date: '2024-09-01',
+      certifications: ['ISO 9001', 'QCS 2014', 'Electrical Safety Cert']
+    },
+    related_detections: ['DET-004', 'DET-005']
+  },
+  'ASSET-B-001': {
+    asset_id: 'ASSET-B-001',
+    asset: mockAssets[4],
+    material_info: {
+      primary_material: 'Pre-stressed Concrete',
+      secondary_materials: ['Steel Reinforcement', 'Concrete Grade 80'],
+      manufacturer: 'Lusail Construction Group',
+      installation_date: '2017-12-05'
+    },
+    maintenance_history: [],
+    compliance: {
+      vision_2030_compliant: true,
+      qcs_certified: true,
+      last_inspection_date: '2024-05-15',
+      certifications: ['ISO 9001', 'QCS 2014', 'Bridge Safety Cert', 'Structural Engineering Cert']
+    },
+    related_detections: ['DET-006']
   }
 }
 

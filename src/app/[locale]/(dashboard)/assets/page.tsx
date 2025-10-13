@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -24,8 +25,17 @@ import { mockAssets, mockAssetPassports } from "@/data/mock-assets"
 import { Asset, AssetPassport } from "@/types/asset"
 
 export default function AssetsPage() {
+  const searchParams = useSearchParams()
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null)
   const [assets] = useState<Asset[]>(mockAssets)
+
+  // Handle URL parameters to automatically open asset modal
+  useEffect(() => {
+    const assetId = searchParams.get('asset')
+    if (assetId && mockAssetPassports[assetId]) {
+      setSelectedAsset(assetId)
+    }
+  }, [searchParams])
 
   const getStatusColor = (status: Asset['status']) => {
     switch (status) {

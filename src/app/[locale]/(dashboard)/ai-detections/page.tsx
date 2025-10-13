@@ -24,7 +24,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
-import { CheckCircle2, AlertTriangle, Clock, Eye, MapPin, Activity, FileText, ArrowRight, Image as ImageIcon } from "lucide-react"
+import { CheckCircle2, AlertTriangle, Clock, Eye, MapPin, Activity, FileText, ArrowRight, Image as ImageIcon, ExternalLink } from "lucide-react"
 import { mockDetections } from "@/data/mock-detections"
 import { mockAssets } from "@/data/mock-assets"
 import { mockContracts } from "@/data/mock-contracts"
@@ -48,6 +48,10 @@ export default function AIDetectionsPage() {
   const router = useRouter()
   const [detections, setDetections] = useState<AIDetection[]>(mockDetections)
   const [selectedDetection, setSelectedDetection] = useState<AIDetection | null>(null)
+
+  const handleViewAsset = (assetId: string) => {
+    router.push(`/${locale}/assets?asset=${assetId}`)
+  }
 
   const handleValidate = (detectionId: string) => {
     setDetections(prev =>
@@ -495,6 +499,14 @@ export default function AIDetectionsPage() {
                     <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                       <FileText className="h-5 w-5" />
                       {t('linkedAsset')}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleViewAsset(linkedAsset.asset_id)}
+                        className="h-6 w-6 p-0"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </Button>
                     </h3>
                     <div className="bg-muted/50 p-4 rounded-lg space-y-3">
                       <div className="flex items-center justify-between">
