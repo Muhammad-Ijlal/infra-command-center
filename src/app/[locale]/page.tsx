@@ -61,7 +61,7 @@ export default function Home() {
         <div className="max-w-container relative z-10 mx-auto flex flex-col gap-8 pt-8 sm:gap-12 sm:pt-12">
           <div className="flex flex-col items-center gap-6 text-center sm:gap-10">
             {/* Title */}
-            <h1 className="animate-appear text-4xl font-bold opacity-0 sm:text-5xl md:text-6xl">
+            <h1 className="animate-appear text-4xl font-title opacity-0 sm:text-5xl md:text-6xl">
               {t('title')}
             </h1>
 

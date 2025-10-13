@@ -1,5 +1,5 @@
 export type DetectionStatus = 'pending' | 'validated' | 'resolved' | 'critical' | 'warning'
-export type DefectType = 'crack' | 'pothole' | 'corrosion' | 'wear' | 'structural' | 'electrical' | 'other'
+export type DefectType = 'crack' | 'pothole' | 'corrosion' | 'wear' | 'structural' | 'electrical' | 'tree lean' | 'road surface deterioration' | 'other'
 
 export interface AIDetection {
   detection_id: string

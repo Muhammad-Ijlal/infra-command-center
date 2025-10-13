@@ -23,6 +23,21 @@ const cairo = Cairo({
   weight: ['300', '400', '600', '700'],
 });
 
+// San Francisco font configuration
+const sanFrancisco = {
+  variable: "--font-san-francisco",
+  family: [
+    "-apple-system",
+    "BlinkMacSystemFont",
+    "SF Pro Display",
+    "SF Pro Text",
+    "Helvetica Neue",
+    "Helvetica",
+    "Arial",
+    "sans-serif"
+  ],
+};
+
 type Props = {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
@@ -61,6 +76,9 @@ export default async function LocaleLayout({
     <html lang={locale} dir={isRTL ? 'rtl' : 'ltr'} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${cairo.variable} antialiased ${isRTL ? 'font-cairo' : 'font-sans'}`}
+        style={{
+          '--font-san-francisco': sanFrancisco.family.join(', ')
+        } as React.CSSProperties}
       >
         <NextIntlClientProvider messages={messages} locale={locale}>
           <QueryProvider>

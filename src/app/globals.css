@@ -46,6 +46,7 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-cairo: var(--font-cairo);
+  --font-san-francisco: var(--font-san-francisco);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -216,6 +217,14 @@
 }
 
 @layer utilities {
+  /* Title font with San Francisco */
+  .font-title {
+    font-family: var(--font-san-francisco);
+    font-weight: 510;
+    font-stretch: 132%;
+    letter-spacing: -0.01em;
+  }
+
   /* Glass effects */
   .glass-1 {
     background: rgba(255, 255, 255, 0.1);

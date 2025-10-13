@@ -64,7 +64,7 @@ export default function AssetsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Asset Management</h1>
+        <h1 className="text-3xl font-title tracking-tight">Asset Management</h1>
         <p className="text-muted-foreground mt-1">
           Infrastructure asset inventory and health monitoring
         </p>
