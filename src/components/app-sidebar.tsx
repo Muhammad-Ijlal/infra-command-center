@@ -132,7 +132,7 @@ export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typ
               <span className="text-muted-foreground text-[10px]">Ready</span>
             </div>
             <div className="bg-sidebar-accent/50 border-sidebar-border flex items-center gap-1 rounded border px-2 py-0.5">
-              <span className="text-[10px]">🇸🇦</span>
+              <span className="text-[10px]">🇶🇦</span>
               <span className="text-muted-foreground text-[10px]">2030</span>
             </div>
           </div>

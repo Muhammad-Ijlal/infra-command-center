@@ -46,6 +46,9 @@ export default function LogosMarquee({
     {
       logo: <TrustedLogo src="/trusted_by/YUNEX.svg" alt="YUNEX" />,
     },
+    {
+      logo: <TrustedLogo src="/trusted_by/PortOfRotterdam.png" alt="Port of Rotterdam" />,
+    },
   ],
   duration = "20s",
   gap = "3rem",

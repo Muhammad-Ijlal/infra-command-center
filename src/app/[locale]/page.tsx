@@ -60,17 +60,10 @@ export default function Home() {
       <Section className="relative flex-1 overflow-hidden pb-0 sm:pb-0 md:pb-0">
         <div className="max-w-container relative z-10 mx-auto flex flex-col gap-12 pt-16 sm:gap-16">
           <div className="flex flex-col items-center gap-6 text-center sm:gap-10">
-            {/* Logo */}
-            <div className="animate-appear opacity-0">
-              <Image
-                src={logoSrc}
-                alt="Peak&Peek"
-                width={300}
-                height={100}
-                className="h-auto w-[250px] object-contain sm:w-[300px] md:w-[350px]"
-                priority
-              />
-            </div>
+            {/* Title */}
+            <h1 className="animate-appear text-4xl font-bold opacity-0 sm:text-5xl md:text-6xl">
+              {t('title')}
+            </h1>
 
             {/* Subtitle */}
             <p className="animate-appear text-xl font-semibold opacity-0 delay-100 sm:text-2xl">
@@ -81,6 +74,11 @@ export default function Home() {
             <p className="text-md animate-appear text-muted-foreground relative z-10 max-w-[740px] font-medium text-balance opacity-0 delay-200 sm:text-xl">
               {t('description')}
             </p>
+
+            {/* Hashtags */}
+            <div className="animate-appear flex flex-wrap justify-center gap-4 opacity-0 delay-250">
+              <span className="text-sm font-medium text-primary">{t('hashtags')}</span>
+            </div>
 
             <PipelineIllustration />
             {/* CTA Button */}
@@ -138,7 +136,7 @@ export default function Home() {
                   <span className="text-muted-foreground text-xs">Ready</span>
                 </div>
                 <div className="bg-card/50 border-border/50 flex items-center gap-2 rounded-md border px-3 py-1.5">
-                  <span className="text-primary text-xs font-bold">🇸🇦</span>
+                  <span className="text-primary text-xs font-bold">🇶🇦</span>
                   <span className="text-muted-foreground text-xs">Vision 2030</span>
                 </div>
               </div>

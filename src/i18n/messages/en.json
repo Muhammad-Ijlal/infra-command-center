@@ -20,9 +20,10 @@
     "markAllAsRead": "Mark All as Read"
   },
   "landing": {
-    "title": "Peak&Peek",
-    "subtitle": "Meet AIVY",
-    "description": "Our autonomous maintenance system for infrastructure and green assets.\n#BuiltInEurope #MadeForQatar #AIinAction",
+    "title": "MEET AIVY",
+    "subtitle": "Our autonomous maintenance system for infrastructure and green assets.",
+    "description": "Autonomous maintenance, from detection to contract.\nFully integrable with Maximo, SAP, and Cityworks. Enhancing, not replacing, your existing infrastructure.",
+    "hashtags": "#BuiltInEurope #MadeForQatar #AIinAction",
     "trustedBy": "Trusted by Leading Names in the Industry",
     "builtToMeetStandards": "Built to Meet Standards",
     "aiDetections": "AI Detections",
