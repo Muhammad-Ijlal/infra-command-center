@@ -11,14 +11,7 @@ import { LanguageSwitcher } from "@/components/language-switcher"
 import LogosMarquee from "@/components/sections/logos/marquee"
 import StickyNavbar from "@/components/sections/navbar/sticky"
 import Glow from "@/components/ui/glow"
-import { 
-  Brain, 
-  Building2, 
-  Users, 
-  FileText, 
-  Bell, 
-  LayoutDashboard 
-} from "lucide-react"
+import PipelineIllustration from "@/components/illustrations/pipeline"
 
 export default function Home() {
   const t = useTranslations('landing')
@@ -35,14 +28,6 @@ export default function Home() {
     ? "/logo_dark.png"
     : "/logo_light.png"
 
-  const features = [
-    { icon: Brain, label: t('aiDetections') },
-    { icon: Building2, label: t('assetManagement') },
-    { icon: Users, label: t('contractors') },
-    { icon: FileText, label: t('commandCenter') },
-    { icon: Bell, label: t('notifications') },
-    { icon: LayoutDashboard, label: t('dashboard') },
-  ]
   
   return (
     <div className="relative flex min-h-screen flex-col">
@@ -97,6 +82,7 @@ export default function Home() {
               {t('description')}
             </p>
 
+            <PipelineIllustration />
             {/* CTA Button */}
             <div className="animate-appear relative z-10 flex justify-center gap-4 opacity-0 delay-300">
               <Button size="lg" variant="default" asChild>
@@ -104,21 +90,6 @@ export default function Home() {
                   {tc('launchDemo')}
                 </Link>
               </Button>
-            </div>
-
-            {/* Feature Icons Grid */}
-            <div className="animate-appear relative z-10 mt-8 grid w-full max-w-3xl grid-cols-2 gap-6 opacity-0 delay-500 md:grid-cols-3">
-              {features.map((feature, index) => (
-                <div
-                  key={index}
-                  className="bg-card/50 border-border/50 hover:border-primary/20 hover:bg-card/80 flex flex-col items-center gap-3 rounded-lg border p-6 backdrop-blur-sm transition-all duration-200"
-                >
-                  <feature.icon className="text-primary size-8" />
-                  <span className="text-muted-foreground text-sm font-medium">
-                    {feature.label}
-                  </span>
-                </div>
-              ))}
             </div>
           </div>
         </div>

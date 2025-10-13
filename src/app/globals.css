@@ -215,6 +215,56 @@
   }
 }
 
+@layer utilities {
+  /* Glass effects */
+  .glass-1 {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+  }
+  .glass-2 {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+  }
+  .glass-3 {
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+  }
+  .glass-4 {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+  }
+
+  /* Inset shadows */
+  .inset-shadow-brand\/10 {
+    box-shadow: inset 0 2px 12px rgb(var(--brand) / 0.1);
+  }
+  .inset-shadow-brand\/20 {
+    box-shadow: inset 0 2px 24px rgb(var(--brand) / 0.2);
+  }
+
+  /* Background gradients */
+  .bg-radial {
+    background: radial-gradient(var(--tw-gradient-stops));
+  }
+  .bg-linear-to-r {
+    background: linear-gradient(to right, var(--tw-gradient-stops));
+  }
+
+  /* Dark mode glass effects */
+  .dark .glass-1 {
+    background: rgba(0, 0, 0, 0.1);
+  }
+  .dark .glass-2 {
+    background: rgba(0, 0, 0, 0.2);
+  }
+  .dark .glass-3 {
+    background: rgba(0, 0, 0, 0.3);
+  }
+  .dark .glass-4 {
+    background: rgba(0, 0, 0, 0.4);
+  }
+}
+
 /* RTL Support */
 [dir="rtl"] {
   direction: rtl;

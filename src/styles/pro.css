@@ -24,6 +24,12 @@
   --inset-shadow-md: inset 0 2px 12px rgb(0 0 0 / 0.05);
   --inset-shadow-lg: inset 0 2px 24px rgb(0 0 0 / 0.05);
   --inset-shadow-xl: inset 0 2px 32px rgb(0 0 0 / 0.05);
+  
+  /* Glass effects */
+  --glass-1: rgba(255, 255, 255, 0.1);
+  --glass-2: rgba(255, 255, 255, 0.2);
+  --glass-3: rgba(255, 255, 255, 0.3);
+  --glass-4: rgba(255, 255, 255, 0.4);
   @keyframes marquee {
     from {
       transform: translateX(0);
@@ -97,17 +103,37 @@
     }
   }
   @keyframes impulse {
-    20% {
+    0% {
       left: 0;
       transform: scale(0.5);
       opacity: 0;
     }
-    50% {
+    15% {
       opacity: 1;
-      left: 50%;
+      left: 35%;
       transform: scale(3);
     }
-    80% {
+    25% {
+      opacity: 1;
+      left: 35%;
+      transform: scale(3);
+    }
+    40% {
+      opacity: 1;
+      left: 65%;
+      transform: scale(3);
+    }
+    50% {
+      opacity: 1;
+      left: 65%;
+      transform: scale(3);
+    }
+    65% {
+      opacity: 0;
+      left: 100%;
+      transform: scale(0.5);
+    }
+    100% {
       opacity: 0;
       left: 100%;
       transform: scale(0.5);
