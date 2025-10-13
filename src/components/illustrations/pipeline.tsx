@@ -14,19 +14,19 @@ function PipelineIllustration() {
   return (
     <div
       data-slot="pipeline-illustration"
-      className="group relative flex w-full flex-col gap-6 p-6 text-xs"
+      className="group relative flex w-full flex-col gap-4 p-4 text-xs sm:gap-6 sm:p-6"
     >
       {/* Pipeline Steps */}
       <div className="relative flex items-center justify-between">
         {steps.map((step, index) => (
-          <div key={index} className="flex flex-col items-center gap-3">
+          <div key={index} className="flex flex-col items-center gap-2 sm:gap-3">
             {/* Step Circle */}
-            <div className="border-border dark:border-border/5 dark:inset-shadow-lg inset-shadow-brand/10 flex items-center justify-center rounded-full border p-3 lg:p-4">
-              <div className="border-border dark:border-border/15 dark:inset-shadow-lg inset-shadow-brand/20 flex items-center justify-center rounded-full border p-3 lg:p-4">
-                <div className="glass-4 relative z-10 flex size-12 items-center justify-center rounded-full shadow-md backdrop-blur-lg transition-all duration-1000 ease-in-out group-hover:scale-105 sm:size-16 lg:size-20">
+            <div className="border-border dark:border-border/5 dark:inset-shadow-lg inset-shadow-brand/10 flex items-center justify-center rounded-full border p-2 sm:p-3 lg:p-4">
+              <div className="border-border dark:border-border/15 dark:inset-shadow-lg inset-shadow-brand/20 flex items-center justify-center rounded-full border p-2 sm:p-3 lg:p-4">
+                <div className="glass-4 relative z-10 flex size-8 items-center justify-center rounded-full shadow-md backdrop-blur-lg transition-all duration-1000 ease-in-out group-hover:scale-105 sm:size-12 md:size-16 lg:size-20">
                   <Beam tone="brandLight">
                     <div className="relative z-10">
-                      <step.icon className={`size-6 sm:size-8 ${step.color}`} />
+                      <step.icon className={`size-4 sm:size-6 md:size-8 ${step.color}`} />
                     </div>
                   </Beam>
                 </div>
@@ -34,7 +34,7 @@ function PipelineIllustration() {
             </div>
             
             {/* Step Label */}
-            <span className="text-sm font-medium text-muted-foreground">
+            <span className="text-xs font-medium text-muted-foreground sm:text-sm">
               {step.label}
             </span>
           </div>
