@@ -20,7 +20,7 @@ interface LogosMarqueeProps {
 }
 
 export default function LogosMarquee({
-  title = "Trusted by Leading Names in the Industry",
+  title = "Backed by the expertise trusted by leading public clients and contractors",
   logoItems = [
     {
       logo: <TrustedLogo src="/trusted_by/Besix.png" alt="Besix" />,
@@ -48,6 +48,9 @@ export default function LogosMarquee({
     },
     {
       logo: <TrustedLogo src="/trusted_by/PortOfRotterdam.png" alt="Port of Rotterdam" />,
+    },
+    {
+      logo: <TrustedLogo src="/trusted_by/Seimens.png" alt="Seimens" />,
     },
   ],
   duration = "20s",

@@ -52,19 +52,6 @@ export default function AssetsPage() {
     }
   }
 
-  const getStatusIcon = (status: Asset['status']) => {
-    switch (status) {
-      case 'operational':
-        return <CheckCircle2 className="h-4 w-4 text-green-600" />
-      case 'maintenance_required':
-        return <AlertCircle className="h-4 w-4 text-red-600" />
-      case 'under_maintenance':
-        return <Wrench className="h-4 w-4 text-blue-600" />
-      default:
-        return null
-    }
-  }
-
   const assetPassport: AssetPassport | undefined = selectedAsset ? mockAssetPassports[selectedAsset] : undefined
 
   const operationalCount = assets.filter(a => a.status === 'operational').length
@@ -155,12 +142,9 @@ export default function AssetsPage() {
                     })}
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      {getStatusIcon(asset.status)}
-                      <Badge variant={getStatusColor(asset.status)}>
-                        {asset.status.replace(/_/g, ' ')}
-                      </Badge>
-                    </div>
+                    <Badge variant={getStatusColor(asset.status)} className="capitalize">
+                      {asset.status.replace(/_/g, ' ')}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -225,7 +209,7 @@ export default function AssetsPage() {
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Status</p>
-                    <Badge variant={getStatusColor(assetPassport.asset.status)}>
+                    <Badge variant={getStatusColor(assetPassport.asset.status)} className="capitalize">
                       {assetPassport.asset.status.replace(/_/g, ' ')}
                     </Badge>
                   </div>
