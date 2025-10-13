@@ -128,7 +128,7 @@ export default function DashboardPage() {
                         <p className="text-sm font-medium leading-none">{detection.defect_type.toUpperCase()}</p>
                         <p className="text-sm text-muted-foreground">{detection.asset_id}</p>
                       </div>
-                      <Badge variant={detection.severity === 'critical' ? 'destructive' : detection.severity === 'warning' ? 'default' : 'secondary'}>
+                      <Badge variant={detection.severity === 'critical' ? 'destructive' : detection.severity === 'warning' ? 'default' : 'secondary'} className="capitalize">
                         {detection.severity}
                       </Badge>
                     </div>
@@ -144,13 +144,15 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {mockContracts.filter(c => c.status === 'active' || c.status === 'sent_to_contractor').slice(0, 3).map((contract) => (
+                  {mockContracts.filter(c => 
+                    c.status === 'active' || c.status === 'sent_to_contractor'
+                  ).slice(0, 3).map((contract) => (
                     <div key={contract.contract_id} className="flex items-start justify-between border-b pb-3 last:border-0">
                       <div className="space-y-1">
                         <p className="text-sm font-medium leading-none">{contract.title}</p>
                         <p className="text-sm text-muted-foreground">{contract.contractor_name}</p>
                       </div>
-                      <Badge variant="outline">
+                      <Badge variant="outline" className="capitalize">
                         {contract.status.replace(/_/g, ' ')}
                       </Badge>
                     </div>

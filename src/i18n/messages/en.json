@@ -258,7 +258,11 @@
     "approvals": "Approvals",
     "sendRequest": "Send Request",
     "notAssigned": "Not assigned",
-    "tbd": "TBD"
+    "tbd": "TBD",
+    "tenderDetails": "Tender Details",
+    "submissionDeadline": "Submission Deadline",
+    "estimatedValue": "Estimated Value",
+    "requirements": "Requirements"
   },
   "notifications": {
     "title": "Notifications",

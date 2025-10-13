@@ -28,8 +28,10 @@ import { CheckCircle2, AlertTriangle, Clock, Eye, MapPin, Activity, FileText, Ar
 import { mockDetections } from "@/data/mock-detections"
 import { mockAssets } from "@/data/mock-assets"
 import { mockContracts } from "@/data/mock-contracts"
+import { mockTenders } from "@/data/mock-tenders"
 import { AIDetection } from "@/types/detection"
 import { Contract } from "@/types/contract"
+import { Tender } from "@/types/tender"
 import 'mapbox-gl/dist/mapbox-gl.css'
 
 // Dynamically import Map components to avoid SSR issues
@@ -70,12 +72,21 @@ export default function AIDetectionsPage() {
     router.push(`/${locale}/command-center?contract=${contractId}`)
   }
 
+  const handleViewTender = (tenderId: string) => {
+    // Navigate to tender details in command center
+    router.push(`/${locale}/command-center?tender=${tenderId}`)
+  }
+
   const getLinkedAsset = (assetId: string) => {
     return mockAssets.find(a => a.asset_id === assetId)
   }
 
   const getLinkedContract = (detectionId: string): Contract | undefined => {
     return mockContracts.find(c => c.detection_id === detectionId)
+  }
+
+  const getLinkedTender = (detectionId: string): Tender | undefined => {
+    return mockTenders.find(t => t.detection_id === detectionId)
   }
 
   const getStatusColor = (status: AIDetection['status']) => {
@@ -183,7 +194,7 @@ export default function AIDetectionsPage() {
                     <span className="capitalize">{detection.defect_type.replace(/_/g, ' ')}</span>
                   </TableCell>
                   <TableCell>
-                    <Badge className={getSeverityColor(detection.severity)} variant="outline">
+                    <Badge className={`${getSeverityColor(detection.severity)} capitalize`} variant="outline">
                       {detection.severity}
                     </Badge>
                   </TableCell>
@@ -193,7 +204,7 @@ export default function AIDetectionsPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={getStatusColor(detection.status)}>
+                    <Badge variant={getStatusColor(detection.status)} className="capitalize">
                       {detection.status}
                     </Badge>
                   </TableCell>
@@ -281,10 +292,10 @@ export default function AIDetectionsPage() {
               {/* Detection Status and Actions */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Badge className={getSeverityColor(selectedDetection.severity)} variant="outline">
+                  <Badge className={`${getSeverityColor(selectedDetection.severity)} capitalize`} variant="outline">
                     {selectedDetection.severity}
                   </Badge>
-                  <Badge variant={getStatusColor(selectedDetection.status)}>
+                  <Badge variant={getStatusColor(selectedDetection.status)} className="capitalize">
                     {selectedDetection.status}
                   </Badge>
                 </div>
@@ -300,9 +311,11 @@ export default function AIDetectionsPage() {
                   )}
                   {selectedDetection.status === 'validated' && (() => {
                     const linkedContract = getLinkedContract(selectedDetection.detection_id)
+                    const linkedTender = getLinkedTender(selectedDetection.detection_id)
+                    
                     if (linkedContract) {
                       // Show "View Contract" or "View Tender" button
-                      const buttonText = linkedContract.type === 'tender' ? t('viewTender') : t('viewContract')
+                      const buttonText = t('viewContract')
                       return (
                         <Button
                           onClick={() => handleViewContract(linkedContract.contract_id)}
@@ -311,6 +324,19 @@ export default function AIDetectionsPage() {
                         >
                           <FileText className="h-4 w-4" />
                           {buttonText}
+                          <ArrowRight className="h-4 w-4" />
+                        </Button>
+                      )
+                    } else if (linkedTender) {
+                      // Show "View Tender" button for separate tender
+                      return (
+                        <Button
+                          onClick={() => handleViewTender(linkedTender.tender_id)}
+                          className="gap-2"
+                          variant="default"
+                        >
+                          <FileText className="h-4 w-4" />
+                          {t('viewTender')}
                           <ArrowRight className="h-4 w-4" />
                         </Button>
                       )
@@ -363,17 +389,6 @@ export default function AIDetectionsPage() {
                   <div className="mt-4">
                     <p className="text-sm text-muted-foreground">{t('description')}</p>
                     <p className="font-medium">{selectedDetection.description}</p>
-                  </div>
-                )}
-                {selectedDetection.location && (
-                  <div className="mt-4 flex items-start gap-2">
-                    <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">{t('location')}</p>
-                      <p className="font-medium">
-                        {selectedDetection.location.lat.toFixed(6)}, {selectedDetection.location.lng.toFixed(6)}
-                      </p>
-                    </div>
                   </div>
                 )}
               </div>
@@ -534,7 +549,7 @@ export default function AIDetectionsPage() {
                       </p>
                       <p className="text-sm text-green-700 dark:text-green-300 mt-1">
                         {linkedContract 
-                          ? `A ${linkedContract.type === 'tender' ? 'tender' : 'contract'} (${linkedContract.contract_id}) has been created for this detection`
+                          ? `A contract (${linkedContract.contract_id}) has been created for this detection`
                           : 'You can now create a tender/contract for this detection'
                         }
                       </p>

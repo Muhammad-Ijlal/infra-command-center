@@ -3,13 +3,13 @@ import { Contract } from '@/types/contract'
 export const mockContracts: Contract[] = [
   {
     contract_id: 'CTR-001',
-    title: 'Corniche Road Emergency Repair',
+    title: 'Corniche Road Pothole Emergency Repair',
     type: 'direct_award',
     status: 'active',
     asset_id: 'ASSET-R-001',
     contractor_id: 'CNT-001',
     contractor_name: 'Qatari Construction Co.',
-    description: 'Emergency repair works for critical crack on Corniche Road',
+    description: 'Emergency repair works for critical pothole on Corniche Road',
     sla_terms: {
       response_time: 4,
       completion_time: 10,
@@ -25,7 +25,7 @@ export const mockContracts: Contract[] = [
       items: [
         {
           item_id: 'BOQ-001',
-          description: 'Crack repair and sealing',
+          description: 'Pothole repair and filling',
           unit: 'linear meter',
           quantity: 50,
           unit_price: 800,
@@ -77,86 +77,14 @@ export const mockContracts: Contract[] = [
     ]
   },
   {
-    contract_id: 'CTR-002',
-    title: 'Bridge Corrosion Treatment - Al Sadd',
-    type: 'tender',
-    status: 'pending_approval',
-    asset_id: 'ASSET-B-003',
-    detection_id: 'DET-002',
-    suitable_contractors: ['CNT-002', 'CNT-003'], // AI-matched contractors for bridge repair
-    description: 'Corrosion treatment and protective coating for bridge support structures',
-    sla_terms: {
-      response_time: 3,
-      completion_time: 21,
-      quality_standards: ['ISO 12944', 'NACE SP0178'],
-      penalties: '0.5% per day delay',
-      warranty_period: 36
-    },
-    created_date: '2025-10-07',
-    value: 285000,
-    boq: {
-      items: [
-        {
-          item_id: 'BOQ-005',
-          description: 'Surface preparation and cleaning',
-          unit: 'sq meter',
-          quantity: 200,
-          unit_price: 250,
-          total_price: 50000
-        },
-        {
-          item_id: 'BOQ-006',
-          description: 'Corrosion treatment application',
-          unit: 'sq meter',
-          quantity: 200,
-          unit_price: 600,
-          total_price: 120000
-        },
-        {
-          item_id: 'BOQ-007',
-          description: 'Protective coating system',
-          unit: 'sq meter',
-          quantity: 200,
-          unit_price: 450,
-          total_price: 90000
-        },
-        {
-          item_id: 'BOQ-008',
-          description: 'Safety and access equipment',
-          unit: 'lump sum',
-          quantity: 1,
-          unit_price: 25000,
-          total_price: 25000
-        }
-      ],
-      total_estimated_cost: 285000,
-      currency: 'QAR'
-    },
-    approvals: [
-      {
-        approver_name: 'James Thompson',
-        approver_role: 'Technical Director',
-        status: 'approved',
-        date: '2025-10-07',
-        comments: 'Technical specifications approved'
-      },
-      {
-        approver_name: 'Sarah Mitchell',
-        approver_role: 'Operations Manager',
-        status: 'pending',
-        comments: ''
-      }
-    ]
-  },
-  {
     contract_id: 'CTR-003',
-    title: 'Streetlight Maintenance - C-Ring Zone 12',
+    title: 'Emergency Tree Removal - C-Ring Road',
     type: 'framework',
     status: 'sent_to_contractor',
     asset_id: 'ASSET-L-012',
     contractor_id: 'CNT-004',
     contractor_name: 'Qatar ElectroTech Solutions',
-    description: 'Repair and upgrade of streetlight system in C-Ring Road Zone 12',
+    description: 'Emergency removal of derooted tree leaning on house on C-Ring Road',
     sla_terms: {
       response_time: 2,
       completion_time: 7,
@@ -185,14 +113,14 @@ export const mockContracts: Contract[] = [
   },
   {
     contract_id: 'CTR-004',
-    title: 'Pothole Repair - Al Waab Intersection',
+    title: 'Drainage System Maintanence - Al Waab Intersection',
     type: 'direct_award',
     status: 'active',
     asset_id: 'ASSET-R-002',
     detection_id: 'DET-003',
     contractor_id: 'CNT-001',
     contractor_name: 'Qatari Construction Co.',
-    description: 'Emergency pothole repair and surface restoration at Al Waab Street intersection',
+    description: 'Emergency drainage system maintanence and debris removal at Al Waab Street intersection',
     sla_terms: {
       response_time: 4,
       completion_time: 5,
@@ -208,7 +136,7 @@ export const mockContracts: Contract[] = [
       items: [
         {
           item_id: 'BOQ-009',
-          description: 'Pothole patching and filling',
+          description: 'Debris removal and drain cleaning',
           unit: 'sq meter',
           quantity: 25,
           unit_price: 600,
@@ -216,7 +144,7 @@ export const mockContracts: Contract[] = [
         },
         {
           item_id: 'BOQ-010',
-          description: 'Surface leveling',
+          description: 'Drainage system restoration',
           unit: 'sq meter',
           quantity: 25,
           unit_price: 400,
@@ -256,6 +184,82 @@ export const mockContracts: Contract[] = [
         status: 'approved',
         date: '2025-10-08',
         comments: 'Budget allocated - emergency response'
+      }
+    ]
+  },
+  {
+    contract_id: 'CTR-005',
+    title: 'Surveillance Camera Maintenance - C-Ring Road',
+    type: 'direct_award',
+    status: 'completed',
+    asset_id: 'ASSET-L-012',
+    detection_id: 'DET-005',
+    contractor_id: 'CNT-001',
+    contractor_name: 'Qatari Construction Co.',
+    description: 'Surveillance camera maintenance and image quality improvement on C-Ring Road',
+    sla_terms: {
+      response_time: 2,
+      completion_time: 3,
+      quality_standards: ['ASTM D6433', 'QCS 2014'],
+      penalties: '1% per day delay after SLA breach',
+      warranty_period: 12
+    },
+    created_date: '2025-10-05',
+    start_date: '2025-10-06',
+    end_date: '2025-10-09',
+    value: 18000,
+    boq: {
+      items: [
+        {
+          item_id: 'BOQ-013',
+          description: 'Camera lens cleaning and maintenance',
+          unit: 'sq meter',
+          quantity: 15,
+          unit_price: 200,
+          total_price: 3000
+        },
+        {
+          item_id: 'BOQ-014',
+          description: 'Camera hardware inspection and repair',
+          unit: 'sq meter',
+          quantity: 15,
+          unit_price: 500,
+          total_price: 7500
+        },
+        {
+          item_id: 'BOQ-015',
+          description: 'Image quality optimization and calibration',
+          unit: 'sq meter',
+          quantity: 15,
+          unit_price: 300,
+          total_price: 4500
+        },
+        {
+          item_id: 'BOQ-016',
+          description: 'Traffic management and safety',
+          unit: 'lump sum',
+          quantity: 1,
+          unit_price: 3000,
+          total_price: 3000
+        }
+      ],
+      total_estimated_cost: 18000,
+      currency: 'QAR'
+    },
+    approvals: [
+      {
+        approver_name: 'James Thompson',
+        approver_role: 'Technical Director',
+        status: 'approved',
+        date: '2025-10-05',
+        comments: 'Approved for execution'
+      },
+      {
+        approver_name: 'Sarah Mitchell',
+        approver_role: 'Operations Manager',
+        status: 'approved',
+        date: '2025-10-05',
+        comments: 'Budget allocated'
       }
     ]
   }

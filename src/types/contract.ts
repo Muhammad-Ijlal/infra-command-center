@@ -1,5 +1,5 @@
 export type ContractStatus = 'draft' | 'pending_approval' | 'approved' | 'sent_to_contractor' | 'active' | 'completed' | 'cancelled'
-export type ContractType = 'tender' | 'direct_award' | 'framework'
+export type ContractType = 'direct_award' | 'framework'
 
 export interface Contract {
   contract_id: string
@@ -10,7 +10,6 @@ export interface Contract {
   detection_id?: string
   contractor_id?: string
   contractor_name?: string
-  suitable_contractors?: string[] // Array of contractor IDs for tenders
   description: string
   sla_terms: SLATerms
   created_date: string

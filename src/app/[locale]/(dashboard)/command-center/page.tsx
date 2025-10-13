@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useTranslations } from 'next-intl'
+import { useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -37,17 +38,23 @@ import {
 } from "@/components/ui/dialog"
 import { FileText, Clock, CheckCircle2, Send, Users, Pencil } from "lucide-react"
 import { mockContracts } from "@/data/mock-contracts"
+import { mockTenders } from "@/data/mock-tenders"
 import { mockAssets } from "@/data/mock-assets"
 import { mockContractors } from "@/data/mock-contractors"
 import { Contract } from "@/types/contract"
+import { Tender } from "@/types/tender"
 import { Contractor } from "@/types/contractor"
 
 export default function CommandCenterPage() {
   const t = useTranslations('commandCenter')
   const tCommon = useTranslations('common')
+  const searchParams = useSearchParams()
   const [contracts, setContracts] = useState<Contract[]>(mockContracts)
+  const [tenders, setTenders] = useState<Tender[]>(mockTenders)
   const [showCreateDialog, setShowCreateDialog] = useState(false)
   const [selectedContract, setSelectedContract] = useState<Contract | null>(null)
+  const [selectedTender, setSelectedTender] = useState<Tender | null>(null)
+  const [activeTab, setActiveTab] = useState<'contracts' | 'tenders'>('contracts')
   const [formData, setFormData] = useState({
     title: '',
     asset_id: '',
@@ -57,11 +64,34 @@ export default function CommandCenterPage() {
     completion_time: '10'
   })
 
+  // Handle URL parameters to automatically open contract/tender modal
+  useEffect(() => {
+    const contractId = searchParams.get('contract')
+    const tenderId = searchParams.get('tender')
+    
+    if (contractId) {
+      const contract = contracts.find(c => c.contract_id === contractId)
+      if (contract) {
+        setSelectedContract(contract)
+        setSelectedTender(null) // Clear tender selection
+        setActiveTab('contracts') // Set contracts tab as active
+      }
+    } else if (tenderId) {
+      // Check separate tender data structure
+      const tender = tenders.find(t => t.tender_id === tenderId)
+      if (tender) {
+        setSelectedTender(tender)
+        setSelectedContract(null) // Clear contract selection
+        setActiveTab('tenders') // Set tenders tab as active
+      }
+    }
+  }, [searchParams, contracts, tenders])
+
   const handleCreateContract = () => {
     const newContract: Contract = {
       contract_id: `CTR-${String(contracts.length + 1).padStart(3, '0')}`,
       title: formData.title,
-      type: 'tender',
+      type: 'direct_award',
       status: 'draft',
       asset_id: formData.asset_id,
       contractor_id: formData.contractor_id,
@@ -138,17 +168,55 @@ export default function CommandCenterPage() {
     }
   }
 
+  const getTenderStatusBadge = (status: string) => {
+    switch (status) {
+      case 'published':
+        return { variant: 'default' as const, className: 'bg-blue-100 text-blue-800' }
+      case 'submission_period':
+        return { variant: 'default' as const, className: 'bg-green-100 text-green-800' }
+      case 'evaluation':
+        return { variant: 'default' as const, className: 'bg-yellow-100 text-yellow-800' }
+      case 'awarded':
+        return { variant: 'default' as const, className: 'bg-purple-100 text-purple-800' }
+      case 'cancelled':
+        return { variant: 'destructive' as const, className: 'bg-red-100 text-red-800' }
+      case 'draft':
+        return { variant: 'outline' as const, className: 'bg-gray-100 text-gray-800' }
+      default:
+        return { variant: 'outline' as const, className: '' }
+    }
+  }
+
+  const getComplianceColor = (compliance: Contractor['sla_compliance']) => {
+    switch (compliance) {
+      case 'excellent':
+        return 'bg-green-600'
+      case 'good':
+        return 'bg-blue-600'
+      case 'fair':
+        return 'bg-yellow-600'
+      case 'poor':
+        return 'bg-red-600'
+      default:
+        return 'bg-gray-600'
+    }
+  }
+
   // Separate contracts and tenders
-  const contractsOnly = contracts.filter(c => c.type === 'direct_award' || c.type === 'framework')
-  const tendersOnly = contracts.filter(c => c.type === 'tender')
+  const contractsOnly = contracts.filter(c => 
+    (c.type === 'direct_award' || c.type === 'framework') && 
+    c.status !== 'completed' // Hide completed contracts (for resolved detections)
+  )
+  // Use separate tender data structure instead of contract-based tenders
+  const tendersOnly = tenders
 
   const draftCount = contracts.filter(c => c.status === 'draft').length
   const pendingCount = contracts.filter(c => c.status === 'pending_approval').length
   const activeCount = contracts.filter(c => c.status === 'active' || c.status === 'sent_to_contractor').length
-  
-  const tenderDraftCount = tendersOnly.filter(t => t.status === 'draft').length
-  const tenderPendingCount = tendersOnly.filter(t => t.status === 'pending_approval').length
-  const tenderActiveCount = tendersOnly.filter(t => t.status === 'approved' || t.status === 'sent_to_contractor').length
+
+  const tenderDraftCount = tendersOnly.filter(t => t.status === 'pending_approval').length
+  const tenderPendingCount = tendersOnly.filter(t => t.status === 'published').length
+  const tenderActiveCount = tendersOnly.filter(t => t.status === 'submission_period' || t.status === 'evaluation').length
   
   const contractActiveCount = contractsOnly.filter(c => c.status === 'active').length
   const contractCompletedCount = contractsOnly.filter(c => c.status === 'completed').length
@@ -163,7 +231,7 @@ export default function CommandCenterPage() {
       </div>
 
       {/* Tabs for Contracts and Tenders */}
-      <Tabs defaultValue="contracts" className="space-y-6">
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'contracts' | 'tenders')} className="space-y-6">
         <TabsList className="grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="contracts">{t('contracts')}</TabsTrigger>
           <TabsTrigger value="tenders">{t('tenders')}</TabsTrigger>
@@ -384,8 +452,8 @@ export default function CommandCenterPage() {
                     : []
                   
                   return (
-                    <TableRow key={tender.contract_id}>
-                      <TableCell className="font-medium">{tender.contract_id}</TableCell>
+                    <TableRow key={tender.tender_id}>
+                      <TableCell className="font-medium">{tender.tender_id}</TableCell>
                       <TableCell>{tender.title}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
@@ -397,8 +465,8 @@ export default function CommandCenterPage() {
                       </TableCell>
                       <TableCell>
                         <Badge 
-                          variant={getStatusBadge(tender.status).variant} 
-                          className={`capitalize ${getStatusBadge(tender.status).className}`}
+                          variant={getTenderStatusBadge(tender.status).variant} 
+                          className={`capitalize ${getTenderStatusBadge(tender.status).className}`}
                         >
                           {tender.status.replace(/_/g, ' ')}
                         </Badge>
@@ -407,14 +475,14 @@ export default function CommandCenterPage() {
                         {new Date(tender.created_date).toLocaleDateString()}
                       </TableCell>
                       <TableCell>
-                        {tender.value ? `${tender.value.toLocaleString()} QAR` : '-'}
+                        {tender.estimated_value ? `${tender.estimated_value.toLocaleString()} ${tender.currency}` : '-'}
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2">
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => setSelectedContract(tender)}
+                            onClick={() => setSelectedTender(tender)}
                           >
                             {t('view')}
                           </Button>
@@ -427,22 +495,13 @@ export default function CommandCenterPage() {
                               <Pencil className="h-4 w-4" />
                             </Button>
                           )}
-                          {tender.status === 'draft' && (
+                          {tender.status === 'pending_approval' && (
                             <Button
                               size="sm"
                               variant="default"
-                              onClick={() => handleUpdateStatus(tender.contract_id, 'pending_approval')}
+                              onClick={() => {/* TODO: Implement tender publish functionality */}}
                             >
                               {t('submit')}
-                            </Button>
-                          )}
-                          {tender.status === 'approved' && (
-                            <Button
-                              size="sm"
-                              variant="default"
-                              onClick={() => handleUpdateStatus(tender.contract_id, 'sent_to_contractor')}
-                            >
-                              {t('send')}
                             </Button>
                           )}
                         </div>
@@ -594,23 +653,21 @@ export default function CommandCenterPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-muted-foreground">{t('type')}</p>
-                  <Badge className="capitalize">{selectedContract.type}</Badge>
+                  <Badge variant="outline" className="capitalize">{selectedContract.type.replace(/_/g, ' ')}</Badge>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{t('status')}</p>
                   <Badge 
                     variant={getStatusBadge(selectedContract.status).variant}
-                    className={getStatusBadge(selectedContract.status).className}
+                    className={`capitalize ${getStatusBadge(selectedContract.status).className}`}
                   >
                     {selectedContract.status.replace(/_/g, ' ')}
                   </Badge>
                 </div>
-                {selectedContract.type !== 'tender' && (
-                  <div>
-                    <p className="text-sm text-muted-foreground">{t('contractor')}</p>
-                    <p className="font-medium">{selectedContract.contractor_name || t('notAssigned')}</p>
-                  </div>
-                )}
+                <div>
+                  <p className="text-sm text-muted-foreground">{t('contractor')}</p>
+                  <p className="font-medium">{selectedContract.contractor_name || t('notAssigned')}</p>
+                </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{t('value')}</p>
                   <p className="font-medium">
@@ -619,8 +676,120 @@ export default function CommandCenterPage() {
                 </div>
               </div>
 
-              {/* Suitable Contractors for Tenders */}
-              {selectedContract.type === 'tender' && selectedContract.suitable_contractors && (
+              {selectedContract.sla_terms && (
+                <div>
+                  <h4 className="font-semibold mb-2">{t('slaTerms')}</h4>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="text-muted-foreground">{t('responseTime')}</p>
+                      <p>{selectedContract.sla_terms.response_time} {t('hours')}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">{t('completionTime')}</p>
+                      <p>{selectedContract.sla_terms.completion_time} {t('days')}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {selectedContract.approvals && selectedContract.approvals.length > 0 && (
+                <div>
+                  <h4 className="font-semibold mb-2">{t('approvals')}</h4>
+                  <div className="space-y-3">
+                    {selectedContract.approvals.map((approval, idx) => (
+                      <div key={idx} className="flex items-center justify-between border rounded-lg p-3 bg-muted/30">
+                        <div className="flex-1">
+                          <p className="font-medium">{approval.approver_name}</p>
+                          <p className="text-sm text-muted-foreground">{approval.approver_role}</p>
+                          {approval.comments && (
+                            <p className="text-sm text-muted-foreground mt-1 italic">&ldquo;{approval.comments}&rdquo;</p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={approval.status === 'approved' ? 'default' : approval.status === 'rejected' ? 'destructive' : 'secondary'} className="capitalize">
+                            {approval.status}
+                          </Badge>
+                          {approval.status === 'pending' && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleSendApprovalRequest(approval.approver_name)}
+                              className="gap-2"
+                            >
+                              <Send className="h-3 w-3" />
+                              {t('sendRequest')}
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-end">
+                <Button onClick={() => setSelectedContract(null)}>{tCommon('close')}</Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* View Tender Dialog */}
+      <Dialog open={!!selectedTender} onOpenChange={() => setSelectedTender(null)}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{t('tenderDetails')}</DialogTitle>
+            <DialogDescription>{selectedTender?.tender_id}</DialogDescription>
+          </DialogHeader>
+
+          {selectedTender && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold mb-2">{selectedTender.title}</h3>
+                <p className="text-sm text-muted-foreground">{selectedTender.description}</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">{t('type')}</p>
+                  <Badge variant="outline" className="capitalize">{selectedTender.type}</Badge>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">{t('status')}</p>
+                  <Badge 
+                    variant={getTenderStatusBadge(selectedTender.status).variant}
+                    className={`capitalize ${getTenderStatusBadge(selectedTender.status).className}`}
+                  >
+                    {selectedTender.status.replace(/_/g, ' ')}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">{t('submissionDeadline')}</p>
+                  <p className="font-medium">
+                    {new Date(selectedTender.submission_deadline).toLocaleDateString()}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">{t('estimatedValue')}</p>
+                  <p className="font-medium">
+                    {selectedTender.estimated_value ? `${selectedTender.estimated_value.toLocaleString()} ${selectedTender.currency}` : t('tbd')}
+                  </p>
+                </div>
+              </div>
+
+              {/* Requirements */}
+              <div>
+                <h4 className="font-semibold mb-2">{t('requirements')}</h4>
+                <ul className="list-disc list-inside space-y-1 text-sm">
+                  {selectedTender.requirements.map((req, index) => (
+                    <li key={index}>{req}</li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Suitable Contractors */}
+              {selectedTender.suitable_contractors && (
                 <div className="border-t pt-4">
                   <h4 className="font-semibold mb-3 flex items-center gap-2">
                     <Users className="h-5 w-5 text-blue-600" />
@@ -630,7 +799,7 @@ export default function CommandCenterPage() {
                     {t('aiMatchedContractors')}
                   </p>
                   <div className="space-y-3">
-                    {getSuitableContractors(selectedContract.suitable_contractors).map((contractor) => (
+                    {getSuitableContractors(selectedTender.suitable_contractors).map((contractor) => (
                       <div 
                         key={contractor.contractor_id}
                         className="border rounded-lg p-4 bg-blue-50/50 dark:bg-blue-950/20"
@@ -689,27 +858,27 @@ export default function CommandCenterPage() {
                 </div>
               )}
 
-              {selectedContract.sla_terms && (
+              {selectedTender.sla_terms && (
                 <div>
                   <h4 className="font-semibold mb-2">{t('slaTerms')}</h4>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <p className="text-muted-foreground">{t('responseTime')}</p>
-                      <p>{selectedContract.sla_terms.response_time} {t('hours')}</p>
+                      <p>{selectedTender.sla_terms.response_time} {t('hours')}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">{t('completionTime')}</p>
-                      <p>{selectedContract.sla_terms.completion_time} {t('days')}</p>
+                      <p>{selectedTender.sla_terms.completion_time} {t('days')}</p>
                     </div>
                   </div>
                 </div>
               )}
 
-              {selectedContract.approvals && selectedContract.approvals.length > 0 && (
+              {selectedTender.approvals && selectedTender.approvals.length > 0 && (
                 <div>
                   <h4 className="font-semibold mb-2">{t('approvals')}</h4>
                   <div className="space-y-3">
-                    {selectedContract.approvals.map((approval, idx) => (
+                    {selectedTender.approvals.map((approval, idx) => (
                       <div key={idx} className="flex items-center justify-between border rounded-lg p-3 bg-muted/30">
                         <div className="flex-1">
                           <p className="font-medium">{approval.approver_name}</p>
@@ -719,7 +888,7 @@ export default function CommandCenterPage() {
                           )}
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge variant={approval.status === 'approved' ? 'default' : approval.status === 'rejected' ? 'destructive' : 'secondary'}>
+                          <Badge variant={approval.status === 'approved' ? 'default' : approval.status === 'rejected' ? 'destructive' : 'secondary'} className="capitalize">
                             {approval.status}
                           </Badge>
                           {approval.status === 'pending' && (
@@ -739,10 +908,6 @@ export default function CommandCenterPage() {
                   </div>
                 </div>
               )}
-
-              <div className="flex justify-end">
-                <Button onClick={() => setSelectedContract(null)}>{tCommon('close')}</Button>
-              </div>
             </div>
           )}
         </DialogContent>

@@ -1,5 +1,5 @@
 export type DetectionStatus = 'pending' | 'validated' | 'resolved' | 'critical' | 'warning'
-export type DefectType = 'crack' | 'pothole' | 'corrosion' | 'wear' | 'structural' | 'electrical' | 'tree lean' | 'road surface deterioration' | 'other'
+export type DefectType = 'crack' | 'pothole' | 'corrosion' | 'wear' | 'structural' | 'electrical' | 'tree lean' | 'structural deterioration' | 'blocked drain' | 'survilance' | 'other'
 
 export interface AIDetection {
   detection_id: string
@@ -15,5 +15,7 @@ export interface AIDetection {
     lat: number
     lng: number
   }
+  contract_id?: string // Reference to associated contract
+  tender_id?: string // Reference to associated tender (if no contract yet)
 }
 
