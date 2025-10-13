@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Peak&Peek",
-  description: "Peak&Peek - AI-powered defect detection, asset management, contractor matching, and contract automation for Vision 2030 compliance.",
+  title: "AIVY",
+  description: "AIVY - Autonomous maintenance, from detection to contract. Fully integrable with Maximo, SAP, and Cityworks. Enhancing, not replacing, your existing infrastructure.",
 };
 
 export default function RootLayout({

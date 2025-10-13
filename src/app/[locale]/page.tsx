@@ -36,7 +36,7 @@ export default function Home() {
         logo={
           <Image
             src={logoSrc}
-            alt="Peak&Peek"
+            alt="AIVY"
             width={120}
             height={40}
             className="h-10 w-auto object-contain"
@@ -58,7 +58,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <Section className="relative flex-1 overflow-hidden pb-0 sm:pb-0 md:pb-0">
-        <div className="max-w-container relative z-10 mx-auto flex flex-col gap-12 pt-16 sm:gap-16">
+        <div className="max-w-container relative z-10 mx-auto flex flex-col gap-8 pt-8 sm:gap-12 sm:pt-12">
           <div className="flex flex-col items-center gap-6 text-center sm:gap-10">
             {/* Title */}
             <h1 className="animate-appear text-4xl font-bold opacity-0 sm:text-5xl md:text-6xl">
@@ -71,16 +71,13 @@ export default function Home() {
             </p>
 
             {/* Description */}
-            <p className="text-md animate-appear text-muted-foreground relative z-10 max-w-[740px] font-medium text-balance opacity-0 delay-200 sm:text-xl">
+            <p className="text-md animate-appear text-muted-foreground relative z-10 max-w-[900px] font-medium text-balance opacity-0 delay-200 sm:text-xl">
               {t('description')}
             </p>
 
-            {/* Hashtags */}
-            <div className="animate-appear flex flex-wrap justify-center gap-4 opacity-0 delay-250">
-              <span className="text-sm font-medium text-primary">{t('hashtags')}</span>
-            </div>
-
+            {/* Pipeline Illustration */}
             <PipelineIllustration />
+            
             {/* CTA Button */}
             <div className="animate-appear relative z-10 flex justify-center gap-4 opacity-0 delay-300">
               <Button size="lg" variant="default" asChild>
@@ -89,6 +86,12 @@ export default function Home() {
                 </Link>
               </Button>
             </div>
+
+            {/* Hashtags */}
+            <div className="animate-appear flex flex-wrap justify-center gap-4 opacity-0 delay-250">
+              <span className="text-sm font-medium text-primary">{t('hashtags')}</span>
+            </div>
+
           </div>
         </div>
 
@@ -107,7 +110,7 @@ export default function Home() {
           <div className="flex flex-col items-center gap-6 text-center">
             <Image
               src={logoSrc}
-              alt="Peak&Peek"
+              alt="AIVY"
               width={150}
               height={50}
               className="h-auto w-[120px] object-contain"
@@ -143,7 +146,7 @@ export default function Home() {
             </div>
 
             <p className="text-muted-foreground text-xs">
-              © 2025 Peak&Peek. All rights reserved.
+              © 2025 AIVY. All rights reserved.
             </p>
           </div>
         </div>

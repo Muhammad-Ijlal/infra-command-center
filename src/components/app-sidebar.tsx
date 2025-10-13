@@ -80,7 +80,7 @@ export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typ
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:size-8 hidden">
                   <Image
                     src={logoSrc}
-                    alt="Peak&Peek"
+                    alt="AIVY"
                     width={32}
                     height={32}
                     className="object-contain"
@@ -89,7 +89,7 @@ export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typ
                 <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
                   <Image
                     src={logoSrc}
-                    alt="Peak&Peek"
+                    alt="AIVY"
                     width={100}
                     height={32}
                     className="object-contain mb-1"

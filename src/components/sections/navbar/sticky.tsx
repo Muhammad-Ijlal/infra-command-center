@@ -46,7 +46,7 @@ export default function StickyNavbar({
   return (
     <header
       className={cn(
-        "fade-bottom sticky top-0 z-50 px-4 pb-4 backdrop-blur-lg",
+        "fade-bottom sticky top-0 z-50 backdrop-blur-lg",
         className,
       )}
     > 
