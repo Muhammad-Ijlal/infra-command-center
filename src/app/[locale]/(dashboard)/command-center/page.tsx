@@ -335,13 +335,14 @@ export default function CommandCenterPage() {
                     <TableCell className="font-medium">{contract.contract_id}</TableCell>
                     <TableCell>{contract.title}</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="capitalize">{contract.type.replace(/_/g, ' ')}</Badge>
+                      <Badge variant="outline" className="capitalize" size="large_status">{contract.type.replace(/_/g, ' ')}</Badge>
                     </TableCell>
                     <TableCell>{contract.contractor_name || t('notAssigned')}</TableCell>
                     <TableCell>
                       <Badge 
                         variant={getStatusBadge(contract.status).variant} 
                         className={`capitalize ${getStatusBadge(contract.status).className}`}
+                        size="xl_status"
                       >
                         {contract.status.replace(/_/g, ' ')}
                       </Badge>
@@ -485,6 +486,7 @@ export default function CommandCenterPage() {
                         <Badge 
                           variant={getTenderStatusBadge(tender.status).variant} 
                           className={`capitalize ${getTenderStatusBadge(tender.status).className}`}
+                          size="xl_status"
                         >
                           {tender.status.replace(/_/g, ' ')}
                         </Badge>
@@ -671,13 +673,14 @@ export default function CommandCenterPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-muted-foreground">{t('type')}</p>
-                  <Badge variant="outline" className="capitalize">{selectedContract.type.replace(/_/g, ' ')}</Badge>
+                  <Badge variant="outline" className="capitalize" size="table">{selectedContract.type.replace(/_/g, ' ')}</Badge>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{t('status')}</p>
                   <Badge 
                     variant={getStatusBadge(selectedContract.status).variant}
                     className={`capitalize ${getStatusBadge(selectedContract.status).className}`}
+                    size="status"
                   >
                     {selectedContract.status.replace(/_/g, ' ')}
                   </Badge>
@@ -724,7 +727,7 @@ export default function CommandCenterPage() {
                           )}
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge variant={approval.status === 'approved' ? 'default' : approval.status === 'rejected' ? 'destructive' : 'secondary'} className="capitalize">
+                          <Badge variant={approval.status === 'approved' ? 'default' : approval.status === 'rejected' ? 'destructive' : 'secondary'} className="capitalize" size="status">
                             {approval.status}
                           </Badge>
                           {approval.status === 'pending' && (
@@ -771,13 +774,14 @@ export default function CommandCenterPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-muted-foreground">{t('type')}</p>
-                  <Badge variant="outline" className="capitalize">{selectedTender.type}</Badge>
+                  <Badge variant="outline" className="capitalize" size="large_status">{selectedTender.type}</Badge>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{t('status')}</p>
                   <Badge 
                     variant={getTenderStatusBadge(selectedTender.status).variant}
                     className={`capitalize ${getTenderStatusBadge(selectedTender.status).className}`}
+                    size="xl_status"
                   >
                     {selectedTender.status.replace(/_/g, ' ')}
                   </Badge>
@@ -862,7 +866,7 @@ export default function CommandCenterPage() {
                               <span className="text-sm text-muted-foreground">{t('capabilities')}:</span>
                               <div className="flex flex-wrap gap-1 mt-1">
                                 {contractor.scope.map((scope) => (
-                                  <Badge key={scope} variant="secondary" className="text-xs">
+                                  <Badge key={scope} variant="secondary" className="text-xs" size="sm">
                                     {scope.replace(/_/g, ' ')}
                                   </Badge>
                                 ))}
@@ -906,7 +910,7 @@ export default function CommandCenterPage() {
                           )}
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge variant={approval.status === 'approved' ? 'default' : approval.status === 'rejected' ? 'destructive' : 'secondary'} className="capitalize">
+                          <Badge variant={approval.status === 'approved' ? 'default' : approval.status === 'rejected' ? 'destructive' : 'secondary'} className="capitalize" size="status">
                             {approval.status}
                           </Badge>
                           {approval.status === 'pending' && (

@@ -139,7 +139,7 @@ export default function AssetsPage() {
                   <TableCell className="font-medium">{asset.asset_id}</TableCell>
                   <TableCell>{asset.name}</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="capitalize">
+                    <Badge variant="outline" className="capitalize" size="status">
                       {asset.category.replace(/_/g, ' ')}
                     </Badge>
                   </TableCell>
@@ -151,7 +151,7 @@ export default function AssetsPage() {
                     })}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={getStatusColor(asset.status)} className="capitalize">
+                    <Badge variant={getStatusColor(asset.status)} className="capitalize" size="xxl_status">
                       {asset.status.replace(/_/g, ' ')}
                     </Badge>
                   </TableCell>
@@ -211,7 +211,7 @@ export default function AssetsPage() {
                     </div>
                     <div className="text-left">
                       <p className="text-sm text-muted-foreground">Status</p>
-                      <Badge variant={getStatusColor(assetPassport.asset.status)} className="capitalize">
+                      <Badge variant={getStatusColor(assetPassport.asset.status)} className="capitalize" size="large_status">
                         {assetPassport.asset.status.replace(/_/g, ' ')}
                       </Badge>
                     </div>
@@ -259,13 +259,13 @@ export default function AssetsPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Vision 2030 Compliant</span>
-                    <Badge variant={assetPassport.compliance.vision_2030_compliant ? 'default' : 'destructive'} className="capitalize">
+                    <Badge variant={assetPassport.compliance.vision_2030_compliant ? 'default' : 'destructive'} className="capitalize" size="default">
                       {assetPassport.compliance.vision_2030_compliant ? 'Yes' : 'No'}
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">QCS Certified</span>
-                    <Badge variant={assetPassport.compliance.qcs_certified ? 'default' : 'destructive'} className="capitalize">
+                    <Badge variant={assetPassport.compliance.qcs_certified ? 'default' : 'destructive'} className="capitalize" size="default">
                       {assetPassport.compliance.qcs_certified ? 'Yes' : 'No'}
                     </Badge>
                   </div>
@@ -275,7 +275,7 @@ export default function AssetsPage() {
                     </div>
                     <div className="flex flex-wrap gap-1">
                       {assetPassport.compliance.certifications?.map((cert) => (
-                        <Badge key={cert} variant="outline" className="text-xs capitalize">{cert}</Badge>
+                        <Badge key={cert} variant="outline" className="text-xs capitalize" size="default">{cert}</Badge>
                       ))}
                     </div>
                   </div>
@@ -296,7 +296,7 @@ export default function AssetsPage() {
                               {new Date(record.date).toLocaleDateString()}
                             </p>
                           </div>
-                          <Badge variant={record.status === 'completed' ? 'default' : 'secondary'} className="text-xs capitalize">
+                          <Badge variant={record.status === 'completed' ? 'default' : 'secondary'} className="text-xs capitalize" size="default">
                             {record.status}
                           </Badge>
                         </div>

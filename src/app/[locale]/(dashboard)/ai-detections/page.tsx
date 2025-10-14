@@ -226,7 +226,11 @@ export default function AIDetectionsPage() {
                     <span className="capitalize">{detection.defect_type.replace(/_/g, ' ')}</span>
                   </TableCell>
                   <TableCell>
-                    <Badge className={`${getSeverityColor(detection.severity)} capitalize`} variant="outline">
+                    <Badge 
+                      className={`${getSeverityColor(detection.severity)} capitalize`} 
+                      variant="outline"
+                      size="status"
+                    >
                       {detection.severity}
                     </Badge>
                   </TableCell>
@@ -239,6 +243,7 @@ export default function AIDetectionsPage() {
                     <Badge 
                       variant={getStatusColor(detection.status).variant} 
                       className={`capitalize ${getStatusColor(detection.status).className}`}
+                      size="status"
                     >
                       {detection.status.replace(/_/g, ' ')}
                     </Badge>
@@ -327,12 +332,17 @@ export default function AIDetectionsPage() {
               {/* Detection Status and Actions */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Badge className={`${getSeverityColor(selectedDetection.severity)} capitalize`} variant="outline">
+                  <Badge 
+                    className={`${getSeverityColor(selectedDetection.severity)} capitalize`} 
+                    variant="outline"
+                    size="status"
+                  >
                     {selectedDetection.severity}
                   </Badge>
                   <Badge 
                     variant={getStatusColor(selectedDetection.status).variant} 
                     className={`capitalize ${getStatusColor(selectedDetection.status).className}`}
+                    size="status"
                   >
                     {selectedDetection.status.replace(/_/g, ' ')}
                   </Badge>
@@ -548,7 +558,7 @@ export default function AIDetectionsPage() {
                           <p className="text-sm text-muted-foreground">{t('assetName')}</p>
                           <p className="font-semibold text-lg">{linkedAsset.name}</p>
                         </div>
-                        <Badge variant="outline" className="capitalize">
+                        <Badge variant="outline" className="capitalize" size="table">
                           {linkedAsset.category}
                         </Badge>
                       </div>

@@ -73,10 +73,6 @@ export default function ContractorsPage() {
             Contractor database with AI-powered matching and performance tracking
           </p>
         </div>
-        <Button onClick={handleAIMatch} className="gap-2">
-          <Star className="h-4 w-4" />
-          AI Match to Issue
-        </Button>
       </div>
 
       {/* Summary Cards */}
@@ -143,19 +139,19 @@ export default function ContractorsPage() {
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
                       {contractor.scope.slice(0, 2).map((s) => (
-                        <Badge key={s} variant="outline" className="text-xs capitalize">
+                        <Badge key={s} variant="outline" className="text-xs capitalize" size="default">
                           {s.replace(/_/g, ' ')}
                         </Badge>
                       ))}
                       {contractor.scope.length > 2 && (
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs" size="sm">
                           +{contractor.scope.length - 2}
                         </Badge>
                       )}
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge className={`${getComplianceColor(contractor.sla_compliance)} text-white capitalize`}>
+                    <Badge className={`${getComplianceColor(contractor.sla_compliance)} text-white capitalize`} size="large_status">
                       {contractor.sla_compliance}
                     </Badge>
                   </TableCell>
@@ -218,7 +214,7 @@ export default function ContractorsPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <Badge className={`${getComplianceColor(contractor.sla_compliance)} text-white`}>
+                    <Badge className={`${getComplianceColor(contractor.sla_compliance)} text-white capitalize`} size="large_status">
                       {contractor.sla_compliance}
                     </Badge>
                     <div className="flex items-center gap-1">
@@ -261,7 +257,7 @@ export default function ContractorsPage() {
                           <CardDescription>Match Score: {match.match_score}%</CardDescription>
                         </div>
                       </div>
-                      <Badge className={`${getComplianceColor(match.contractor.sla_compliance)} text-white text-sm`}>
+                      <Badge className={`${getComplianceColor(match.contractor.sla_compliance)} text-white text-sm capitalize`} size="large_status">
                         {match.contractor.sla_compliance}
                       </Badge>
                     </div>
@@ -274,7 +270,7 @@ export default function ContractorsPage() {
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">Availability</p>
-                        <Badge variant={match.availability === 'available' ? 'default' : 'secondary'}>
+                        <Badge variant={match.availability === 'available' ? 'default' : 'secondary'} size="status">
                           {match.availability}
                         </Badge>
                       </div>
