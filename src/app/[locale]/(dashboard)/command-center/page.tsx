@@ -6,15 +6,6 @@ import { useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import {
   Table,
   TableBody,
@@ -36,7 +27,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { FileText, Clock, CheckCircle2, Send, Users, Pencil } from "lucide-react"
+import { FileText, Clock, CheckCircle2, Send, Users, Pencil, FileSignature, Gavel } from "lucide-react"
 import { mockContracts } from "@/data/mock-contracts"
 import { mockTenders } from "@/data/mock-tenders"
 import { mockAssets } from "@/data/mock-assets"
@@ -249,14 +240,36 @@ export default function CommandCenterPage() {
       </div>
 
       {/* Tabs for Contracts and Tenders */}
-      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'contracts' | 'tenders')} className="space-y-6">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="contracts">{t('contracts')}</TabsTrigger>
-          <TabsTrigger value="tenders">{t('tenders')}</TabsTrigger>
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'contracts' | 'tenders')} className="flex flex-col items-start gap-4">
+        <TabsList className="grid w-full grid-cols-1 items-stretch gap-2 sm:grid-cols-2 md:gap-4 lg:flex">
+          <TabsTrigger 
+            value="contracts" 
+            className="flex w-full flex-row gap-2 p-3"
+          >
+            <FileSignature className="h-5 w-5 stroke-1" />
+            <div className="flex flex-col gap-1">
+              <h3 className="font-semibold">{t('contracts')}</h3>
+              <p className="text-muted-foreground text-xs">
+                Manage active contracts and agreements
+              </p>
+            </div>
+          </TabsTrigger>
+          <TabsTrigger 
+            value="tenders" 
+            className="flex w-full flex-row gap-2 p-3"
+          >
+            <Gavel className="h-5 w-5 stroke-1" />
+            <div className="flex flex-col gap-1">
+              <h3 className="font-semibold">{t('tenders')}</h3>
+              <p className="text-muted-foreground text-xs">
+                Handle tender processes and bidding
+              </p>
+            </div>
+          </TabsTrigger>
         </TabsList>
 
         {/* Contracts Tab */}
-        <TabsContent value="contracts" className="space-y-6">
+        <TabsContent value="contracts" className="w-full space-y-6">
           {/* Contract Summary Cards */}
           <div className="grid gap-4 md:grid-cols-3">
             <Card>
@@ -390,7 +403,7 @@ export default function CommandCenterPage() {
         </TabsContent>
 
         {/* Tenders Tab */}
-        <TabsContent value="tenders" className="space-y-6">
+        <TabsContent value="tenders" className="w-full space-y-6">
           {/* Tender Summary Cards */}
           <div className="grid gap-4 md:grid-cols-3">
         <Card>
@@ -540,120 +553,6 @@ export default function CommandCenterPage() {
       </Card>
         </TabsContent>
       </Tabs>
-
-      {/* Create Contract Dialog */}
-      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>{t('createNewContract')}</DialogTitle>
-            <DialogDescription>
-              {t('fillDetails')}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="asset">{t('asset')} *</Label>
-                <Select value={formData.asset_id} onValueChange={(value) => setFormData(prev => ({ ...prev, asset_id: value }))}>
-                  <SelectTrigger id="asset">
-                    <SelectValue placeholder={t('selectAsset')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {mockAssets.map(asset => (
-                      <SelectItem key={asset.asset_id} value={asset.asset_id}>
-                        {asset.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="contractor">{t('contractor')}</Label>
-                <Select value={formData.contractor_id} onValueChange={(value) => setFormData(prev => ({ ...prev, contractor_id: value }))}>
-                  <SelectTrigger id="contractor">
-                    <SelectValue placeholder={t('selectContractor')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {mockContractors.map(contractor => (
-                      <SelectItem key={contractor.contractor_id} value={contractor.contractor_id}>
-                        {contractor.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="title">{t('contractTitle')} *</Label>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleAutoGenerate}
-                  disabled={!formData.asset_id}
-                >
-                  {t('autoGenerate')}
-                </Button>
-              </div>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                placeholder={t('enterTitle')}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">{t('description')}</Label>
-              <textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                className="w-full min-h-[100px] px-3 py-2 text-sm border rounded-md"
-                placeholder={t('enterDescription')}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="response">{t('responseTimeHours')}</Label>
-                <Input
-                  id="response"
-                  type="number"
-                  value={formData.response_time}
-                  onChange={(e) => setFormData(prev => ({ ...prev, response_time: e.target.value }))}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="completion">{t('completionTimeDays')}</Label>
-                <Input
-                  id="completion"
-                  type="number"
-                  value={formData.completion_time}
-                  onChange={(e) => setFormData(prev => ({ ...prev, completion_time: e.target.value }))}
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
-                {tCommon('cancel')}
-              </Button>
-              <Button
-                onClick={handleCreateContract}
-                disabled={!formData.title || !formData.asset_id}
-              >
-                {t('createContract')}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* View Contract Dialog */}
       <Dialog open={!!selectedContract} onOpenChange={(open) => !open && handleCloseContract()}>
