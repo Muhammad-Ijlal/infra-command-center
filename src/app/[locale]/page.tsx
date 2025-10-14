@@ -67,7 +67,7 @@ export default function Home() {
             </h1>
 
             {/* Subtitle */}
-            <p className="animate-appear text-xl font-semibold opacity-0 delay-100 sm:text-2xl max-w-[600px]">
+            <p className="animate-appear text-xl font-semibold opacity-0 delay-100 sm:text-2xl max-w-[800px]">
               {t('subtitle')}
             </p>
 
