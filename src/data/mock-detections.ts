@@ -3,13 +3,13 @@ import { AIDetection } from '@/types/detection'
 export const mockDetections: AIDetection[] = [
   {
     detection_id: 'DET-004',
-    asset_id: 'ASSET-L-012',
+    asset_id: 'ASSET-R-001',
     defect_type: 'tree lean',
     confidence_score: 0.78,
     timestamp: '2025-10-07T22:30:00Z',
     status: 'pending',
     severity: 'critical',
-    description: 'Derooted tree leaning on house on C-Ring Road',
+    description: 'Derooted tree leaning on house on Corniche Road',
     location: { lat: 25.2760, lng: 51.5250 },
     image_url: '/detections/DET-004.jpg',
     contract_id: 'CTR-003' // Has framework contract
