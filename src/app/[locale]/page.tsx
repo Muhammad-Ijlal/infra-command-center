@@ -57,7 +57,7 @@ export default function Home() {
       />
 
       {/* Hero Section */}
-      <Section className="relative flex-1 overflow-hidden pb-0 sm:pb-0 md:pb-0">
+      <Section className="relative flex-1 overflow-hidden pb-0 sm:pb-0 md:pb-0 -mt-16 pt-16">
         <div className="max-w-container relative z-10 mx-auto flex flex-col gap-8 pt-8 sm:gap-12 sm:pt-12">
           <div className="flex flex-col items-center gap-6 text-center sm:gap-10">
             {/* Title */}
@@ -66,12 +66,12 @@ export default function Home() {
             </h1>
 
             {/* Subtitle */}
-            <p className="animate-appear text-xl font-semibold opacity-0 delay-100 sm:text-2xl">
+            <p className="animate-appear text-xl font-semibold opacity-0 delay-100 sm:text-2xl max-w-[600px]">
               {t('subtitle')}
             </p>
 
             {/* Description */}
-            <p className="text-md animate-appear text-muted-foreground relative z-10 max-w-[900px] font-medium text-balance opacity-0 delay-200 sm:text-xl">
+            <p className="text-md animate-appear text-muted-foreground relative z-10 max-w-[700px] font-medium text-balance opacity-0 delay-200 sm:text-xl">
               {t('description')}
             </p>
 
@@ -88,7 +88,7 @@ export default function Home() {
             </div>
 
             {/* Hashtags */}
-            <div className="animate-appear flex flex-wrap justify-center gap-4 opacity-0 delay-250">
+            <div className="animate-appear flex flex-wrap justify-center gap-4 opacity-0 delay-250 mb-8 sm:mb-12 md:mb-16">
               <span className="text-sm font-medium text-primary">{t('hashtags')}</span>
             </div>
 
@@ -96,7 +96,7 @@ export default function Home() {
         </div>
 
         {/* Background Glow */}
-        <div className="pointer-events-none absolute top-0 left-0 h-full w-full">
+        <div className="pointer-events-none absolute -top-16 left-0 h-full w-full">
           <Glow variant="top" className="animate-appear-zoom opacity-0 delay-700" />
         </div>
       </Section>

@@ -62,7 +62,7 @@ export default function LogosMarquee({
   return (
     <Section className={cn(className)}>
       <div className="max-w-container mx-auto flex flex-col items-center gap-8 text-center">
-        <h2 className="text-md text-muted-foreground font-semibold">{title}</h2>
+        <h2 className="text-xl font-semibold sm:text-2xl max-w-[600px]">{title}</h2>
         <div className="relative flex w-full flex-col items-center justify-center overflow-hidden">
           <Marquee
             pauseOnHover={pauseOnHover}
