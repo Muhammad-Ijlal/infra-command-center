@@ -61,9 +61,9 @@ export default function IntegrationLogos({
                 <Image
                   src={item.logo}
                   alt={item.name}
-                  width={220}
-                  height={220}
-                  className="object-contain transition-transform duration-300 group-hover:scale-110"
+                  width={120}
+                  height={60}
+                  className="h-15 w-auto object-contain transition-transform duration-300 group-hover:scale-110"
                 />
               </div>
             ))}
