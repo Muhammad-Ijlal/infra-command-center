@@ -50,7 +50,7 @@ export default function LogosMarquee({
       logo: <TrustedLogo src="/trusted_by/PortOfRotterdam.png" alt="Port of Rotterdam" />,
     },
     {
-      logo: <TrustedLogo src="/trusted_by/Seimens.png" alt="Seimens" />,
+      logo: <TrustedLogo src="/trusted_by/Siemens.png" alt="Siemens" />,
     },
   ],
   duration = "20s",
