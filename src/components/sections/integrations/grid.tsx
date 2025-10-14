@@ -27,7 +27,7 @@ export default function IntegrationLogos({
     },
     {
       name: "Cityworks",
-      logo: "/integrations/cityworks-3.png", 
+      logo: "/integrations/Cityworks-3.png", 
     },
     {
       name: "Maximo",
