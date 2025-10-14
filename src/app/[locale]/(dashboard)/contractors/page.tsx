@@ -19,7 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Star, Trophy, TrendingUp } from "lucide-react"
+import { Star, Trophy, TrendingUp, Award, Shield, AlertTriangle, CheckCircle } from "lucide-react"
 import { SummaryCard } from "@/components/summary-card"
 import { mockContractors } from "@/data/mock-contractors"
 import { Contractor, ContractorMatch } from "@/types/contractor"
@@ -46,18 +46,18 @@ export default function ContractorsPage() {
     setShowMatchDialog(true)
   }
 
-  const getComplianceColor = (compliance: Contractor['sla_compliance']) => {
+  const getComplianceIcon = (compliance: Contractor['sla_compliance']) => {
     switch (compliance) {
       case 'excellent':
-        return 'bg-green-600'
+        return <Award className="h-4 w-4 text-muted-foreground" />
       case 'good':
-        return 'bg-blue-600'
+        return <Shield className="h-4 w-4 text-muted-foreground" />
       case 'fair':
-        return 'bg-yellow-600'
+        return <AlertTriangle className="h-4 w-4 text-muted-foreground" />
       case 'poor':
-        return 'bg-red-600'
+        return <AlertTriangle className="h-4 w-4 text-muted-foreground" />
       default:
-        return 'bg-gray-600'
+        return <CheckCircle className="h-4 w-4 text-muted-foreground" />
     }
   }
 
@@ -138,9 +138,10 @@ export default function ContractorsPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge className={`${getComplianceColor(contractor.sla_compliance)} text-white capitalize`} size="large_status">
-                      {contractor.sla_compliance}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      {getComplianceIcon(contractor.sla_compliance)}
+                      <span className="text-sm font-medium capitalize">{contractor.sla_compliance}</span>
+                    </div>
                   </TableCell>
                   <TableCell>{contractor.avg_response_time}h</TableCell>
                   <TableCell>
@@ -201,9 +202,10 @@ export default function ContractorsPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <Badge className={`${getComplianceColor(contractor.sla_compliance)} text-white capitalize`} size="large_status">
-                      {contractor.sla_compliance}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      {getComplianceIcon(contractor.sla_compliance)}
+                      <span className="text-sm font-medium capitalize">{contractor.sla_compliance}</span>
+                    </div>
                     <div className="flex items-center gap-1">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                       <span className="font-bold">{contractor.rating}</span>
@@ -244,9 +246,10 @@ export default function ContractorsPage() {
                           <CardDescription>Match Score: {match.match_score}%</CardDescription>
                         </div>
                       </div>
-                      <Badge className={`${getComplianceColor(match.contractor.sla_compliance)} text-white text-sm capitalize`} size="large_status">
-                        {match.contractor.sla_compliance}
-                      </Badge>
+                    <div className="flex items-center gap-2">
+                      {getComplianceIcon(match.contractor.sla_compliance)}
+                      <span className="text-sm font-medium capitalize">{match.contractor.sla_compliance}</span>
+                    </div>
                     </div>
                   </CardHeader>
                   <CardContent>

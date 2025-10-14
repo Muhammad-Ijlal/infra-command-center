@@ -147,13 +147,7 @@ export default function AssetsPage() {
                     <div className="flex items-center gap-2">
                       <div className="w-16 bg-gray-200 rounded-full h-2">
                         <div
-                          className={`h-2 rounded-full ${
-                            asset.impact_score >= 90
-                              ? 'bg-red-600'
-                              : asset.impact_score >= 70
-                              ? 'bg-orange-500'
-                              : 'bg-green-600'
-                          }`}
+                          className="h-2 rounded-full bg-orange-500"
                           style={{ width: `${asset.impact_score}%` }}
                         />
                       </div>
