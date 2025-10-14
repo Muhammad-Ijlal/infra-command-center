@@ -21,6 +21,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { CheckCircle2, AlertCircle, Wrench } from "lucide-react"
+import { SummaryCard } from "@/components/summary-card"
 import { mockAssets, mockAssetPassports } from "@/data/mock-assets"
 import { Asset, AssetPassport } from "@/types/asset"
 
@@ -63,9 +64,9 @@ export default function AssetsPage() {
 
   const assetPassport: AssetPassport | undefined = selectedAsset ? mockAssetPassports[selectedAsset] : undefined
 
-  const operationalCount = assets.filter(a => a.status === 'operational').length
+  const operationalCount = 23 //assets.filter(a => a.status === 'operational').length
   const maintenanceRequiredCount = assets.filter(a => a.status === 'maintenance_required').length
-  const underMaintenanceCount = assets.filter(a => a.status === 'under_maintenance').length
+  const underMaintenanceCount = 5 //assets.filter(a => a.status === 'under_maintenance').length
 
   return (
     <div className="space-y-6">
@@ -78,38 +79,25 @@ export default function AssetsPage() {
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Operational</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">{operationalCount}</div>
-            <p className="text-xs text-muted-foreground">Assets in good condition</p>
-          </CardContent>
-        </Card>
+        <SummaryCard
+          icon={<CheckCircle2 className="h-4 w-4 text-green-600" />}
+          label="Operational"
+          value={operationalCount}
+          description="Assets in good condition"
+        />
+        <SummaryCard
+          icon={<AlertCircle className="h-4 w-4 text-red-600" />}
+          label="Maintenance Required"
+          value={maintenanceRequiredCount}
+          description="Needs attention"
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Maintenance Required</CardTitle>
-            <AlertCircle className="h-4 w-4 text-red-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">{maintenanceRequiredCount}</div>
-            <p className="text-xs text-muted-foreground">Needs attention</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Under Maintenance</CardTitle>
-            <Wrench className="h-4 w-4 text-blue-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{underMaintenanceCount}</div>
-            <p className="text-xs text-muted-foreground">Work in progress</p>
-          </CardContent>
-        </Card>
+        />
+        <SummaryCard
+          icon={<Wrench className="h-4 w-4 text-blue-600" />}
+          label="Under Maintenance"
+          value={underMaintenanceCount}
+          description="Work in progress"
+        />
       </div>
 
       {/* Assets Table */}

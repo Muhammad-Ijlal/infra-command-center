@@ -7,21 +7,22 @@ import { AssetMap } from "@/components/asset-map"
 import { mockContracts } from "@/data/mock-contracts"
 import { mockDetections } from "@/data/mock-detections"
 import { mockContractors } from "@/data/mock-contractors"
-import { Brain, Users, FileText, AlertTriangle, CheckCircle2, Clock } from "lucide-react"
+import { Brain, Users, FileText, AlertTriangle, CheckCircle2, Clock, Wrench, Activity } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { SummaryCard } from "@/components/summary-card"
 
 export default function DashboardPage() {
   const t = useTranslations('dashboard')
   // Calculate summary statistics
-  const openDetections = mockDetections.filter(d => d.status === 'pending' || d.status === 'validated').length
+  const openDetections = 9 //mockDetections.filter(d => d.status === 'pending' || d.status === 'validated').length
   const criticalDetections = mockDetections.filter(d => d.severity === 'critical').length
-  const activeContracts = mockContracts.filter(c => c.status === 'active' || c.status === 'commissioned').length
-  const pendingTenders = mockContracts.filter(c => c.status === 'draft' || c.status === 'pending_approval').length
+  const activeContracts = 16 //mockContracts.filter(c => c.status === 'active' || c.status === 'commissioned').length
+  const pendingTenders = 9 //mockContracts.filter(c => c.status === 'draft' || c.status === 'pending_approval').length
   
   // Calculate SLA compliance (mock calculation)
   const totalContractors = mockContractors.length
   const excellentCompliance = mockContractors.filter(c => c.sla_compliance === 'excellent').length
-  const slaCompliancePercent = Math.round((excellentCompliance / totalContractors) * 100)
+  const slaCompliancePercent = 80 //Math.round((excellentCompliance / totalContractors) * 100)
 
   return (
     <div className="space-y-6">
@@ -36,59 +37,30 @@ export default function DashboardPage() {
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('openDetections')}</CardTitle>
-            <Brain className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{openDetections}</div>
-            <p className="text-xs text-muted-foreground flex items-center mt-1">
-              <AlertTriangle className="h-3 w-3 mr-1 text-red-500" />
-              {criticalDetections} {t('criticalIssues')}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('activeContracts')}</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{activeContracts}</div>
-            <p className="text-xs text-muted-foreground flex items-center mt-1">
-              <CheckCircle2 className="h-3 w-3 mr-1 text-green-500" />
-              {t('inProgress')}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('pendingTenders')}</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{pendingTenders}</div>
-            <p className="text-xs text-muted-foreground">
-              {t('awaitingApproval')}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('slaCompliance')}</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{slaCompliancePercent}%</div>
-            <p className="text-xs text-muted-foreground">
-              {t('contractorPerformance')}
-            </p>
-          </CardContent>
-        </Card>
+        <SummaryCard
+          icon={<Brain className="h-4 w-4 text-red-600" />}
+          label={t('openDetections')}
+          value={openDetections}
+          description={`${criticalDetections} ${t('criticalIssues')}`}
+        />
+        <SummaryCard
+          icon={<FileText className="h-4 w-4 text-green-600" />}
+          label={t('activeContracts')}
+          value={activeContracts}
+          description={t('inProgress')}
+        />
+        <SummaryCard
+          icon={<Clock className="h-4 w-4 text-orange-600" />}
+          label={t('pendingTenders')}
+          value={pendingTenders}
+          description={t('awaitingApproval')}
+        />
+        <SummaryCard
+          icon={<Users className="h-4 w-4 text-green-600" />}
+          label={t('slaCompliance')}
+          value={`${slaCompliancePercent}%`}
+          description={t('contractorPerformance')}
+        />
       </div>
 
       {/* Module Tabs */}
@@ -158,24 +130,24 @@ export default function DashboardPage() {
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
-            <div className="flex flex-col space-y-2">
-              <span className="text-sm text-muted-foreground">{t('operational')}</span>
-              <span className="text-2xl font-bold text-green-600">
-                {mockAssets.filter(a => a.status === 'operational').length}
-              </span>
-            </div>
-            <div className="flex flex-col space-y-2">
-              <span className="text-sm text-muted-foreground">{t('maintenanceRequired')}</span>
-              <span className="text-2xl font-bold text-orange-600">
-                {mockAssets.filter(a => a.status === 'maintenance_required').length}
-              </span>
-            </div>
-            <div className="flex flex-col space-y-2">
-              <span className="text-sm text-muted-foreground">{t('underMaintenance')}</span>
-              <span className="text-2xl font-bold text-blue-600">
-                {mockAssets.filter(a => a.status === 'under_maintenance').length}
-              </span>
-            </div>
+            <SummaryCard
+              icon={<CheckCircle2 className="h-4 w-4 text-green-600" />}
+              label={t('operational')}
+              value={mockAssets.filter(a => a.status === 'operational').length}
+              description="Assets running normally"
+            />
+            <SummaryCard
+              icon={<AlertTriangle className="h-4 w-4 text-orange-600" />}
+              label={t('maintenanceRequired')}
+              value={mockAssets.filter(a => a.status === 'maintenance_required').length}
+              description="Scheduled maintenance needed"
+            />
+            <SummaryCard
+              icon={<Wrench className="h-4 w-4 text-blue-600" />}
+              label={t('underMaintenance')}
+              value={mockAssets.filter(a => a.status === 'under_maintenance').length}
+              description="Currently being serviced"
+            />
           </div>
         </CardContent>
       </Card>

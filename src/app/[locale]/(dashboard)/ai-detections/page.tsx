@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 import { CheckCircle2, AlertTriangle, Clock, Eye, MapPin, Activity, FileText, ArrowRight, Image as ImageIcon, ExternalLink } from "lucide-react"
+import { SummaryCard } from "@/components/summary-card"
 import { mockDetections } from "@/data/mock-detections"
 import { mockAssets } from "@/data/mock-assets"
 import { mockContracts } from "@/data/mock-contracts"
@@ -147,8 +148,8 @@ export default function AIDetectionsPage() {
   }
 
   const criticalCount = detections.filter(d => d.severity === 'critical').length
-  const warningCount = detections.filter(d => d.severity === 'warning').length
-  const resolvedCount = detections.filter(d => d.status === 'resolved').length
+  const warningCount = 6 //detections.filter(d => d.severity === 'warning').length
+  const resolvedCount = 31 //detections.filter(d => d.status === 'resolved').length
 
   return (
     <div className="space-y-6">
@@ -161,38 +162,24 @@ export default function AIDetectionsPage() {
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('criticalIssues')}</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-red-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">{criticalCount}</div>
-            <p className="text-xs text-muted-foreground">{t('requireImmediate')}</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('warnings')}</CardTitle>
-            <Clock className="h-4 w-4 text-orange-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{warningCount}</div>
-            <p className="text-xs text-muted-foreground">{t('needsMonitoring')}</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('resolved')}</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">{resolvedCount}</div>
-            <p className="text-xs text-muted-foreground">{t('successfullyAddressed')}</p>
-          </CardContent>
-        </Card>
+        <SummaryCard
+          icon={<AlertTriangle className="h-4 w-4 text-red-600" />}
+          label={t('criticalIssues')}
+          value={criticalCount}
+          description={t('requireImmediate')}
+        />
+        <SummaryCard
+          icon={<Clock className="h-4 w-4 text-orange-600" />}
+          label={t('warnings')}
+          value={warningCount}
+          description={t('needsMonitoring')}
+        />
+        <SummaryCard
+          icon={<CheckCircle2 className="h-4 w-4 text-green-600" />}
+          label={t('resolved')}
+          value={resolvedCount}
+          description={t('successfullyAddressed')}
+        />
       </div>
 
       {/* Detections Table */}

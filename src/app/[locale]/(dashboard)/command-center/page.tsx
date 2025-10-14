@@ -28,6 +28,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { FileText, Clock, CheckCircle2, Send, Users, Pencil, FileSignature, Gavel } from "lucide-react"
+import { SummaryCard } from "@/components/summary-card"
 import { mockContracts } from "@/data/mock-contracts"
 import { mockTenders } from "@/data/mock-tenders"
 import { mockAssets } from "@/data/mock-assets"
@@ -220,12 +221,12 @@ export default function CommandCenterPage() {
   const tendersOnly = tenders
 
   const draftCount = contracts.filter(c => c.status === 'draft').length
-  const pendingCount = contracts.filter(c => c.status === 'pending_approval').length
-  const activeCount = contracts.filter(c => c.status === 'active' || c.status === 'commissioned').length
+  const pendingCount = 4 //contracts.filter(c => c.status === 'pending_approval').length
+  const activeCount = 16 //contracts.filter(c => c.status === 'active' || c.status === 'commissioned').length
 
   const tenderDraftCount = tendersOnly.filter(t => t.status === 'pending_approval').length
-  const tenderPendingCount = tendersOnly.filter(t => t.status === 'published').length
-  const tenderActiveCount = tendersOnly.filter(t => t.status === 'submission_period' || t.status === 'evaluation').length
+  const tenderPendingCount = 9 //tendersOnly.filter(t => t.status === 'published').length
+  const tenderActiveCount = 2 //tendersOnly.filter(t => t.status === 'submission_period' || t.status === 'evaluation').length
   
   const contractActiveCount = contractsOnly.filter(c => c.status === 'active').length
   const contractCompletedCount = contractsOnly.filter(c => c.status === 'completed').length
@@ -272,38 +273,24 @@ export default function CommandCenterPage() {
         <TabsContent value="contracts" className="w-full space-y-6">
           {/* Contract Summary Cards */}
           <div className="grid gap-4 md:grid-cols-3">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{t('draftContracts')}</CardTitle>
-                <FileText className="h-4 w-4 text-gray-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{draftCount}</div>
-                <p className="text-xs text-muted-foreground">{t('beingPrepared')}</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{t('pendingApproval')}</CardTitle>
-                <Clock className="h-4 w-4 text-yellow-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-yellow-600">{pendingCount}</div>
-                <p className="text-xs text-muted-foreground">{t('awaitingReview')}</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{t('activeContracts')}</CardTitle>
-                <CheckCircle2 className="h-4 w-4 text-green-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-green-600">{activeCount}</div>
-                <p className="text-xs text-muted-foreground">{t('inExecution')}</p>
-              </CardContent>
-            </Card>
+            <SummaryCard
+              icon={<FileText className="h-4 w-4 text-muted-foreground" />}
+              label={t('draftContracts')}
+              value={draftCount}
+              description={t('beingPrepared')}
+            />
+            <SummaryCard
+              icon={<Clock className="h-4 w-4 text-yellow-600" />}
+              label={t('pendingApproval')}
+              value={pendingCount}
+              description={t('awaitingReview')}
+            />
+            <SummaryCard
+              icon={<CheckCircle2 className="h-4 w-4 text-green-600" />}
+              label={t('activeContracts')}
+              value={activeCount}
+              description={t('inExecution')}
+            />
           </div>
 
           {/* Contract Registry */}
@@ -406,39 +393,25 @@ export default function CommandCenterPage() {
         <TabsContent value="tenders" className="w-full space-y-6">
           {/* Tender Summary Cards */}
           <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('draftTenders')}</CardTitle>
-            <FileText className="h-4 w-4 text-gray-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{tenderDraftCount}</div>
-            <p className="text-xs text-muted-foreground">{t('beingPrepared')}</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('pendingTenders')}</CardTitle>
-            <Clock className="h-4 w-4 text-yellow-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{tenderPendingCount}</div>
-            <p className="text-xs text-muted-foreground">{t('awaitingApproval')}</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('activeTenders')}</CardTitle>
-            <Users className="h-4 w-4 text-blue-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{tenderActiveCount}</div>
-            <p className="text-xs text-muted-foreground">{t('openForBidding')}</p>
-          </CardContent>
-        </Card>
-      </div>
+            <SummaryCard
+              icon={<FileText className="h-4 w-4 text-muted-foreground" />}
+              label={t('draftTenders')}
+              value={tenderDraftCount}
+              description={t('beingPrepared')}
+            />
+            <SummaryCard
+              icon={<Clock className="h-4 w-4 text-yellow-600" />}
+              label={t('pendingTenders')}
+              value={tenderPendingCount}
+              description={t('awaitingApproval')}
+            />
+            <SummaryCard
+              icon={<Users className="h-4 w-4 text-blue-600" />}
+              label={t('activeTenders')}
+              value={tenderActiveCount}
+              description={t('openForBidding')}
+            />
+          </div>
 
       {/* Tender Registry */}
       <Card>

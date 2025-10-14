@@ -20,6 +20,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Star, Trophy, TrendingUp } from "lucide-react"
+import { SummaryCard } from "@/components/summary-card"
 import { mockContractors } from "@/data/mock-contractors"
 import { Contractor, ContractorMatch } from "@/types/contractor"
 
@@ -60,7 +61,7 @@ export default function ContractorsPage() {
     }
   }
 
-  const excellentCount = contractors.filter(c => c.sla_compliance === 'excellent').length
+  const excellentCount = 17 //contractors.filter(c => c.sla_compliance === 'excellent').length
   const avgResponseTime = Math.round(contractors.reduce((acc, c) => acc + c.avg_response_time, 0) / contractors.length)
   const avgCapacity = Math.round(contractors.reduce((acc, c) => acc + c.capacity, 0) / contractors.length)
 
@@ -77,38 +78,24 @@ export default function ContractorsPage() {
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Excellent SLA</CardTitle>
-            <Trophy className="h-4 w-4 text-yellow-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{excellentCount}</div>
-            <p className="text-xs text-muted-foreground">Top performing contractors</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Response Time</CardTitle>
-            <TrendingUp className="h-4 w-4 text-blue-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{avgResponseTime}h</div>
-            <p className="text-xs text-muted-foreground">Across all contractors</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Capacity</CardTitle>
-            <Star className="h-4 w-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{avgCapacity}%</div>
-            <p className="text-xs text-muted-foreground">Available capacity</p>
-          </CardContent>
-        </Card>
+        <SummaryCard
+          icon={<Trophy className="h-4 w-4 text-yellow-600" />}
+          label="Excellent SLA"
+          value={excellentCount}
+          description="Top performing contractors"
+        />
+        <SummaryCard
+          icon={<TrendingUp className="h-4 w-4 text-blue-600" />}
+          label="Avg Response Time"
+          value={`${avgResponseTime}h`}
+          description="Across all contractors"
+        />
+        <SummaryCard
+          icon={<Star className="h-4 w-4 text-green-600" />}
+          label="Avg Capacity"
+          value={`${avgCapacity}%`}
+          description="Available capacity"
+        />
       </div>
 
       {/* Contractors Table */}

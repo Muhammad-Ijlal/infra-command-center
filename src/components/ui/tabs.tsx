@@ -15,6 +15,7 @@ function TabsList({
     <TabsPrimitive.List
       data-slot="tabs-list"
       className={cn("text-muted-foreground flex items-center", className)}
+      dir="auto"
       {...props}
     />
   );
@@ -28,9 +29,10 @@ function TabsTrigger({
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        "data-[state=active]:glass-4 ring-offset-background hover:bg-accent/50 hover:text-accent-foreground focus-visible:ring-ring data-[state=active]:text-foreground flex flex-col gap-3 rounded-md border border-border px-5 pt-4 pb-6 text-left text-sm font-medium transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-xl",
+        "data-[state=active]:glass-4 ring-offset-background hover:bg-accent/50 hover:text-accent-foreground focus-visible:ring-ring data-[state=active]:text-foreground flex flex-col gap-3 rounded-md border border-border px-5 pt-4 pb-6 text-start text-sm font-medium transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-xl",
         className,
       )}
+      dir="auto"
       {...props}
     />
   );
@@ -47,6 +49,7 @@ function TabsContent({
         "ring-offset-background focus-visible:ring-ring relative overflow-hidden focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden",
         className,
       )}
+      dir="auto"
       {...props}
     />
   );
