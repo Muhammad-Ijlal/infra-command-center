@@ -320,7 +320,7 @@
     "draft": "draft",
     "pending_approval": "pending approval",
     "approved": "approved",
-    "sent_to_contractor": "sent to contractor",
+    "commissioned": "commissioned",
     "active": "active",
     "completed": "completed",
     "cancelled": "cancelled"

@@ -1,4 +1,4 @@
-export type ContractStatus = 'draft' | 'pending_approval' | 'approved' | 'sent_to_contractor' | 'active' | 'completed' | 'cancelled'
+export type ContractStatus = 'draft' | 'pending_approval' | 'approved' | 'commissioned' | 'active' | 'completed' | 'cancelled'
 export type ContractType = 'direct_award' | 'framework'
 
 export interface Contract {

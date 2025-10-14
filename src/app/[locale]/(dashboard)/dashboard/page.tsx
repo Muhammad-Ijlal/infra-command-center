@@ -16,7 +16,7 @@ export default function DashboardPage() {
   // Calculate summary statistics
   const openDetections = mockDetections.filter(d => d.status === 'pending' || d.status === 'validated').length
   const criticalDetections = mockDetections.filter(d => d.severity === 'critical').length
-  const activeContracts = mockContracts.filter(c => c.status === 'active' || c.status === 'sent_to_contractor').length
+  const activeContracts = mockContracts.filter(c => c.status === 'active' || c.status === 'commissioned').length
   const pendingTenders = mockContracts.filter(c => c.status === 'draft' || c.status === 'pending_approval').length
   
   // Calculate SLA compliance (mock calculation)
@@ -145,7 +145,7 @@ export default function DashboardPage() {
               <CardContent>
                 <div className="space-y-4">
                   {mockContracts.filter(c => 
-                    c.status === 'active' || c.status === 'sent_to_contractor'
+                    c.status === 'active' || c.status === 'commissioned'
                   ).slice(0, 3).map((contract) => (
                     <div key={contract.contract_id} className="flex items-start justify-between border-b pb-3 last:border-0">
                       <div className="space-y-1">

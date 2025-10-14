@@ -5,7 +5,7 @@ export const mockTenders: Tender[] = [
     tender_id: 'TND-001',
     title: 'Lusail Expressway Bridge Road Surface Repair',
     type: 'open',
-    status: 'published',
+    status: 'pending_approval',
     asset_id: 'ASSET-B-001',
     detection_id: 'DET-006',
     description: 'Road surface deterioration repair and restoration works for Lusail Expressway bridge following detection of structural deterioration',
@@ -33,14 +33,14 @@ export const mockTenders: Tender[] = [
       {
         approver_name: 'James Thompson',
         approver_role: 'Technical Director',
-        status: 'approved',
+        status: 'pending',
         date: '2025-10-08',
         comments: 'Technical specifications approved for tender publication'
       },
       {
         approver_name: 'Sarah Mitchell',
         approver_role: 'Operations Manager',
-        status: 'approved',
+        status: 'pending',
         date: '2025-10-08',
         comments: 'Budget allocation confirmed'
       }
@@ -50,7 +50,7 @@ export const mockTenders: Tender[] = [
     tender_id: 'TND-002',
     title: 'Bridge Corrosion Treatment - Al Sadd',
     type: 'open',
-    status: 'pending_approval',
+    status: 'published',
     asset_id: 'ASSET-B-003',
     detection_id: 'DET-002',
     description: 'Corrosion treatment and protective coating for bridge support structures',
@@ -92,7 +92,7 @@ export const mockTenders: Tender[] = [
       {
         approver_name: 'Michael Chen',
         approver_role: 'Procurement Manager',
-        status: 'pending',
+        status: 'approved',
         comments: 'Final procurement review pending'
       }
     ]

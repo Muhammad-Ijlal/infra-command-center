@@ -2,12 +2,38 @@ import { AIDetection } from '@/types/detection'
 
 export const mockDetections: AIDetection[] = [
   {
+    detection_id: 'DET-004',
+    asset_id: 'ASSET-L-012',
+    defect_type: 'tree lean',
+    confidence_score: 0.78,
+    timestamp: '2025-10-07T22:30:00Z',
+    status: 'pending',
+    severity: 'critical',
+    description: 'Derooted tree leaning on house on C-Ring Road',
+    location: { lat: 25.2760, lng: 51.5250 },
+    image_url: '/detections/DET-004.jpg',
+    contract_id: 'CTR-003' // Has framework contract
+  },
+  {
+    detection_id: 'DET-006',
+    asset_id: 'ASSET-B-001',
+    defect_type: 'structural deterioration',
+    confidence_score: 0.96,
+    timestamp: '2025-10-07T12:00:00Z',
+    status: 'pending',
+    severity: 'critical',
+    description: 'Road surface deterioration on Lusail Expressway bridge',
+    location: { lat: 25.4200, lng: 51.4900 },
+    image_url: '/detections/DET-006.jpg',
+    tender_id: 'TND-001' // Has tender but no contract yet
+  },
+  {
     detection_id: 'DET-001',
     asset_id: 'ASSET-R-001',
     defect_type: 'pothole',
     confidence_score: 0.94,
     timestamp: '2025-10-08T14:30:00Z',
-    status: 'pending',
+    status: 'validated',
     severity: 'critical',
     description: 'Pothole detected on Corniche Road, requires immediate attention',
     location: { lat: 25.2854, lng: 51.5310 },
@@ -41,22 +67,9 @@ export const mockDetections: AIDetection[] = [
     contract_id: 'CTR-004' // Has active contract
   },
   {
-    detection_id: 'DET-004',
-    asset_id: 'ASSET-L-012',
-    defect_type: 'tree lean',
-    confidence_score: 0.78,
-    timestamp: '2025-10-07T22:30:00Z',
-    status: 'pending',
-    severity: 'critical',
-    description: 'Derooted tree leaning on house on C-Ring Road',
-    location: { lat: 25.2760, lng: 51.5250 },
-    image_url: '/detections/DET-004.jpg',
-    contract_id: 'CTR-003' // Has framework contract
-  },
-  {
     detection_id: 'DET-005',
     asset_id: 'ASSET-L-012',
-    defect_type: 'survilance',
+    defect_type: 'surveillance',
     confidence_score: 0.65,
     timestamp: '2025-10-07T16:20:00Z',
     status: 'resolved',
@@ -65,19 +78,6 @@ export const mockDetections: AIDetection[] = [
     location: { lat: 25.3200, lng: 51.5300 },
     image_url: '/detections/DET-005.jpg',
     contract_id: 'CTR-005' // Has completed contract (not displayed in table)
-  },
-  {
-    detection_id: 'DET-006',
-    asset_id: 'ASSET-B-001',
-    defect_type: 'structural deterioration',
-    confidence_score: 0.96,
-    timestamp: '2025-10-07T12:00:00Z',
-    status: 'pending',
-    severity: 'critical',
-    description: 'Road surface deterioration on Lusail Expressway bridge',
-    location: { lat: 25.4200, lng: 51.4900 },
-    image_url: '/detections/DET-006.jpg',
-    tender_id: 'TND-001' // Has tender but no contract yet
   }
 ]
 

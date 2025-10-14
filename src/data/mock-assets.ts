@@ -194,7 +194,7 @@ export const mockAssetPassports: Record<string, AssetPassport> = {
       vision_2030_compliant: true,
       qcs_certified: true,
       last_inspection_date: '2024-05-15',
-      certifications: ['ISO 9001', 'QCS 2014', 'Bridge Safety Cert', 'Structural Engineering Cert']
+      certifications: ['ISO 9001', 'QCS 2014', 'Structural Engineering Cert']
     },
     related_detections: ['DET-006']
   }

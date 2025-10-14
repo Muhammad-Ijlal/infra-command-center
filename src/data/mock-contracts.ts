@@ -3,6 +3,7 @@ import { Contract } from '@/types/contract'
 export const mockContracts: Contract[] = [
   {
     contract_id: 'CTR-001',
+    detection_id: 'DET-001',
     title: 'Corniche Road Pothole Emergency Repair',
     type: 'direct_award',
     status: 'active',
@@ -80,7 +81,7 @@ export const mockContracts: Contract[] = [
     contract_id: 'CTR-003',
     title: 'Emergency Tree Removal - C-Ring Road',
     type: 'framework',
-    status: 'sent_to_contractor',
+    status: 'pending_approval',
     asset_id: 'ASSET-L-012',
     contractor_id: 'CNT-004',
     contractor_name: 'Qatar ElectroTech Solutions',
@@ -100,13 +101,13 @@ export const mockContracts: Contract[] = [
       {
         approver_name: 'James Thompson',
         approver_role: 'Technical Director',
-        status: 'approved',
+        status: 'pending',
         date: '2025-10-06'
       },
       {
         approver_name: 'Sarah Mitchell',
         approver_role: 'Operations Manager',
-        status: 'approved',
+        status: 'pending',
         date: '2025-10-06'
       }
     ]

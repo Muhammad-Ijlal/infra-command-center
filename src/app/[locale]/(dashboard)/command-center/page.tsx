@@ -119,6 +119,22 @@ export default function CommandCenterPage() {
     })
   }
 
+  const handleCloseContract = () => {
+    setSelectedContract(null)
+    // Clear query parameters
+    const url = new URL(window.location.href)
+    url.searchParams.delete('contract')
+    window.history.replaceState({}, '', url.pathname + url.search)
+  }
+
+  const handleCloseTender = () => {
+    setSelectedTender(null)
+    // Clear query parameters
+    const url = new URL(window.location.href)
+    url.searchParams.delete('tender')
+    window.history.replaceState({}, '', url.pathname + url.search)
+  }
+
   const handleAutoGenerate = () => {
     const asset = mockAssets.find(a => a.asset_id === formData.asset_id)
     if (asset) {
@@ -155,7 +171,7 @@ export default function CommandCenterPage() {
         return { variant: 'default' as const, className: '' }
       case 'approved':
         return { variant: 'default' as const, className: 'bg-green-600 text-white' }
-      case 'sent_to_contractor':
+      case 'commissioned':
         return { variant: 'default' as const, className: 'bg-blue-600 text-white' }
       case 'pending_approval':
         return { variant: 'default' as const, className: 'bg-yellow-600 text-white' }
@@ -182,6 +198,8 @@ export default function CommandCenterPage() {
         return { variant: 'destructive' as const, className: 'bg-red-100 text-red-800' }
       case 'draft':
         return { variant: 'outline' as const, className: 'bg-gray-100 text-gray-800' }
+      case 'pending_approval':
+        return { variant: 'default' as const, className: 'bg-yellow-600 text-white' }
       default:
         return { variant: 'outline' as const, className: '' }
     }
@@ -212,7 +230,7 @@ export default function CommandCenterPage() {
 
   const draftCount = contracts.filter(c => c.status === 'draft').length
   const pendingCount = contracts.filter(c => c.status === 'pending_approval').length
-  const activeCount = contracts.filter(c => c.status === 'active' || c.status === 'sent_to_contractor').length
+  const activeCount = contracts.filter(c => c.status === 'active' || c.status === 'commissioned').length
 
   const tenderDraftCount = tendersOnly.filter(t => t.status === 'pending_approval').length
   const tenderPendingCount = tendersOnly.filter(t => t.status === 'published').length
@@ -636,7 +654,7 @@ export default function CommandCenterPage() {
       </Dialog>
 
       {/* View Contract Dialog */}
-      <Dialog open={!!selectedContract} onOpenChange={() => setSelectedContract(null)}>
+      <Dialog open={!!selectedContract} onOpenChange={(open) => !open && handleCloseContract()}>
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{t('contractDetails')}</DialogTitle>
@@ -736,7 +754,7 @@ export default function CommandCenterPage() {
       </Dialog>
 
       {/* View Tender Dialog */}
-      <Dialog open={!!selectedTender} onOpenChange={() => setSelectedTender(null)}>
+      <Dialog open={!!selectedTender} onOpenChange={(open) => !open && handleCloseTender()}>
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{t('tenderDetails')}</DialogTitle>

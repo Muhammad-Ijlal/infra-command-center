@@ -34,12 +34,6 @@ function Glow({
           variant === "center" && "-translate-y-1/2",
         )}
       />
-      <div
-        className={cn(
-          "from-brand/30 to-brand-foreground/0 absolute left-1/2 h-[128px] w-[40%] -translate-x-1/2 scale-200 rounded-[50%] bg-radial from-10% to-60% opacity-20 sm:h-[256px] dark:opacity-100",
-          variant === "center" && "-translate-y-1/2",
-        )}
-      />
     </div>
   );
 }

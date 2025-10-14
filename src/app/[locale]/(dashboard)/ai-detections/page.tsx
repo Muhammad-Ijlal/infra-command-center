@@ -1,8 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useTranslations, useLocale } from 'next-intl'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -46,8 +46,20 @@ export default function AIDetectionsPage() {
   const tCommon = useTranslations('common')
   const locale = useLocale()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [detections, setDetections] = useState<AIDetection[]>(mockDetections)
   const [selectedDetection, setSelectedDetection] = useState<AIDetection | null>(null)
+
+  // Handle URL parameters to automatically open detection modal
+  useEffect(() => {
+    const detectionId = searchParams.get('detection')
+    if (detectionId) {
+      const detection = detections.find(d => d.detection_id === detectionId)
+      if (detection) {
+        setSelectedDetection(detection)
+      }
+    }
+  }, [searchParams, detections])
 
   const handleViewAsset = (assetId: string) => {
     router.push(`/${locale}/assets?asset=${assetId}`)
@@ -67,8 +79,15 @@ export default function AIDetectionsPage() {
   }
 
   const handleCreateTender = (detection: AIDetection) => {
-    // Navigate to command center with pre-filled data
-    router.push(`/${locale}/command-center?asset=${detection.asset_id}&detection=${detection.detection_id}`)
+    // Open the linked contract or tender modal
+    if (detection.contract_id) {
+      handleViewContract(detection.contract_id)
+    } else if (detection.tender_id) {
+      handleViewTender(detection.tender_id)
+    } else {
+      // If no linked contract/tender, navigate to command center to create one
+      router.push(`/${locale}/command-center?asset=${detection.asset_id}&detection=${detection.detection_id}`)
+    }
   }
 
   const handleViewContract = (contractId: string) => {
@@ -79,6 +98,14 @@ export default function AIDetectionsPage() {
   const handleViewTender = (tenderId: string) => {
     // Navigate to tender details in command center
     router.push(`/${locale}/command-center?tender=${tenderId}`)
+  }
+
+  const handleCloseDetection = () => {
+    setSelectedDetection(null)
+    // Clear query parameters
+    const url = new URL(window.location.href)
+    url.searchParams.delete('detection')
+    router.replace(url.pathname + url.search)
   }
 
   const getLinkedAsset = (assetId: string) => {
@@ -96,14 +123,15 @@ export default function AIDetectionsPage() {
   const getStatusColor = (status: AIDetection['status']) => {
     switch (status) {
       case 'resolved':
-        return 'default'
+        return { variant: 'default' as const, className: '' }
       case 'validated':
-        return 'secondary'
+        return { variant: 'secondary' as const, className: '' }
       case 'critical':
+        return { variant: 'destructive' as const, className: '' }
       case 'pending':
-        return 'destructive'
+        return { variant: 'default' as const, className: 'bg-yellow-600 text-white' } // Same as pending_approval
       default:
-        return 'outline'
+        return { variant: 'outline' as const, className: '' }
     }
   }
 
@@ -208,8 +236,11 @@ export default function AIDetectionsPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={getStatusColor(detection.status)} className="capitalize">
-                      {detection.status}
+                    <Badge 
+                      variant={getStatusColor(detection.status).variant} 
+                      className={`capitalize ${getStatusColor(detection.status).className}`}
+                    >
+                      {detection.status.replace(/_/g, ' ')}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
@@ -282,7 +313,7 @@ export default function AIDetectionsPage() {
       </Card>
 
       {/* Detection Details Modal */}
-      <Dialog open={!!selectedDetection} onOpenChange={() => setSelectedDetection(null)}>
+      <Dialog open={!!selectedDetection} onOpenChange={(open) => !open && handleCloseDetection()}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{t('detectionDetails')}</DialogTitle>
@@ -299,8 +330,11 @@ export default function AIDetectionsPage() {
                   <Badge className={`${getSeverityColor(selectedDetection.severity)} capitalize`} variant="outline">
                     {selectedDetection.severity}
                   </Badge>
-                  <Badge variant={getStatusColor(selectedDetection.status)} className="capitalize">
-                    {selectedDetection.status}
+                  <Badge 
+                    variant={getStatusColor(selectedDetection.status).variant} 
+                    className={`capitalize ${getStatusColor(selectedDetection.status).className}`}
+                  >
+                    {selectedDetection.status.replace(/_/g, ' ')}
                   </Badge>
                 </div>
                 <div className="flex gap-2">
@@ -572,7 +606,7 @@ export default function AIDetectionsPage() {
 
               {/* Close Button */}
               <div className="flex justify-end pt-4">
-                <Button variant="outline" onClick={() => setSelectedDetection(null)}>
+                <Button variant="outline" onClick={handleCloseDetection}>
                   {tCommon('close')}
                 </Button>
               </div>

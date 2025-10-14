@@ -16,12 +16,17 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { mockNotifications } from "@/data/mock-notifications"
 import { Notification } from "@/types/notification"
+import { generateNotificationActionUrl } from "@/lib/notification-utils"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import { useParams } from "next/navigation"
 
 export function NotificationsPanel() {
   const [notifications, setNotifications] = useState<Notification[]>(mockNotifications)
+  const [isOpen, setIsOpen] = useState(false)
   const unreadCount = notifications.filter(n => !n.read).length
+  const params = useParams()
+  const locale = params.locale as string || 'en'
 
   const handleMarkAsRead = (notificationId: string) => {
     setNotifications(prev =>
@@ -33,6 +38,10 @@ export function NotificationsPanel() {
 
   const handleMarkAllAsRead = () => {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })))
+  }
+
+  const handleViewDetails = () => {
+    setIsOpen(false)
   }
 
   const getModuleIcon = (module: Notification['module']) => {
@@ -83,7 +92,7 @@ export function NotificationsPanel() {
   }
 
   return (
-    <Sheet>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="relative">
           <Bell className="h-5 w-5" />
@@ -167,12 +176,13 @@ export function NotificationsPanel() {
                       </p>
                     </div>
                   </div>
-                  {notification.action_url && (
-                    <Link href={notification.action_url} className="block pl-8">
+                  {(notification.contract_id || notification.tender_id || notification.detection_id || notification.asset_id || notification.contractor_id || notification.action_url) && (
+                    <Link href={generateNotificationActionUrl(notification, locale)} className="block pl-8">
                       <Button 
                         variant="outline" 
                         size="sm" 
                         className="w-full text-xs h-6"
+                        onClick={handleViewDetails}
                       >
                         View Details
                       </Button>
