@@ -12,6 +12,7 @@ import LogosMarquee from "@/components/sections/logos/marquee"
 import StickyNavbar from "@/components/sections/navbar/sticky"
 import Glow from "@/components/ui/glow"
 import PipelineIllustration from "@/components/illustrations/pipeline"
+import IntegrationLogos from "@/components/sections/integrations/grid"
 
 export default function Home() {
   const t = useTranslations('landing')
@@ -101,9 +102,16 @@ export default function Home() {
         </div>
       </Section>
 
+
+      {/* Integration Logos Section */}
+      <IntegrationLogos 
+        title={t('integrationsTitle')}
+        description={t('integrationsDescription')}
+      />
+
       {/* Logo Marquee Section */}
       <LogosMarquee title={t('trustedBy')} />
-
+      
       {/* Footer */}
       <footer className="border-border/15 bg-background border-t pb-12">
         <div className="max-w-container mx-auto px-4">
