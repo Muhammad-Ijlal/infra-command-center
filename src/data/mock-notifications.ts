@@ -27,7 +27,7 @@ export const mockNotifications: Notification[] = [
     notification_id: 'NOTIF-003',
     type: 'ai_detection',
     title: 'New Critical Detection Alert',
-    message: 'Critical structural issue detected on Lusail Expressway Bridge',
+    message: 'Critical structural crack detected in West Bay Traffic Control Tower control room',
     priority: 'urgent',
     timestamp: '2025-10-08T12:00:00Z',
     read: false,

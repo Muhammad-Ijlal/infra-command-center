@@ -114,61 +114,85 @@ export const mockContracts: Contract[] = [
   },
   {
     contract_id: 'CTR-004',
-    title: 'Drainage System Maintanence - Al Waab Intersection',
+    title: 'Solar Panel Replacement - Al Khor Solar Facility',
     type: 'direct_award',
     status: 'active',
-    asset_id: 'ASSET-R-002',
+    asset_id: 'ASSET-S-001',
     detection_id: 'DET-003',
-    contractor_id: 'CNT-001',
-    contractor_name: 'Qatari Construction Co.',
-    description: 'Emergency drainage system maintanence and debris removal at Al Waab Street intersection',
+    contractor_id: 'CNT-004',
+    contractor_name: 'Qatar ElectroTech Solutions',
+    description: 'Broken solar panel replacement and electrical system maintenance at Al Khor Solar Power Facility',
     sla_terms: {
-      response_time: 4,
-      completion_time: 5,
-      quality_standards: ['ASTM D6433', 'QCS 2014'],
-      penalties: '1% per day delay after SLA breach',
-      warranty_period: 18
+      response_time: 2,
+      completion_time: 7,
+      quality_standards: ['IEC 61215', 'IEC 61730', 'QCS 2014', 'Solar Panel Standards'],
+      penalties: '1.5% per day delay after SLA breach',
+      warranty_period: 60
     },
     created_date: '2025-10-08',
     start_date: '2025-10-09',
-    end_date: '2025-10-14',
-    value: 35000,
+    end_date: '2025-10-16',
+    value: 85000,
     boq: {
       items: [
         {
           item_id: 'BOQ-009',
-          description: 'Debris removal and drain cleaning',
-          unit: 'sq meter',
-          quantity: 25,
-          unit_price: 600,
-          total_price: 15000
+          description: 'Broken solar panel removal and disposal',
+          unit: 'panel',
+          quantity: 12,
+          unit_price: 800,
+          total_price: 9600
         },
         {
           item_id: 'BOQ-010',
-          description: 'Drainage system restoration',
-          unit: 'sq meter',
-          quantity: 25,
-          unit_price: 400,
-          total_price: 10000
+          description: 'New solar panel installation and mounting',
+          unit: 'panel',
+          quantity: 12,
+          unit_price: 1200,
+          total_price: 14400
         },
         {
           item_id: 'BOQ-011',
-          description: 'Road marking restoration',
-          unit: 'linear meter',
-          quantity: 20,
-          unit_price: 200,
-          total_price: 4000
+          description: 'Electrical wiring and inverter connection',
+          unit: 'panel',
+          quantity: 12,
+          unit_price: 400,
+          total_price: 4800
         },
         {
           item_id: 'BOQ-012',
-          description: 'Traffic control and safety',
+          description: 'System testing and performance verification',
           unit: 'lump sum',
           quantity: 1,
-          unit_price: 6000,
-          total_price: 6000
+          unit_price: 15000,
+          total_price: 15000
+        },
+        {
+          item_id: 'BOQ-013',
+          description: 'Safety equipment and access systems',
+          unit: 'lump sum',
+          quantity: 1,
+          unit_price: 8000,
+          total_price: 8000
+        },
+        {
+          item_id: 'BOQ-014',
+          description: 'Environmental compliance and waste management',
+          unit: 'lump sum',
+          quantity: 1,
+          unit_price: 5000,
+          total_price: 5000
+        },
+        {
+          item_id: 'BOQ-015',
+          description: 'Documentation and certification',
+          unit: 'lump sum',
+          quantity: 1,
+          unit_price: 3000,
+          total_price: 3000
         }
       ],
-      total_estimated_cost: 35000,
+      total_estimated_cost: 85000,
       currency: 'QAR'
     },
     approvals: [
@@ -177,14 +201,14 @@ export const mockContracts: Contract[] = [
         approver_role: 'Technical Director',
         status: 'approved',
         date: '2025-10-08',
-        comments: 'Approved for immediate execution'
+        comments: 'Solar panel replacement approved for immediate execution'
       },
       {
         approver_name: 'Sarah Mitchell',
         approver_role: 'Operations Manager',
         status: 'approved',
         date: '2025-10-08',
-        comments: 'Budget allocated - emergency response'
+        comments: 'Renewable energy budget allocated - priority project'
       }
     ]
   },

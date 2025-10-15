@@ -37,20 +37,20 @@ export const mockContractors: Contractor[] = [
   },
   {
     contractor_id: 'CNT-003',
-    name: 'Gulf Bridge Specialists',
-    scope: ['bridge_repair', 'structural'],
-    sla_compliance: 'good',
-    avg_response_time: 6,
-    capacity: 80,
-    rating: 4.5,
-    active_contracts: 8,
-    completed_contracts: 89,
+    name: 'Qatar Subsea Pipeline Solutions',
+    scope: ['pipeline_maintenance', 'subsea_repair', 'marine_corrosion'],
+    sla_compliance: 'excellent',
+    avg_response_time: 3,
+    capacity: 55,
+    rating: 4.7,
+    active_contracts: 12,
+    completed_contracts: 134,
     contact: {
-      email: 'contact@gulfbridge.qa',
+      email: 'projects@qspi.qa',
       phone: '+974 4433 7890',
-      representative: 'Khalid Al-Attiyah'
+      representative: 'Hassan Al-Marri'
     },
-    certifications: ['ISO 9001', 'Bridge Safety Specialist']
+    certifications: ['ISO 9001', 'NACE Certification', 'Marine Pipeline Specialist', 'Subsea Safety Cert']
   },
   {
     contractor_id: 'CNT-004',
@@ -85,6 +85,22 @@ export const mockContractors: Contractor[] = [
       representative: 'Abdullah Al-Sulaiti'
     },
     certifications: ['ISO 9001', 'Multi-Sector Certified']
+  },
+  {
+    contractor_id: 'CNT-006',
+    name: 'Qatar Facility Maintenance Solutions',
+    scope: ['facility_maintenance', 'structural', 'building_repair'],
+    sla_compliance: 'excellent',
+    avg_response_time: 2,
+    capacity: 60,
+    rating: 4.8,
+    active_contracts: 16,
+    completed_contracts: 198,
+    contact: {
+      email: 'projects@qfms.qa',
+      phone: '+974 4466 0123',
+      representative: 'Omar Al-Mansouri'
+    },
+    certifications: ['ISO 9001', 'Facility Management Cert', 'Structural Safety Cert', 'Qatar National Vision 2030 Certified']
   }
 ]
-

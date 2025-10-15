@@ -17,5 +17,7 @@ export interface AIDetection {
   }
   contract_id?: string // Reference to associated contract
   tender_id?: string // Reference to associated tender (if no contract yet)
+  detection_device?: string // Device used for detection
+  device_model?: string // Model number of the detection device
 }
 

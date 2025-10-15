@@ -426,6 +426,22 @@ export default function AIDetectionsPage() {
                     <p className="font-medium">{selectedDetection.description}</p>
                   </div>
                 )}
+                {(selectedDetection.detection_device || selectedDetection.device_model) && (
+                  <div className="mt-4 grid grid-cols-2 gap-4">
+                    {selectedDetection.detection_device && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">Detection Device</p>
+                        <p className="font-medium">{selectedDetection.detection_device}</p>
+                      </div>
+                    )}
+                    {selectedDetection.device_model && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">Device Model</p>
+                        <p className="font-medium">{selectedDetection.device_model}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <Separator />
