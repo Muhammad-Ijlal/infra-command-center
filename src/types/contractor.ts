@@ -1,4 +1,4 @@
-export type ContractorScope = 'road_maintenance' | 'bridge_repair' | 'electrical' | 'structural' | 'general' | 'all'
+export type ContractorScope = 'road_maintenance' | 'bridge_repair' | 'electrical' | 'structural' | 'general' | 'all' | 'pipeline_maintenance' | 'subsea_repair' | 'marine_corrosion' | 'facility_maintenance' | 'building_repair'
 export type ComplianceLevel = 'excellent' | 'good' | 'fair' | 'poor'
 
 export interface Contractor {

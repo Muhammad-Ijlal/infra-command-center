@@ -1,4 +1,3 @@
-import { ReactNode } from "react";
 import Image from "next/image";
 import { Section } from "@/components/ui/section";
 import { cn } from "@/lib/utils";

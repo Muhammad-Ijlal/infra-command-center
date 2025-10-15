@@ -1,4 +1,4 @@
-export type AssetCategory = 'road' | 'bridge' | 'lighting' | 'drainage' | 'signage' | 'building' | 'other'
+export type AssetCategory = 'road' | 'bridge' | 'lighting' | 'drainage' | 'signage' | 'building' | 'facility' | 'pipeline' | 'solar' | 'other'
 export type AssetStatus = 'operational' | 'maintenance_required' | 'under_maintenance' | 'decommissioned'
 
 export interface Asset {
