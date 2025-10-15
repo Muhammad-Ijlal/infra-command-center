@@ -24,6 +24,7 @@ import { CheckCircle2, AlertCircle, Wrench } from "lucide-react"
 import { SummaryCard } from "@/components/summary-card"
 import { mockAssets, mockAssetPassports } from "@/data/mock-assets"
 import { Asset, AssetPassport } from "@/types/asset"
+import IntegrationLogos from "@/components/sections/integrations/grid"
 
 export default function AssetsPage() {
   const searchParams = useSearchParams()
@@ -305,6 +306,12 @@ export default function AssetsPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Integration Logos Section */}
+      <IntegrationLogos 
+        title="Seamlessly integrates with your existing tools"
+        description="Connect with the platforms and systems you already use"
+      />
     </div>
   )
 }
