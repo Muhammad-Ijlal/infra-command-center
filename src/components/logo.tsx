@@ -22,7 +22,7 @@ export const Logo = ({ className = "" }: { className?: string }) => {
     <div className={cn("flex items-center gap-2", className)}>
       <Image
         src={logoSrc}
-        alt="AIVY"
+        alt="TRAGS"
         width={120}
         height={40}
         className="object-contain"

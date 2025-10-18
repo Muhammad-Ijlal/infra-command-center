@@ -10,6 +10,7 @@ import {
   Brain,
   Building2,
   Users,
+  Wrench,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -52,11 +53,11 @@ export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typ
       url: `/${locale}/ai-detections`,
       icon: Brain,
     },
-    // {
-    //   title: t('commandCenter'),
-    //   url: `/${locale}/command-center`,
-    //   icon: FileText,
-    // },
+    {
+      title: t('engineers'),
+      url: `/${locale}/engineers`,
+      icon: Wrench,
+    },
     {
       title: t('contractors'),
       url: `/${locale}/contractors`,
@@ -79,7 +80,7 @@ export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typ
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:size-8 hidden">
                   <Image
                     src={logoSrc}
-                    alt="AIVY"
+                    alt="TRAGS"
                     width={32}
                     height={32}
                     className="object-contain"
@@ -88,7 +89,7 @@ export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typ
                 <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
                   <Image
                     src={logoSrc}
-                    alt="AIVY"
+                    alt="TRAGS"
                     width={100}
                     height={32}
                     className="object-contain mb-1"

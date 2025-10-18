@@ -37,7 +37,7 @@ export default function Home() {
         logo={
           <Image
             src={logoSrc}
-            alt="AIVY"
+            alt="TRAGS"
             width={120}
             height={40}
             className="h-10 w-auto object-contain"
@@ -118,7 +118,7 @@ export default function Home() {
           <div className="flex flex-col items-center gap-6 text-center">
             <Image
               src={logoSrc}
-              alt="AIVY"
+              alt="TRAGS"
               width={150}
               height={50}
               className="h-auto w-[120px] object-contain"
@@ -154,7 +154,7 @@ export default function Home() {
             </div>
 
             <p className="text-muted-foreground text-xs">
-              © 2025 AIVY. All rights reserved.
+              © 2025 TRAGS. All rights reserved.
             </p>
           </div>
         </div>
