@@ -3,28 +3,17 @@ import { Notification } from '@/types/notification'
 export const mockNotifications: Notification[] = [
   {
     notification_id: 'NOTIF-001',
-    type: 'contract_update',
-    title: 'Contract Approved',
-    message: 'Contract CTR-001 for King Fahd Road pothole repair has been approved by Operations Manager',
-    priority: 'high',
-    timestamp: '2025-10-08T14:30:00Z',
+    type: 'repair_completed',
+    title: 'Barrier Repair Completed',
+    message: 'Barrier repair on Corniche Road completed successfully - AI validation approved',
+    priority: 'medium',
+    timestamp: '2025-01-08T18:50:00Z',
     read: false,
-    module: 'contract',
-    contract_id: 'CTR-001'
+    module: 'ai',
+    detection_id: 'DET-003'
   },
   {
     notification_id: 'NOTIF-002',
-    type: 'ai_detection',
-    title: 'New Detection Alert',
-    message: 'Critical pothole detected on Corniche Road requiring immediate attention',
-    priority: 'urgent',
-    timestamp: '2025-10-08T15:45:00Z',
-    read: false,
-    module: 'ai',
-    detection_id: 'DET-001'
-  },
-  {
-    notification_id: 'NOTIF-003',
     type: 'ai_detection',
     title: 'New Critical Detection Alert',
     message: 'Critical structural crack detected in West Bay Traffic Control Tower control room',
@@ -35,7 +24,7 @@ export const mockNotifications: Notification[] = [
     detection_id: 'DET-006'
   },
   {
-    notification_id: 'NOTIF-004',
+    notification_id: 'NOTIF-003',
     type: 'maintenance_scheduled',
     title: 'Scheduled Maintenance Reminder',
     message: 'Routine maintenance scheduled for Lusail Expressway Bridge in 3 days',
@@ -46,18 +35,7 @@ export const mockNotifications: Notification[] = [
     asset_id: 'ASSET-B-001'
   },
   {
-    notification_id: 'NOTIF-005',
-    type: 'weather_alert',
-    title: 'Weather Alert - Precautionary Maintenance',
-    message: 'Heavy rain forecasted. Al Sadd Bridge requires precautionary maintenance check',
-    priority: 'high',
-    timestamp: '2025-10-08T16:15:00Z',
-    read: false,
-    module: 'asset',
-    asset_id: 'ASSET-B-003'
-  },
-  {
-    notification_id: 'NOTIF-006',
+    notification_id: 'NOTIF-004',
     type: 'maintenance_scheduled',
     title: 'Maintenance Due Soon',
     message: 'Scheduled maintenance for C-Ring Road lighting system due in 2 days',
@@ -68,7 +46,7 @@ export const mockNotifications: Notification[] = [
     asset_id: 'ASSET-L-012'
   },
   {
-    notification_id: 'NOTIF-007',
+    notification_id: 'NOTIF-005',
     type: 'weather_alert',
     title: 'Sandstorm Alert',
     message: 'Sandstorm warning issued. All outdoor assets require protective measures',
@@ -76,6 +54,61 @@ export const mockNotifications: Notification[] = [
     timestamp: '2025-10-08T17:30:00Z',
     read: true,
     module: 'asset',
+  },
+  {
+    notification_id: 'NOTIF-006',
+    type: 'ai_detection',
+    title: 'Traffic Signal Failure Alert',
+    message: 'Critical traffic signal light failure detected at Corniche intersection - immediate repair required',
+    priority: 'urgent',
+    timestamp: '2025-01-08T10:20:00Z',
+    read: false,
+    module: 'ai',
+    detection_id: 'DET-002'
+  },
+  {
+    notification_id: 'NOTIF-007',
+    type: 'engineer_assignment',
+    title: 'Engineer Assigned to Traffic Signal Repair',
+    message: 'Alexander Müller has been assigned to repair traffic signal at Corniche intersection',
+    priority: 'high',
+    timestamp: '2025-01-08T10:35:00Z',
+    read: false,
+    module: 'ai',
+    detection_id: 'DET-002'
+  },
+  {
+    notification_id: 'NOTIF-008',
+    type: 'sla_alert',
+    title: 'SLA Deadline Approaching',
+    message: 'Traffic signal repair SLA deadline approaching - 2 hours remaining for DET-002',
+    priority: 'high',
+    timestamp: '2025-01-08T12:30:00Z',
+    read: false,
+    module: 'ai',
+    detection_id: 'DET-002'
+  },
+  {
+    notification_id: 'NOTIF-009',
+    type: 'ai_detection',
+    title: 'Barrier Damage Alert',
+    message: 'Critical barrier damage detected on Corniche Road - immediate repair required',
+    priority: 'urgent',
+    timestamp: '2025-01-08T08:50:00Z',
+    read: false,
+    module: 'ai',
+    detection_id: 'DET-003'
+  },
+  {
+    notification_id: 'NOTIF-010',
+    type: 'engineer_assignment',
+    title: 'Engineer Assigned to Barrier Repair',
+    message: 'Sophie Dubois has been assigned to repair barrier damage on Corniche Road',
+    priority: 'high',
+    timestamp: '2025-01-08T09:05:00Z',
+    read: false,
+    module: 'ai',
+    detection_id: 'DET-003'
   }
 ]
 
