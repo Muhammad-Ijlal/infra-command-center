@@ -90,7 +90,7 @@ export const mockDetections: AIDetection[] = [
   },
   {
     detection_id: 'DET-005',
-    asset_id: 'ASSET-L-012',
+    asset_id: 'ASSET-B-003',
     defect_type: 'asphalt_damage',
     confidence_score: 0.85,
     timestamp: '2025-01-07T16:20:00Z',

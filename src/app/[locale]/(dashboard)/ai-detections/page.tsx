@@ -49,6 +49,7 @@ export default function AIDetectionsPage() {
   const searchParams = useSearchParams()
   const [detections, setDetections] = useState<AIDetection[]>(mockDetections)
   const [selectedDetection, setSelectedDetection] = useState<AIDetection | null>(null)
+  const [validatedDetections, setValidatedDetections] = useState<Set<string>>(new Set())
 
   // Handle URL parameters to automatically open detection modal
   useEffect(() => {
@@ -76,11 +77,40 @@ export default function AIDetectionsPage() {
     if (selectedDetection && selectedDetection.detection_id === detectionId) {
       setSelectedDetection({ ...selectedDetection, status: 'validated' as const })
     }
+    // Track that this detection has been validated to show assign buttons
+    setValidatedDetections(prev => new Set(prev).add(detectionId))
   }
 
   const handleAssignEngineer = () => {
     // TODO: Implement engineer assignment logic
     console.log('Assign engineer for detection:', selectedDetection?.detection_id)
+  }
+
+  const handleAssignSpecificEngineer = (engineerId: string, engineerName: string) => {
+    if (selectedDetection) {
+      // Update the detection with assigned engineer
+      setDetections(prev =>
+        prev.map(d =>
+          d.detection_id === selectedDetection.detection_id
+            ? { 
+                ...d, 
+                status: 'assigned' as const,
+                assigned_engineer_id: engineerId,
+                assigned_engineer_name: engineerName,
+                assignment_timestamp: new Date().toISOString()
+              }
+            : d
+        )
+      )
+      // Update selected detection
+      setSelectedDetection({
+        ...selectedDetection,
+        status: 'assigned' as const,
+        assigned_engineer_id: engineerId,
+        assigned_engineer_name: engineerName,
+        assignment_timestamp: new Date().toISOString()
+      })
+    }
   }
 
   const handleViewEngineer = () => {
@@ -494,8 +524,8 @@ export default function AIDetectionsPage() {
                 </>
               )}
 
-              {/* Suitable Engineers for Pending Detections */}
-              {selectedDetection.status === 'pending' && selectedDetection.suitable_engineers && selectedDetection.suitable_engineers.length > 0 && (
+              {/* Suitable Engineers for Pending/Validated Detections */}
+              {(selectedDetection.status === 'pending' || selectedDetection.status === 'validated') && selectedDetection.suitable_engineers && selectedDetection.suitable_engineers.length > 0 && (
                 <>
                   <div>
                     <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -535,6 +565,22 @@ export default function AIDetectionsPage() {
                               <p className="text-xs text-muted-foreground mt-1">
                                 {engineer.current_assignments}/{engineer.max_assignments} assignments
                               </p>
+                              {validatedDetections.has(selectedDetection.detection_id) ? (
+                                <Button
+                                  onClick={() => handleAssignSpecificEngineer(engineerId, engineer.name)}
+                                  className="gap-2 mt-2"
+                                  variant="default"
+                                  size="sm"
+                                  disabled={engineer.status === 'offline'}
+                                >
+                                  <User className="h-4 w-4" />
+                                  {t('assignEngineer')}
+                                </Button>
+                              ) : (
+                                <p className="text-xs text-muted-foreground mt-2">
+                                  {t('validateFirst')}
+                                </p>
+                              )}
                             </div>
                           </div>
                         )

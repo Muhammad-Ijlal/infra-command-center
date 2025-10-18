@@ -132,10 +132,11 @@
     "connectToAsset": "Connect to asset",
         "engineerAssignment": "Engineer Assignment",
         "automaticAssignment": "Automatic assignment",
-        "assignEngineer": "Assign Engineer",
+        "assignEngineer": "Assign",
         "assignedEngineer": "Assigned Engineer",
         "viewEngineer": "View Engineer",
         "suitableEngineers": "Suitable Engineers",
+        "validateFirst": "Validate first to assign",
         "repairExecution": "Repair Execution",
         "engineerRepair": "Engineer performs repair"
   },

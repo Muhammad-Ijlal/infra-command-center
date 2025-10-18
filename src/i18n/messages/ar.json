@@ -136,6 +136,7 @@
         "assignedEngineer": "المهندس المكلف",
         "viewEngineer": "عرض المهندس",
         "suitableEngineers": "المهندسون المناسبون",
+        "validateFirst": "تحقق أولاً للتكليف",
         "repairExecution": "تنفيذ الإصلاح",
         "engineerRepair": "المهندس يقوم بالإصلاح"
   },
