@@ -25,17 +25,6 @@ export const mockNotifications: Notification[] = [
   },
   {
     notification_id: 'NOTIF-003',
-    type: 'maintenance_scheduled',
-    title: 'Maintenance Due Soon',
-    message: 'Scheduled maintenance for C-Ring Road lighting system due in 2 days',
-    priority: 'medium',
-    timestamp: '2025-10-08T17:00:00Z',
-    read: true,
-    module: 'asset',
-    asset_id: 'ASSET-L-012'
-  },
-  {
-    notification_id: 'NOTIF-004',
     type: 'weather_alert',
     title: 'Sandstorm Alert',
     message: 'Sandstorm warning issued. All outdoor assets require protective measures',
@@ -43,6 +32,17 @@ export const mockNotifications: Notification[] = [
     timestamp: '2025-10-08T17:30:00Z',
     read: true,
     module: 'asset',
+  },
+  {
+    notification_id: 'NOTIF-004',
+    type: 'sla_alert',
+    title: 'SLA Deadline Approaching',
+    message: 'Traffic signal repair SLA deadline approaching - 2 hours remaining for DET-002',
+    priority: 'high',
+    timestamp: '2025-01-08T12:30:00Z',
+    read: false,
+    module: 'ai',
+    detection_id: 'DET-002'
   },
   {
     notification_id: 'NOTIF-005',
@@ -68,17 +68,6 @@ export const mockNotifications: Notification[] = [
   },
   {
     notification_id: 'NOTIF-007',
-    type: 'sla_alert',
-    title: 'SLA Deadline Approaching',
-    message: 'Traffic signal repair SLA deadline approaching - 2 hours remaining for DET-002',
-    priority: 'high',
-    timestamp: '2025-01-08T12:30:00Z',
-    read: false,
-    module: 'ai',
-    detection_id: 'DET-002'
-  },
-  {
-    notification_id: 'NOTIF-008',
     type: 'engineer_assignment',
     title: 'Engineer Assigned to Barrier Repair',
     message: 'Sophie Dubois has been assigned to repair barrier damage on Corniche Road',
@@ -89,7 +78,7 @@ export const mockNotifications: Notification[] = [
      detection_id: 'DET-003'
    },
    {
-    notification_id: 'NOTIF-009',
+    notification_id: 'NOTIF-008',
     type: 'ai_detection',
     title: 'Barrier Damage Alert',
     message: 'Critical barrier damage detected on Corniche Road - immediate repair required',
