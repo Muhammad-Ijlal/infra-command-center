@@ -130,8 +130,13 @@
     "humanVerification": "Human verification",
     "assetLinking": "Asset Linking",
     "connectToAsset": "Connect to asset",
-    "engineerAssignment": "Engineer Assignment",
-    "automaticAssignment": "Automatic assignment"
+        "engineerAssignment": "Engineer Assignment",
+        "automaticAssignment": "Automatic assignment",
+        "assignEngineer": "Assign Engineer",
+        "assignedEngineer": "Assigned Engineer",
+        "viewEngineer": "View Engineer",
+        "repairExecution": "Repair Execution",
+        "engineerRepair": "Engineer performs repair"
   },
   "assets": {
     "title": "Asset Management",

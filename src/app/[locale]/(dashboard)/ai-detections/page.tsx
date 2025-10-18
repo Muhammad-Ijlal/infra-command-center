@@ -94,6 +94,18 @@ export default function AIDetectionsPage() {
     router.push(`/${locale}/dashboard`)
   }
 
+  const handleAssignEngineer = () => {
+    // TODO: Implement engineer assignment logic
+    console.log('Assign engineer for detection:', selectedDetection?.detection_id)
+  }
+
+  const handleViewEngineer = () => {
+    if (selectedDetection?.assigned_engineer_id) {
+      // Navigate to engineers page with engineer ID parameter
+      router.push(`/${locale}/engineers?engineer=${selectedDetection.assigned_engineer_id}`)
+    }
+  }
+
   const handleCloseDetection = () => {
     setSelectedDetection(null)
     // Clear query parameters
@@ -315,16 +327,16 @@ export default function AIDetectionsPage() {
               <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
                 <span className="text-xl font-bold text-purple-600">3</span>
               </div>
-              <p className="text-sm font-medium">{t('assetLinking')}</p>
-              <p className="text-xs text-muted-foreground">{t('connectToAsset')}</p>
+              <p className="text-sm font-medium">{t('engineerAssignment')}</p>
+              <p className="text-xs text-muted-foreground">{t('automaticAssignment')}</p>
             </div>
             <div className="hidden md:block text-muted-foreground">→</div>
             <div className="flex flex-col items-center text-center space-y-2">
               <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
                 <span className="text-xl font-bold text-green-600">4</span>
               </div>
-              <p className="text-sm font-medium">{t('engineerAssignment')}</p>
-              <p className="text-xs text-muted-foreground">{t('automaticAssignment')}</p>
+              <p className="text-sm font-medium">{t('repairExecution')}</p>
+              <p className="text-xs text-muted-foreground">{t('engineerRepair')}</p>
             </div>
           </div>
         </CardContent>
@@ -370,51 +382,27 @@ export default function AIDetectionsPage() {
                       {t('validate')}
                     </Button>
                   )}
-                  {selectedDetection.status === 'validated' && (() => {
-                    const linkedContract = getLinkedContract(selectedDetection.detection_id)
-                    const linkedTender = getLinkedTender(selectedDetection.detection_id)
-                    
-                    if (linkedContract) {
-                      // Show "View Contract" or "View Tender" button
-                      const buttonText = t('viewContract')
-                      return (
-                        <Button
-                          onClick={() => handleViewContract()}
-                          className="gap-2"
-                          variant="default"
-                        >
-                          <FileText className="h-4 w-4" />
-                          {buttonText}
-                          <ArrowRight className="h-4 w-4" />
-                        </Button>
-                      )
-                    } else if (linkedTender) {
-                      // Show "View Tender" button for separate tender
-                      return (
-                        <Button
-                          onClick={() => handleViewTender()}
-                          className="gap-2"
-                          variant="default"
-                        >
-                          <FileText className="h-4 w-4" />
-                          {t('viewTender')}
-                          <ArrowRight className="h-4 w-4" />
-                        </Button>
-                      )
-                    } else {
-                      // Show "Create Tender/Contract" button
-                      return (
-                        <Button
-                          onClick={() => handleCreateTender()}
-                          className="gap-2"
-                        >
-                          <FileText className="h-4 w-4" />
-                          {t('createTender')}
-                          <ArrowRight className="h-4 w-4" />
-                        </Button>
-                      )
-                    }
-                  })()}
+                  {selectedDetection.status === 'validated' && !selectedDetection.assigned_engineer_id && (
+                    <Button
+                      onClick={() => handleAssignEngineer()}
+                      className="gap-2"
+                      variant="default"
+                    >
+                      <User className="h-4 w-4" />
+                      {t('assignEngineer')}
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  )}
+                  {selectedDetection.assigned_engineer_id && (
+                      <Button
+                        onClick={() => handleViewEngineer()}
+                        className="gap-2"
+                        variant="default"
+                      >
+                      <User className="h-4 w-4" />
+                      {t('assignedEngineer')}
+                    </Button>
+                  )}
                 </div>
               </div>
 

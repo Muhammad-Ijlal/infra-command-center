@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useTranslations } from 'next-intl'
+import { useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -40,7 +41,19 @@ import { Engineer } from "@/types/engineer"
 export default function EngineersPage() {
   const t = useTranslations('engineers')
   const tCommon = useTranslations('common')
+  const searchParams = useSearchParams()
   const [selectedEngineer, setSelectedEngineer] = useState<Engineer | null>(null)
+
+  // Handle engineer parameter from URL
+  useEffect(() => {
+    const engineerId = searchParams.get('engineer')
+    if (engineerId) {
+      const engineer = mockEngineers.find(e => e.engineer_id === engineerId)
+      if (engineer) {
+        setSelectedEngineer(engineer)
+      }
+    }
+  }, [searchParams])
 
   // Calculate summary statistics
   const totalEngineers = mockEngineers.length

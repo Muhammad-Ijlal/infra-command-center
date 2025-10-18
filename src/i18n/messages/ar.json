@@ -130,8 +130,13 @@
     "humanVerification": "التحقق البشري",
     "assetLinking": "ربط الأصول",
     "connectToAsset": "الاتصال بالأصل",
-    "engineerAssignment": "تكليف المهندس",
-    "automaticAssignment": "التكليف التلقائي"
+        "engineerAssignment": "تكليف المهندس",
+        "automaticAssignment": "التكليف التلقائي",
+        "assignEngineer": "تكليف مهندس",
+        "assignedEngineer": "المهندس المكلف",
+        "viewEngineer": "عرض المهندس",
+        "repairExecution": "تنفيذ الإصلاح",
+        "engineerRepair": "المهندس يقوم بالإصلاح"
   },
   "assets": {
     "title": "إدارة الأصول",
