@@ -1,5 +1,5 @@
 export type DetectionStatus = 'pending' | 'assigned' | 'in_progress' | 'completed' | 'validated' | 'resolved' | 'critical' | 'warning'
-export type DefectType = 'crack' | 'pothole' | 'corrosion' | 'wear' | 'structural' | 'electrical' | 'tree lean' | 'structural deterioration' | 'blocked drain' | 'surveillance' | 'subsea corrosion' | 'panel damage' | 'structural crack' | 'traffic_signal' | 'asphalt' | 'other'
+export type DefectType = 'crack' | 'pothole' | 'corrosion' | 'wear' | 'structural' | 'electrical' | 'tree lean' | 'structural deterioration' | 'blocked drain' | 'surveillance' | 'subsea corrosion' | 'panel damage' | 'structural crack' | 'traffic_signal' | 'asphalt' | 'barrier_damage' | 'missing_road_stud' | 'asphalt_damage' | 'other'
 
 export interface AIDetection {
   detection_id: string
@@ -21,6 +21,7 @@ export interface AIDetection {
   assigned_engineer_id?: string
   assigned_engineer_name?: string
   assignment_timestamp?: string
+  suitable_engineers?: string[] // List of engineer IDs suitable for this detection
   sla_hours?: number // SLA in hours (4 for traffic signals, 24 for asphalt, etc.)
   sla_deadline?: string // Calculated deadline
   repair_started_at?: string

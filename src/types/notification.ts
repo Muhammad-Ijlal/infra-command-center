@@ -1,4 +1,4 @@
-export type NotificationType = 'ai_detection' | 'asset_update' | 'contractor_match' | 'contract_update' | 'approval_required' | 'system' | 'maintenance_scheduled' | 'weather_alert'
+export type NotificationType = 'ai_detection' | 'asset_update' | 'contractor_match' | 'contract_update' | 'approval_required' | 'system' | 'maintenance_scheduled' | 'weather_alert' | 'repair_completed' | 'engineer_assignment' | 'sla_alert'
 export type NotificationPriority = 'low' | 'medium' | 'high' | 'urgent'
 
 export interface Notification {

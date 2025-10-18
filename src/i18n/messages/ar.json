@@ -135,6 +135,7 @@
         "assignEngineer": "تكليف مهندس",
         "assignedEngineer": "المهندس المكلف",
         "viewEngineer": "عرض المهندس",
+        "suitableEngineers": "المهندسون المناسبون",
         "repairExecution": "تنفيذ الإصلاح",
         "engineerRepair": "المهندس يقوم بالإصلاح"
   },

@@ -4,15 +4,33 @@ import { useTranslations } from 'next-intl'
 import { Badge } from "@/components/ui/badge"
 import { mockAssets } from "@/data/mock-assets"
 import { AssetMap } from "@/components/asset-map"
-import { mockContracts } from "@/data/mock-contracts"
 import { mockDetections } from "@/data/mock-detections"
 import { mockEngineers } from "@/data/mock-engineers"
-import { Brain, Users, FileText, AlertTriangle, CheckCircle2, Clock, Wrench, Activity, User } from "lucide-react"
+import { Brain, Users, AlertTriangle, CheckCircle2, Clock, Wrench, Activity, User } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { SummaryCard } from "@/components/summary-card"
 
 export default function DashboardPage() {
   const t = useTranslations('dashboard')
+  
+  // Status color function for detection badges
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'resolved':
+        return { variant: 'default' as const, className: '' }
+      case 'completed':
+        return { variant: 'default' as const, className: 'bg-primary text-primary-foreground' }
+      case 'validated':
+        return { variant: 'secondary' as const, className: '' }
+      case 'critical':
+        return { variant: 'destructive' as const, className: '' }
+      case 'pending':
+        return { variant: 'default' as const, className: 'bg-yellow-600 text-white' }
+      default:
+        return { variant: 'outline' as const, className: '' }
+    }
+  }
+  
   // Calculate summary statistics
   const openDetections = mockDetections.filter(d => d.status === 'pending' || d.status === 'assigned').length
   const criticalDetections = mockDetections.filter(d => d.severity === 'critical').length
@@ -23,7 +41,6 @@ export default function DashboardPage() {
   // Engineer statistics
   const totalEngineers = mockEngineers.length
   const availableEngineers = mockEngineers.filter(e => e.status === 'available').length
-  const busyEngineers = mockEngineers.filter(e => e.status === 'busy').length
   
   // Calculate SLA compliance
   const avgSlaCompliance = Math.round(
@@ -121,10 +138,11 @@ export default function DashboardPage() {
                     )}
                   </div>
                   <div className="text-right">
-                    <Badge variant={detection.severity === 'critical' ? 'destructive' : detection.severity === 'warning' ? 'default' : 'secondary'} className="capitalize" size="status">
-                      {detection.severity}
-                    </Badge>
-                    <Badge variant="outline" className="capitalize text-xs mt-1" size="status">
+                    <Badge 
+                      variant={getStatusColor(detection.status).variant} 
+                      className={`capitalize text-xs ${getStatusColor(detection.status).className}`} 
+                      size="status"
+                    >
                       {detection.status.replace(/_/g, ' ')}
                     </Badge>
                   </div>

@@ -40,7 +40,7 @@ export const mockAssets: Asset[] = [
     location: {
       lat: 25.2866,
       lng: 51.5362,
-      address: 'Al Sadd District, Doha'
+      address: 'Al Sadd District'
     }
   },
   {
@@ -282,7 +282,7 @@ export const mockAssetPassports: Record<string, AssetPassport> = {
       last_inspection_date: '2024-06-20',
       certifications: ['ISO 9001', 'QCS 2014', 'Bridge Safety Cert']
     },
-    related_detections: ['DET-002']
+    related_detections: ['DET-002', 'DET-004']
   },
   'ASSET-L-012': {
     asset_id: 'ASSET-L-012',

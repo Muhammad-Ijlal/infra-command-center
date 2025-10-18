@@ -29,10 +29,9 @@ import { SummaryCard } from "@/components/summary-card"
 import { mockDetections } from "@/data/mock-detections"
 import { mockAssets } from "@/data/mock-assets"
 import { mockContracts } from "@/data/mock-contracts"
-import { mockTenders } from "@/data/mock-tenders"
+import { mockEngineers } from "@/data/mock-engineers"
 import { AIDetection } from "@/types/detection"
 import { Contract } from "@/types/contract"
-import { Tender } from "@/types/tender"
 import 'mapbox-gl/dist/mapbox-gl.css'
 
 // Dynamically import Map components to avoid SSR issues
@@ -79,21 +78,6 @@ export default function AIDetectionsPage() {
     }
   }
 
-  const handleCreateTender = () => {
-    // Navigate to dashboard
-    router.push(`/${locale}/dashboard`)
-  }
-
-  const handleViewContract = () => {
-    // Navigate to dashboard
-    router.push(`/${locale}/dashboard`)
-  }
-
-  const handleViewTender = () => {
-    // Navigate to dashboard
-    router.push(`/${locale}/dashboard`)
-  }
-
   const handleAssignEngineer = () => {
     // TODO: Implement engineer assignment logic
     console.log('Assign engineer for detection:', selectedDetection?.detection_id)
@@ -122,14 +106,12 @@ export default function AIDetectionsPage() {
     return mockContracts.find(c => c.detection_id === detectionId)
   }
 
-  const getLinkedTender = (detectionId: string): Tender | undefined => {
-    return mockTenders.find(t => t.detection_id === detectionId)
-  }
-
   const getStatusColor = (status: AIDetection['status']) => {
     switch (status) {
       case 'resolved':
         return { variant: 'default' as const, className: '' }
+      case 'completed':
+        return { variant: 'default' as const, className: 'bg-primary text-primary-foreground' }
       case 'validated':
         return { variant: 'secondary' as const, className: '' }
       case 'critical':
@@ -506,6 +488,57 @@ export default function AIDetectionsPage() {
                           </p>
                         )}
                       </div>
+                    </div>
+                  </div>
+                  <Separator />
+                </>
+              )}
+
+              {/* Suitable Engineers for Pending Detections */}
+              {selectedDetection.status === 'pending' && selectedDetection.suitable_engineers && selectedDetection.suitable_engineers.length > 0 && (
+                <>
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <User className="h-5 w-5" />
+                      {t('suitableEngineers')}
+                    </h3>
+                    <div className="space-y-3">
+                      {selectedDetection.suitable_engineers.map((engineerId) => {
+                        const engineer = mockEngineers.find(e => e.engineer_id === engineerId)
+                        if (!engineer) return null
+                        
+                        return (
+                          <div key={engineerId} className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                <User className="h-5 w-5 text-blue-600" />
+                              </div>
+                              <div>
+                                <p className="font-medium">{engineer.name}</p>
+                                <p className="text-sm text-muted-foreground">{engineerId}</p>
+                                <div className="flex gap-2 mt-1">
+                                  {engineer.specialization.map((spec) => (
+                                    <Badge key={spec} variant="outline" className="text-xs">
+                                      {spec.replace(/_/g, ' ')}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <Badge 
+                                variant={engineer.status === 'available' ? 'default' : 'secondary'}
+                                className="text-xs"
+                              >
+                                {engineer.status}
+                              </Badge>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {engineer.current_assignments}/{engineer.max_assignments} assignments
+                              </p>
+                            </div>
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
                   <Separator />

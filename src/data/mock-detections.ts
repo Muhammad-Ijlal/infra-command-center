@@ -19,8 +19,8 @@ export const mockDetections: AIDetection[] = [
     sla_hours: 24, // Asphalt repair SLA
     sla_deadline: '2025-01-09T15:00:00Z',
     repair_started_at: '2025-01-08T16:30:00Z',
-    detection_device: 'Inspection Vehicle',
-    device_model: 'IV-2024-Electric'
+    detection_device: 'Road Inspection Vehicle',
+    device_model: 'RIV-2025-Autonomous'
   },
   {
     detection_id: 'DET-002',
@@ -65,68 +65,43 @@ export const mockDetections: AIDetection[] = [
     repair_completed_at: '2025-01-08T18:45:00Z',
     ai_validation_result: 'approved',
     validation_confidence: 0.92,
-    detection_device: 'Crawl Bot',
-    device_model: 'CB-2024-Advanced'
+    detection_device: 'Road Inspection Vehicle',
+    device_model: 'RIV-2025-Autonomous'
   },
   {
     detection_id: 'DET-004',
-    asset_id: 'ASSET-D-001',
-    defect_type: 'blocked_drain',
+    asset_id: 'ASSET-B-003',
+    defect_type: 'missing_road_stud',
     confidence_score: 0.78,
     timestamp: '2025-01-08T06:30:00Z',
     status: 'assigned',
     severity: 'warning',
-    description: 'Blocked drainage system on C-Ring Road',
-    location: { lat: 25.3200, lng: 51.5300 },
+    description: 'Missing road stud detected on Al Sadd Bridge',
+    location: { lat: 25.2866, lng: 51.5362 },
     image_url: '/detections/DET-004.jpeg',
     baseline_image_url: '/detections/DET-004.jpeg',
     assigned_engineer_id: 'ENG-004',
     assigned_engineer_name: 'Lars Andersen',
     assignment_timestamp: '2025-01-08T07:00:00Z',
-    sla_hours: 8, // Drainage repair SLA
-    sla_deadline: '2025-01-08T15:00:00Z',
-    detection_device: 'Drainage Inspection Camera',
-    device_model: 'DIC-2024-Pro'
+    sla_hours: 6, // Road stud repair SLA
+    sla_deadline: '2025-01-08T13:00:00Z',
+    detection_device: 'Road Inspection Vehicle',
+    device_model: 'RIV-2025-Autonomous'
   },
   {
     detection_id: 'DET-005',
     asset_id: 'ASSET-L-012',
-    defect_type: 'electrical',
+    defect_type: 'asphalt_damage',
     confidence_score: 0.85,
     timestamp: '2025-01-07T16:20:00Z',
-    status: 'resolved',
+    status: 'pending',
     severity: 'normal',
-    description: 'Street lighting malfunction on Lusail Expressway',
+    description: 'Asphalt damage detected on Lusail Expressway',
     location: { lat: 25.3500, lng: 51.5500 },
     image_url: '/detections/DET-005.jpeg',
     baseline_image_url: '/detections/DET-005.jpeg',
-    repair_image_url: '/detections/DET-005-repair.jpg',
-    assigned_engineer_id: 'ENG-005',
-    assigned_engineer_name: 'Elena Kowalski',
-    assignment_timestamp: '2025-01-07T16:45:00Z',
-    sla_hours: 6, // Electrical repair SLA
-    sla_deadline: '2025-01-07T22:45:00Z',
-    repair_started_at: '2025-01-07T17:30:00Z',
-    repair_completed_at: '2025-01-07T20:15:00Z',
-    ai_validation_result: 'approved',
-    validation_confidence: 0.88,
-    detection_device: 'Smart Lighting Controller',
-    device_model: 'SLC-2024-AI'
-  },
-  {
-    detection_id: 'DET-006',
-    asset_id: 'ASSET-R-002',
-    defect_type: 'asphalt',
-    confidence_score: 0.91,
-    timestamp: '2025-01-07T12:00:00Z',
-    status: 'pending',
-    severity: 'warning',
-    description: 'Asphalt deterioration on King Fahd Road',
-    location: { lat: 25.2760, lng: 51.5250 },
-    image_url: '/detections/DET-006.jpg',
-    baseline_image_url: '/detections/DET-006.jpg',
+    suitable_engineers: ['ENG-002', 'ENG-004'], // Marco Rossi (asphalt repair) and Lars Andersen (general maintenance)
     detection_device: 'Road Inspection Vehicle',
-    device_model: 'RIV-2024-Autonomous'
-  }
+    device_model: 'RIV-2025-Autonomous'
+  },
 ]
-

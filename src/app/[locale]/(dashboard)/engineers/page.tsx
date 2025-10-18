@@ -22,10 +22,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { 
-  Wrench, 
   Clock, 
   CheckCircle2, 
-  AlertTriangle, 
   User, 
   Phone, 
   Mail,
@@ -40,7 +38,6 @@ import { Engineer } from "@/types/engineer"
 
 export default function EngineersPage() {
   const t = useTranslations('engineers')
-  const tCommon = useTranslations('common')
   const searchParams = useSearchParams()
   const [selectedEngineer, setSelectedEngineer] = useState<Engineer | null>(null)
 
@@ -59,7 +56,6 @@ export default function EngineersPage() {
   const totalEngineers = mockEngineers.length
   const availableEngineers = mockEngineers.filter(e => e.status === 'available').length
   const busyEngineers = mockEngineers.filter(e => e.status === 'busy').length
-  const offlineEngineers = mockEngineers.filter(e => e.status === 'offline').length
   
   // Calculate average SLA compliance
   const avgSlaCompliance = Math.round(
@@ -148,7 +144,6 @@ export default function EngineersPage() {
             </TableHeader>
             <TableBody>
               {mockEngineers.map((engineer) => {
-                const assignments = getEngineerAssignments(engineer.engineer_id)
                 return (
                   <TableRow key={engineer.engineer_id}>
                     <TableCell>

@@ -24,7 +24,7 @@ export function NavUser() {
           </Avatar>
           <div className="grid flex-1 ltr:text-left rtl:text-right text-sm leading-tight">
             <span className="truncate font-medium">Demo User</span>
-            <span className="truncate text-xs text-muted-foreground">demo@infracommand.qa</span>
+            <span className="truncate text-xs text-muted-foreground">demo@asghal.qa</span>
           </div>
         </SidebarMenuButton>
       </SidebarMenuItem>
