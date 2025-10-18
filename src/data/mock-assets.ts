@@ -2,6 +2,20 @@ import { Asset, AssetPassport, MaintenanceRecord } from '@/types/asset'
 
 export const mockAssets: Asset[] = [
   {
+    asset_id: 'ASSET-T-001',
+    name: 'Doha Corniche Traffic Signal System',
+    category: 'traffic_signal',
+    last_maintenance_date: '2024-07-10',
+    next_maintenance_date: '2025-01-10',
+    status: 'maintenance_required',
+    impact_score: 92,
+    location: {
+      lat: 25.2850,
+      lng: 51.5300,
+      address: 'Doha Corniche Intersection, Doha'
+    }
+  },
+  {
     asset_id: 'ASSET-R-001',
     name: 'Corniche Road - Section A',
     category: 'road',
@@ -102,6 +116,26 @@ export const mockAssets: Asset[] = [
 ]
 
 export const mockMaintenanceHistory: Record<string, MaintenanceRecord[]> = {
+  'ASSET-T-001': [
+    {
+      record_id: 'MNT-010',
+      date: '2024-07-10',
+      type: 'routine',
+      description: 'Traffic signal system inspection and light bulb replacement',
+      cost: 8500,
+      contractor: 'Qatar Traffic Solutions',
+      status: 'completed'
+    },
+    {
+      record_id: 'MNT-011',
+      date: '2024-01-15',
+      type: 'preventive',
+      description: 'Complete traffic signal system maintenance and controller update',
+      cost: 22000,
+      contractor: 'West Bay Traffic Services',
+      status: 'completed'
+    }
+  ],
   'ASSET-R-001': [
     {
       record_id: 'MNT-001',
@@ -196,9 +230,27 @@ export const mockMaintenanceHistory: Record<string, MaintenanceRecord[]> = {
 }
 
 export const mockAssetPassports: Record<string, AssetPassport> = {
+  'ASSET-T-001': {
+    asset_id: 'ASSET-T-001',
+    asset: mockAssets[0],
+    material_info: {
+      primary_material: 'LED Traffic Signal System',
+      secondary_materials: ['Steel Pole', 'Concrete Base', 'Traffic Controller', 'Detection Loops'],
+      manufacturer: 'Qatar Traffic Technologies',
+      installation_date: '2021-03-20'
+    },
+    maintenance_history: mockMaintenanceHistory['ASSET-T-001'],
+    compliance: {
+      vision_2030_compliant: true,
+      qcs_certified: true,
+      last_inspection_date: '2024-07-10',
+      certifications: ['ISO 9001', 'QCS 2014', 'Traffic Signal Safety Cert']
+    },
+    related_detections: ['DET-002']
+  },
   'ASSET-R-001': {
     asset_id: 'ASSET-R-001',
-    asset: mockAssets[0],
+    asset: mockAssets[1],
     material_info: {
       primary_material: 'Asphalt Concrete',
       secondary_materials: ['Aggregate Base', 'Gravel Subbase'],
@@ -216,7 +268,7 @@ export const mockAssetPassports: Record<string, AssetPassport> = {
   },
   'ASSET-B-003': {
     asset_id: 'ASSET-B-003',
-    asset: mockAssets[1],
+    asset: mockAssets[2],
     material_info: {
       primary_material: 'Reinforced Concrete',
       secondary_materials: ['Steel Reinforcement', 'Concrete Grade 60'],
@@ -234,7 +286,7 @@ export const mockAssetPassports: Record<string, AssetPassport> = {
   },
   'ASSET-L-012': {
     asset_id: 'ASSET-L-012',
-    asset: mockAssets[2],
+    asset: mockAssets[3],
     material_info: {
       primary_material: 'Electrical Systems',
       secondary_materials: ['Steel Poles', 'Concrete Base', 'Surveillance Camera'],
@@ -252,7 +304,7 @@ export const mockAssetPassports: Record<string, AssetPassport> = {
   },
   'ASSET-B-001': {
     asset_id: 'ASSET-B-001',
-    asset: mockAssets[3],
+    asset: mockAssets[4],
     material_info: {
       primary_material: 'Pre-stressed Concrete',
       secondary_materials: ['Steel Reinforcement', 'Concrete Grade 80'],
@@ -270,7 +322,7 @@ export const mockAssetPassports: Record<string, AssetPassport> = {
   },
   'ASSET-F-001': {
     asset_id: 'ASSET-F-001',
-    asset: mockAssets[4],
+    asset: mockAssets[5],
     material_info: {
       primary_material: 'Reinforced Concrete',
       secondary_materials: ['Steel Frame', 'Control Room Walls', 'Traffic Monitoring Systems'],
@@ -288,7 +340,7 @@ export const mockAssetPassports: Record<string, AssetPassport> = {
   },
   'ASSET-P-001': {
     asset_id: 'ASSET-P-001',
-    asset: mockAssets[5],
+    asset: mockAssets[6],
     material_info: {
       primary_material: 'Carbon Steel Pipeline',
       secondary_materials: ['Corrosion Protection Coating', 'Concrete Weight Coating', 'Marine Grade Steel'],
@@ -306,7 +358,7 @@ export const mockAssetPassports: Record<string, AssetPassport> = {
   },
   'ASSET-S-001': {
     asset_id: 'ASSET-S-001',
-    asset: mockAssets[6],
+    asset: mockAssets[7],
     material_info: {
       primary_material: 'Monocrystalline Silicon Solar Panels',
       secondary_materials: ['Aluminum Frame', 'Tempered Glass', 'Inverter System', 'Mounting Structure'],

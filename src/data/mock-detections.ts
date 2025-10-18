@@ -14,7 +14,7 @@ export const mockDetections: AIDetection[] = [
     image_url: '/detections/DET-001.jpg',
     baseline_image_url: '/detections/DET-001.jpg',
     assigned_engineer_id: 'ENG-002',
-    assigned_engineer_name: 'Mohammed Hassan',
+    assigned_engineer_name: 'Marco Rossi',
     assignment_timestamp: '2025-01-08T15:00:00Z',
     sla_hours: 24, // Asphalt repair SLA
     sla_deadline: '2025-01-09T15:00:00Z',
@@ -30,12 +30,12 @@ export const mockDetections: AIDetection[] = [
     timestamp: '2025-01-08T10:15:00Z',
     status: 'in_progress',
     severity: 'critical',
-    description: 'Traffic signal malfunction at West Bay intersection',
+    description: 'Traffic signal light is not working',
     location: { lat: 25.2850, lng: 51.5300 },
     image_url: '/detections/DET-002.jpg',
     baseline_image_url: '/detections/DET-002.jpg',
     assigned_engineer_id: 'ENG-001',
-    assigned_engineer_name: 'Ahmed Al-Rashid',
+    assigned_engineer_name: 'Alexander Müller',
     assignment_timestamp: '2025-01-08T10:30:00Z',
     sla_hours: 4, // Traffic signal SLA
     sla_deadline: '2025-01-08T14:30:00Z',
@@ -57,7 +57,7 @@ export const mockDetections: AIDetection[] = [
     baseline_image_url: '/detections/DET-003.webp',
     repair_image_url: '/detections/DET-003-repair.jpg',
     assigned_engineer_id: 'ENG-003',
-    assigned_engineer_name: 'Sarah Al-Mansouri',
+    assigned_engineer_name: 'Sophie Dubois',
     assignment_timestamp: '2025-01-08T09:00:00Z',
     sla_hours: 12, // Structural repair SLA
     sla_deadline: '2025-01-08T21:00:00Z',
@@ -81,7 +81,7 @@ export const mockDetections: AIDetection[] = [
     image_url: '/detections/DET-004.jpg',
     baseline_image_url: '/detections/DET-004.jpg',
     assigned_engineer_id: 'ENG-004',
-    assigned_engineer_name: 'Omar Al-Kuwari',
+    assigned_engineer_name: 'Lars Andersen',
     assignment_timestamp: '2025-01-08T07:00:00Z',
     sla_hours: 8, // Drainage repair SLA
     sla_deadline: '2025-01-08T15:00:00Z',
@@ -102,7 +102,7 @@ export const mockDetections: AIDetection[] = [
     baseline_image_url: '/detections/DET-005.jpg',
     repair_image_url: '/detections/DET-005-repair.jpg',
     assigned_engineer_id: 'ENG-005',
-    assigned_engineer_name: 'Fatima Al-Thani',
+    assigned_engineer_name: 'Elena Kowalski',
     assignment_timestamp: '2025-01-07T16:45:00Z',
     sla_hours: 6, // Electrical repair SLA
     sla_deadline: '2025-01-07T22:45:00Z',
