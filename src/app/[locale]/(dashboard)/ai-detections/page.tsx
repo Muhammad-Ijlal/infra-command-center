@@ -24,7 +24,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
-import { CheckCircle2, AlertTriangle, Clock, Eye, MapPin, Activity, FileText, ArrowRight, Image as ImageIcon, ExternalLink } from "lucide-react"
+import { CheckCircle2, AlertTriangle, Clock, Eye, MapPin, Activity, FileText, ArrowRight, Image as ImageIcon, ExternalLink, User } from "lucide-react"
 import { SummaryCard } from "@/components/summary-card"
 import { mockDetections } from "@/data/mock-detections"
 import { mockAssets } from "@/data/mock-assets"
@@ -79,16 +79,9 @@ export default function AIDetectionsPage() {
     }
   }
 
-  const handleCreateTender = (detection: AIDetection) => {
-    // Open the linked contract or tender modal
-    if (detection.contract_id) {
-      handleViewContract(detection.contract_id)
-    } else if (detection.tender_id) {
-      handleViewTender(detection.tender_id)
-    } else {
-      // If no linked contract/tender, navigate to dashboard
-      router.push(`/${locale}/dashboard`)
-    }
+  const handleCreateTender = () => {
+    // Navigate to dashboard
+    router.push(`/${locale}/dashboard`)
   }
 
   const handleViewContract = () => {
@@ -199,6 +192,8 @@ export default function AIDetectionsPage() {
                 <TableHead>{t('defectType')}</TableHead>
                 <TableHead>{t('severity')}</TableHead>
                 <TableHead>{t('confidence')}</TableHead>
+                <TableHead>{t('assignedEngineer')}</TableHead>
+                <TableHead>{t('slaDeadline')}</TableHead>
                 <TableHead>{t('status')}</TableHead>
                 <TableHead>{t('timestamp')}</TableHead>
                 <TableHead>{t('actions')}</TableHead>
@@ -225,6 +220,37 @@ export default function AIDetectionsPage() {
                     <div className="flex items-center">
                       <span className="text-sm">{Math.round(detection.confidence_score * 100)}%</span>
                     </div>
+                  </TableCell>
+                  <TableCell>
+                    {detection.assigned_engineer_name ? (
+                      <div className="text-sm">
+                        <p className="font-medium">{detection.assigned_engineer_name}</p>
+                        <p className="text-muted-foreground text-xs">{detection.assigned_engineer_id}</p>
+                      </div>
+                    ) : (
+                      <Badge variant="outline" className="text-xs">
+                        {t('unassigned')}
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {detection.sla_deadline ? (
+                      <div className="text-sm">
+                        <p className="font-medium">
+                          {new Date(detection.sla_deadline).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          {detection.sla_hours}h SLA
+                        </p>
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground text-sm">-</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <Badge 
@@ -297,8 +323,8 @@ export default function AIDetectionsPage() {
               <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
                 <span className="text-xl font-bold text-green-600">4</span>
               </div>
-              <p className="text-sm font-medium">{t('contractCreation')}</p>
-              <p className="text-xs text-muted-foreground">{t('automatedResponse')}</p>
+              <p className="text-sm font-medium">{t('engineerAssignment')}</p>
+              <p className="text-xs text-muted-foreground">{t('automaticAssignment')}</p>
             </div>
           </div>
         </CardContent>
@@ -353,7 +379,7 @@ export default function AIDetectionsPage() {
                       const buttonText = t('viewContract')
                       return (
                         <Button
-                          onClick={() => handleViewContract(linkedContract.contract_id)}
+                          onClick={() => handleViewContract()}
                           className="gap-2"
                           variant="default"
                         >
@@ -366,7 +392,7 @@ export default function AIDetectionsPage() {
                       // Show "View Tender" button for separate tender
                       return (
                         <Button
-                          onClick={() => handleViewTender(linkedTender.tender_id)}
+                          onClick={() => handleViewTender()}
                           className="gap-2"
                           variant="default"
                         >
@@ -379,7 +405,7 @@ export default function AIDetectionsPage() {
                       // Show "Create Tender/Contract" button
                       return (
                         <Button
-                          onClick={() => handleCreateTender(selectedDetection)}
+                          onClick={() => handleCreateTender()}
                           className="gap-2"
                         >
                           <FileText className="h-4 w-4" />
@@ -445,6 +471,124 @@ export default function AIDetectionsPage() {
               </div>
 
               <Separator />
+
+              {/* Engineer Assignment Information */}
+              {selectedDetection.assigned_engineer_name && (
+                <>
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <User className="h-5 w-5" />
+                      {t('engineerAssignment')}
+                    </h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-muted-foreground">{t('assignedEngineer')}</p>
+                        <p className="font-medium">{selectedDetection.assigned_engineer_name}</p>
+                        <p className="text-xs text-muted-foreground">{selectedDetection.assigned_engineer_id}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">{t('assignmentDate')}</p>
+                        <p className="font-medium">
+                          {selectedDetection.assignment_timestamp ? 
+                            new Date(selectedDetection.assignment_timestamp).toLocaleString() : 
+                            '-'
+                          }
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">{t('slaDeadline')}</p>
+                        <p className="font-medium">
+                          {selectedDetection.sla_deadline ? 
+                            new Date(selectedDetection.sla_deadline).toLocaleString() : 
+                            '-'
+                          }
+                        </p>
+                        {selectedDetection.sla_hours && (
+                          <p className="text-xs text-muted-foreground">{selectedDetection.sla_hours}h SLA</p>
+                        )}
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">{t('repairStatus')}</p>
+                        <p className="font-medium capitalize">
+                          {selectedDetection.repair_started_at ? 'In Progress' : 'Not Started'}
+                        </p>
+                        {selectedDetection.repair_started_at && (
+                          <p className="text-xs text-muted-foreground">
+                            Started: {new Date(selectedDetection.repair_started_at).toLocaleString()}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <Separator />
+                </>
+              )}
+
+              {/* Repair Validation */}
+              {selectedDetection.repair_image_url && (
+                <>
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <CheckCircle2 className="h-5 w-5" />
+                      {t('repairValidation')}
+                    </h3>
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <p className="text-sm text-muted-foreground">{t('repairCompleted')}</p>
+                        <p className="font-medium">
+                          {selectedDetection.repair_completed_at ? 
+                            new Date(selectedDetection.repair_completed_at).toLocaleString() : 
+                            '-'
+                          }
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">{t('aiValidation')}</p>
+                        <Badge 
+                          variant={selectedDetection.ai_validation_result === 'approved' ? 'default' : 'destructive'}
+                          className="capitalize"
+                        >
+                          {selectedDetection.ai_validation_result || 'pending'}
+                        </Badge>
+                        {selectedDetection.validation_confidence && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Confidence: {Math.round(selectedDetection.validation_confidence * 100)}%
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Repair Image Comparison */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <h4 className="font-medium mb-2">{t('beforeRepair')}</h4>
+                        <div className="rounded-lg overflow-hidden border">
+                          <Image 
+                            src={selectedDetection.baseline_image_url || selectedDetection.image_url || ''} 
+                            alt="Before repair"
+                            width={300}
+                            height={200}
+                            className="w-full h-[200px] object-cover"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="font-medium mb-2">{t('afterRepair')}</h4>
+                        <div className="rounded-lg overflow-hidden border">
+                          <Image 
+                            src={selectedDetection.repair_image_url} 
+                            alt="After repair"
+                            width={300}
+                            height={200}
+                            className="w-full h-[200px] object-cover"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <Separator />
+                </>
+              )}
 
               {/* Detection Image */}
               {selectedDetection.image_url && (

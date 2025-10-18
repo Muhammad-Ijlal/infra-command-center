@@ -7,22 +7,29 @@ import { AssetMap } from "@/components/asset-map"
 import { mockContracts } from "@/data/mock-contracts"
 import { mockDetections } from "@/data/mock-detections"
 import { mockContractors } from "@/data/mock-contractors"
-import { Brain, Users, FileText, AlertTriangle, CheckCircle2, Clock, Wrench, Activity } from "lucide-react"
+import { mockEngineers } from "@/data/mock-engineers"
+import { Brain, Users, FileText, AlertTriangle, CheckCircle2, Clock, Wrench, Activity, User } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { SummaryCard } from "@/components/summary-card"
 
 export default function DashboardPage() {
   const t = useTranslations('dashboard')
   // Calculate summary statistics
-  const openDetections = 9 //mockDetections.filter(d => d.status === 'pending' || d.status === 'validated').length
+  const openDetections = mockDetections.filter(d => d.status === 'pending' || d.status === 'assigned').length
   const criticalDetections = mockDetections.filter(d => d.severity === 'critical').length
-  const activeContracts = 16 //mockContracts.filter(c => c.status === 'active' || c.status === 'commissioned').length
-  const pendingTenders = 9 //mockContracts.filter(c => c.status === 'draft' || c.status === 'pending_approval').length
+  const assignedDetections = mockDetections.filter(d => d.assigned_engineer_id).length
+  const inProgressDetections = mockDetections.filter(d => d.status === 'in_progress').length
+  const completedDetections = mockDetections.filter(d => d.status === 'completed' || d.status === 'resolved').length
   
-  // Calculate SLA compliance (mock calculation)
-  const totalContractors = mockContractors.length
-  const excellentCompliance = mockContractors.filter(c => c.sla_compliance === 'excellent').length
-  const slaCompliancePercent = 80 //Math.round((excellentCompliance / totalContractors) * 100)
+  // Engineer statistics
+  const totalEngineers = mockEngineers.length
+  const availableEngineers = mockEngineers.filter(e => e.status === 'available').length
+  const busyEngineers = mockEngineers.filter(e => e.status === 'busy').length
+  
+  // Calculate SLA compliance
+  const avgSlaCompliance = Math.round(
+    mockEngineers.reduce((sum, e) => sum + e.sla_compliance_rate, 0) / totalEngineers
+  )
 
   return (
     <div className="space-y-6">
@@ -44,22 +51,44 @@ export default function DashboardPage() {
           description={`${criticalDetections} ${t('criticalIssues')}`}
         />
         <SummaryCard
-          icon={<FileText className="h-4 w-4 text-green-600" />}
-          label={t('activeContracts')}
-          value={activeContracts}
-          description={t('inProgress')}
+          icon={<User className="h-4 w-4 text-blue-600" />}
+          label={t('assignedDetections')}
+          value={assignedDetections}
+          description={t('assignedToEngineers')}
         />
         <SummaryCard
-          icon={<Clock className="h-4 w-4 text-orange-600" />}
-          label={t('pendingTenders')}
-          value={pendingTenders}
-          description={t('awaitingApproval')}
+          icon={<Activity className="h-4 w-4 text-yellow-600" />}
+          label={t('inProgressDetections')}
+          value={inProgressDetections}
+          description={t('currentlyBeingRepaired')}
         />
         <SummaryCard
-          icon={<Users className="h-4 w-4 text-green-600" />}
-          label={t('slaCompliance')}
-          value={`${slaCompliancePercent}%`}
-          description={t('contractorPerformance')}
+          icon={<CheckCircle2 className="h-4 w-4 text-green-600" />}
+          label={t('completedDetections')}
+          value={completedDetections}
+          description={t('successfullyResolved')}
+        />
+      </div>
+
+      {/* Engineer Status Cards */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <SummaryCard
+          icon={<Users className="h-4 w-4 text-blue-600" />}
+          label={t('totalEngineers')}
+          value={totalEngineers}
+          description={t('registeredEngineers')}
+        />
+        <SummaryCard
+          icon={<CheckCircle2 className="h-4 w-4 text-green-600" />}
+          label={t('availableEngineers')}
+          value={availableEngineers}
+          description={t('readyForAssignment')}
+        />
+        <SummaryCard
+          icon={<Clock className="h-4 w-4 text-purple-600" />}
+          label={t('avgSlaCompliance')}
+          value={`${avgSlaCompliance}%`}
+          description={t('engineerPerformance')}
         />
       </div>
 
@@ -86,12 +115,20 @@ export default function DashboardPage() {
               {mockDetections.slice(0, 3).map((detection) => (
                 <div key={detection.detection_id} className="flex items-start justify-between border-b pb-3 last:border-0">
                   <div className="space-y-1">
-                    <p className="text-sm font-medium leading-none">{detection.defect_type.toUpperCase()}</p>
+                    <p className="text-sm font-medium leading-none">{detection.defect_type.replace(/_/g, ' ').toUpperCase()}</p>
                     <p className="text-sm text-muted-foreground">{detection.asset_id}</p>
+                    {detection.assigned_engineer_name && (
+                      <p className="text-xs text-blue-600">Assigned to: {detection.assigned_engineer_name}</p>
+                    )}
                   </div>
-                  <Badge variant={detection.severity === 'critical' ? 'destructive' : detection.severity === 'warning' ? 'default' : 'secondary'} className="capitalize" size="status">
-                    {detection.severity}
-                  </Badge>
+                  <div className="text-right">
+                    <Badge variant={detection.severity === 'critical' ? 'destructive' : detection.severity === 'warning' ? 'default' : 'secondary'} className="capitalize" size="status">
+                      {detection.severity}
+                    </Badge>
+                    <Badge variant="outline" className="capitalize text-xs mt-1" size="status">
+                      {detection.status.replace(/_/g, ' ')}
+                    </Badge>
+                  </div>
                 </div>
               ))}
             </div>
@@ -100,22 +137,25 @@ export default function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('activeContractsTitle')}</CardTitle>
-            <CardDescription>{t('contractsInProgress')}</CardDescription>
+            <CardTitle>{t('engineerAssignments')}</CardTitle>
+            <CardDescription>{t('currentEngineerWorkload')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {mockContracts.filter(c => 
-                c.status === 'active' || c.status === 'commissioned'
-              ).slice(0, 3).map((contract) => (
-                <div key={contract.contract_id} className="flex items-start justify-between border-b pb-3 last:border-0">
+              {mockEngineers.filter(e => e.current_assignments > 0).slice(0, 3).map((engineer) => (
+                <div key={engineer.engineer_id} className="flex items-start justify-between border-b pb-3 last:border-0">
                   <div className="space-y-1">
-                    <p className="text-sm font-medium leading-none">{contract.title}</p>
-                    <p className="text-sm text-muted-foreground">{contract.contractor_name}</p>
+                    <p className="text-sm font-medium leading-none">{engineer.name}</p>
+                    <p className="text-sm text-muted-foreground">{engineer.specialization[0].replace(/_/g, ' ')}</p>
                   </div>
-                  <Badge variant="outline" className="capitalize" size="status">
-                    {contract.status.replace(/_/g, ' ')}
-                  </Badge>
+                  <div className="text-right">
+                    <Badge variant={engineer.status === 'available' ? 'default' : engineer.status === 'busy' ? 'secondary' : 'outline'} className="capitalize" size="status">
+                      {engineer.status}
+                    </Badge>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {engineer.current_assignments}/{engineer.max_assignments} assignments
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
