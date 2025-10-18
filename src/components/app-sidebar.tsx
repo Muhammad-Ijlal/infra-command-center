@@ -10,7 +10,6 @@ import {
   Brain,
   Building2,
   Users,
-  FileText,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -53,11 +52,11 @@ export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typ
       url: `/${locale}/ai-detections`,
       icon: Brain,
     },
-    {
-      title: t('commandCenter'),
-      url: `/${locale}/command-center`,
-      icon: FileText,
-    },
+    // {
+    //   title: t('commandCenter'),
+    //   url: `/${locale}/command-center`,
+    //   icon: FileText,
+    // },
     {
       title: t('contractors'),
       url: `/${locale}/contractors`,

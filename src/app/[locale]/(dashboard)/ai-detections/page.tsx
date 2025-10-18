@@ -86,19 +86,19 @@ export default function AIDetectionsPage() {
     } else if (detection.tender_id) {
       handleViewTender(detection.tender_id)
     } else {
-      // If no linked contract/tender, navigate to command center to create one
-      router.push(`/${locale}/command-center?asset=${detection.asset_id}&detection=${detection.detection_id}`)
+      // If no linked contract/tender, navigate to dashboard
+      router.push(`/${locale}/dashboard`)
     }
   }
 
-  const handleViewContract = (contractId: string) => {
-    // Navigate to contract details in command center
-    router.push(`/${locale}/command-center?contract=${contractId}`)
+  const handleViewContract = () => {
+    // Navigate to dashboard
+    router.push(`/${locale}/dashboard`)
   }
 
-  const handleViewTender = (tenderId: string) => {
-    // Navigate to tender details in command center
-    router.push(`/${locale}/command-center?tender=${tenderId}`)
+  const handleViewTender = () => {
+    // Navigate to dashboard
+    router.push(`/${locale}/dashboard`)
   }
 
   const handleCloseDetection = () => {

@@ -11,12 +11,14 @@ export function generateNotificationActionUrl(notification: Notification, locale
 
   // Contract-related notifications
   if (notification.contract_id) {
-    return `${baseUrl}/command-center?contract=${notification.contract_id}`
+    //return `${baseUrl}/command-center?contract=${notification.contract_id}`
+    return `${baseUrl}/dashboard`
   }
 
   // Tender-related notifications
   if (notification.tender_id) {
-    return `${baseUrl}/command-center?tender=${notification.tender_id}`
+    //return `${baseUrl}/command-center?tender=${notification.tender_id}`
+    return `${baseUrl}/dashboard`
   }
 
   // Detection-related notifications
@@ -44,7 +46,8 @@ export function generateNotificationActionUrl(notification: Notification, locale
   // Default fallback based on module
   switch (notification.module) {
     case 'contract':
-      return `${baseUrl}/command-center`
+      //return `${baseUrl}/command-center`
+      return `${baseUrl}/dashboard`
     case 'ai':
       return `${baseUrl}/ai-detections`
     case 'asset':
