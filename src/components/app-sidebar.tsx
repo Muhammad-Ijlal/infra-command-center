@@ -9,7 +9,6 @@ import {
   LayoutDashboard,
   Brain,
   Building2,
-  Users,
   Wrench,
 } from "lucide-react"
 
@@ -57,11 +56,6 @@ export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typ
       title: t('engineers'),
       url: `/${locale}/engineers`,
       icon: Wrench,
-    },
-    {
-      title: t('contractors'),
-      url: `/${locale}/contractors`,
-      icon: Users,
     },
     {
       title: t('assets'),

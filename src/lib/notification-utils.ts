@@ -33,7 +33,7 @@ export function generateNotificationActionUrl(notification: Notification, locale
 
   // Contractor-related notifications
   if (notification.contractor_id) {
-    return `${baseUrl}/contractors?contractor=${notification.contractor_id}`
+    return `${baseUrl}/dashboard`
   }
 
   // Fallback to hardcoded action_url if provided
@@ -53,7 +53,7 @@ export function generateNotificationActionUrl(notification: Notification, locale
     case 'asset':
       return `${baseUrl}/assets`
     case 'contractor':
-      return `${baseUrl}/contractors`
+      return `${baseUrl}/dashboard`
     default:
       return `${baseUrl}/dashboard`
   }
