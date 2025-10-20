@@ -6,23 +6,16 @@ export interface Engineer {
   specialization: EngineerSpecialization[]
   status: 'available' | 'busy' | 'offline'
   current_assignments: number
-  max_assignments: number
+  completed_assignments: number
   sla_compliance_rate: number // Percentage of SLA deadlines met
-  average_response_time_hours: number
-  skills: string[]
   certifications?: string[]
   created_at: string
   last_active?: string
 }
 
 export type EngineerSpecialization = 
-  | 'traffic_signals' 
-  | 'asphalt_repair' 
   | 'structural_maintenance' 
   | 'electrical_systems' 
-  | 'drainage_systems' 
-  | 'bridge_maintenance' 
-  | 'road_maintenance' 
   | 'general_maintenance'
 
 export interface EngineerAssignment {

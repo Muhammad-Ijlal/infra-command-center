@@ -6,6 +6,10 @@ import { useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Table,
   TableBody,
@@ -22,14 +26,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { 
-  Clock, 
   CheckCircle2, 
   User, 
   Phone, 
   Mail,
   Award,
   Activity,
-  Users
+  Users,
+  Plus
 } from "lucide-react"
 import { SummaryCard } from "@/components/summary-card"
 import { mockEngineers } from "@/data/mock-engineers"
@@ -40,6 +44,18 @@ export default function EngineersPage() {
   const t = useTranslations('engineers')
   const searchParams = useSearchParams()
   const [selectedEngineer, setSelectedEngineer] = useState<Engineer | null>(null)
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    specialization: [] as string[],
+    status: 'available' as 'available' | 'busy' | 'offline',
+    current_assignments: 0,
+    completed_assignments: 0,
+    sla_compliance_rate: 100,
+    certifications: [] as string[],
+  })
 
   // Handle engineer parameter from URL
   useEffect(() => {
@@ -70,20 +86,76 @@ export default function EngineersPage() {
   const getStatusColor = (status: Engineer['status']) => {
     switch (status) {
       case 'available':
-        return 'bg-green-100 text-green-800'
+        return { variant: 'default' as const, className: '' } // Same as resolved - ready to work
       case 'busy':
-        return 'bg-yellow-100 text-yellow-800'
+        return { variant: 'default' as const, className: 'bg-yellow-600 text-white' } // Same as pending - currently working
       case 'offline':
-        return 'bg-gray-100 text-gray-800'
+        return { variant: 'secondary' as const, className: '' } // Same as validated - not available
       default:
-        return 'bg-gray-100 text-gray-800'
+        return { variant: 'outline' as const, className: '' }
     }
   }
 
-  const getSlaComplianceColor = (rate: number) => {
-    if (rate >= 90) return 'text-green-600'
-    if (rate >= 80) return 'text-yellow-600'
-    return 'text-red-600'
+  
+
+  const handleInputChange = (field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleSpecializationChange = (specialization: string, checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      specialization: checked 
+        ? [...prev.specialization, specialization]
+        : prev.specialization.filter(s => s !== specialization)
+    }))
+  }
+
+  const handleCertificationChange = (certification: string, checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      certifications: checked 
+        ? [...prev.certifications, certification]
+        : prev.certifications.filter(c => c !== certification)
+    }))
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    // Generate new engineer ID
+    const newId = `ENG-${String(mockEngineers.length + 1).padStart(3, '0')}`
+    
+    const newEngineer: Engineer = {
+      engineer_id: newId,
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone || undefined,
+      specialization: formData.specialization as any[],
+      status: formData.status,
+      current_assignments: formData.current_assignments,
+      completed_assignments: formData.completed_assignments,
+      sla_compliance_rate: formData.sla_compliance_rate,
+      certifications: formData.certifications.length > 0 ? formData.certifications : undefined,
+      created_at: new Date().toISOString(),
+      last_active: new Date().toISOString()
+    }
+    
+    // In a real app, this would be an API call
+    console.log('New engineer created:', newEngineer)
+    
+    // Reset form and close modal
+    setFormData({
+      name: '',
+      email: '',
+      phone: '',
+      specialization: [],
+      status: 'available',
+      current_assignments: 0,
+      completed_assignments: 0,
+      sla_compliance_rate: 100,
+      certifications: [],
+    })
+    setShowAddModal(false)
   }
 
   return (
@@ -126,8 +198,16 @@ export default function EngineersPage() {
       {/* Engineer Directory */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('engineerDirectory')}</CardTitle>
-          <CardDescription>{t('engineerDirectoryDesc')}</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>{t('engineerDirectory')}</CardTitle>
+              <CardDescription>{t('engineerDirectoryDesc')}</CardDescription>
+            </div>
+            <Button onClick={() => setShowAddModal(true)} className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              {t('addNewEmployee')}
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
@@ -138,7 +218,7 @@ export default function EngineersPage() {
                 <TableHead>{t('status')}</TableHead>
                 <TableHead>{t('assignments')}</TableHead>
                 <TableHead>{t('slaCompliance')}</TableHead>
-                <TableHead>{t('avgResponseTime')}</TableHead>
+                <TableHead>{t('completedAssignments')}</TableHead>
                 <TableHead>{t('actions')}</TableHead>
               </TableRow>
             </TableHeader>
@@ -160,37 +240,39 @@ export default function EngineersPage() {
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {engineer.specialization.slice(0, 2).map((spec) => (
-                          <Badge key={spec} variant="outline" className="text-xs">
+                          <Badge key={spec} variant="outline" className="text-xs capitalize" size="default">
                             {spec.replace(/_/g, ' ')}
                           </Badge>
                         ))}
                         {engineer.specialization.length > 2 && (
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-xs" size="sm">
                             +{engineer.specialization.length - 2}
                           </Badge>
                         )}
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge className={getStatusColor(engineer.status)}>
-                        {engineer.status}
+                      <Badge 
+                        variant={getStatusColor(engineer.status).variant}
+                        className={`${getStatusColor(engineer.status).className} capitalize`}
+                        size="status"
+                      >
+                        {engineer.status.replace(/_/g, ' ')}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <div className="text-sm">
                         <span className="font-medium">{engineer.current_assignments}</span>
-                        <span className="text-muted-foreground">/{engineer.max_assignments}</span>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span className={`font-medium ${getSlaComplianceColor(engineer.sla_compliance_rate)}`}>
+                      <span className="font-medium">
                         {engineer.sla_compliance_rate}%
                       </span>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-1 text-sm">
-                        <Clock className="h-3 w-3" />
-                        {engineer.average_response_time_hours}h
+                      <div className="text-sm font-medium">
+                        {engineer.completed_assignments}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -248,17 +330,17 @@ export default function EngineersPage() {
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
                       <span>{t('slaCompliance')}:</span>
-                      <span className={getSlaComplianceColor(selectedEngineer.sla_compliance_rate)}>
+                      <span className="font-medium">
                         {selectedEngineer.sla_compliance_rate}%
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span>{t('avgResponseTime')}:</span>
-                      <span>{selectedEngineer.average_response_time_hours}h</span>
+                      <span>{t('currentAssignments')}:</span>
+                      <span>{selectedEngineer.current_assignments}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>{t('currentAssignments')}:</span>
-                      <span>{selectedEngineer.current_assignments}/{selectedEngineer.max_assignments}</span>
+                      <span>{t('completedAssignments')}:</span>
+                      <span>{selectedEngineer.completed_assignments}</span>
                     </div>
                   </div>
                 </div>
@@ -269,24 +351,14 @@ export default function EngineersPage() {
                 <h4 className="font-medium mb-2">{t('specializations')}</h4>
                 <div className="flex flex-wrap gap-2">
                   {selectedEngineer.specialization.map((spec) => (
-                    <Badge key={spec} variant="secondary">
+                    <Badge key={spec} variant="secondary" className="capitalize">
                       {spec.replace(/_/g, ' ')}
                     </Badge>
                   ))}
                 </div>
               </div>
 
-              {/* Skills */}
-              <div>
-                <h4 className="font-medium mb-2">{t('skills')}</h4>
-                <div className="flex flex-wrap gap-2">
-                  {selectedEngineer.skills.map((skill) => (
-                    <Badge key={skill} variant="outline">
-                      {skill}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
+              {/* Skills removed as per updated Engineer type */}
 
               {/* Current Assignments */}
               <div>
@@ -296,10 +368,10 @@ export default function EngineersPage() {
                     {getEngineerAssignments(selectedEngineer.engineer_id).map((detection) => (
                       <div key={detection.detection_id} className="flex items-center justify-between p-3 border rounded-lg">
                         <div>
-                          <p className="font-medium">{detection.defect_type.replace(/_/g, ' ')}</p>
+                          <p className="font-medium capitalize">{detection.defect_type.replace(/_/g, ' ')}</p>
                           <p className="text-sm text-muted-foreground">{detection.asset_id}</p>
                         </div>
-                        <Badge variant={detection.severity === 'critical' ? 'destructive' : 'default'}>
+                        <Badge variant={detection.severity === 'critical' ? 'destructive' : 'default'} className="capitalize">
                           {detection.status.replace(/_/g, ' ')}
                         </Badge>
                       </div>
@@ -311,6 +383,174 @@ export default function EngineersPage() {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Add New Employee Modal */}
+      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="h-5 w-5" />
+              {t('addNewEmployee')}
+            </DialogTitle>
+            <DialogDescription>
+              {t('addNewEmployeeDesc')}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Basic Information */}
+            <div className="space-y-4">
+              <h4 className="font-medium">{t('basicInformation')}</h4>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="name">{t('name')}</Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">{t('email')}</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">{t('phone')}</Label>
+                  <Input
+                    id="phone"
+                    value={formData.phone}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="status">{t('status')}</Label>
+                  <Select value={formData.status} onValueChange={(value) => handleInputChange('status', value)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="available">{t('available')}</SelectItem>
+                      <SelectItem value="busy">{t('busy')}</SelectItem>
+                      <SelectItem value="offline">{t('offline')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* Specializations */}
+            <div className="space-y-4">
+              <h4 className="font-medium">{t('specializations')}</h4>
+              <div className="space-y-2">
+                {['structural_maintenance', 'electrical_systems', 'general_maintenance'].map((spec) => (
+                  <div key={spec} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={spec}
+                      checked={formData.specialization.includes(spec)}
+                      onCheckedChange={(checked) => handleSpecializationChange(spec, checked as boolean)}
+                    />
+                    <Label htmlFor={spec} className="text-sm capitalize">
+                      {spec.replace(/_/g, ' ')}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Performance Metrics */}
+            <div className="space-y-4">
+              <h4 className="font-medium">{t('performance')}</h4>
+              <div className="grid gap-4 md:grid-cols-3">
+                <div className="space-y-2">
+                  <Label htmlFor="current_assignments">{t('currentAssignments')}</Label>
+                  <Input
+                    id="current_assignments"
+                    type="number"
+                    min="0"
+                    value={formData.current_assignments}
+                    onChange={(e) => handleInputChange('current_assignments', parseInt(e.target.value) || 0)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="completed_assignments">{t('completedAssignments')}</Label>
+                  <Input
+                    id="completed_assignments"
+                    type="number"
+                    min="0"
+                    value={formData.completed_assignments}
+                    onChange={(e) => handleInputChange('completed_assignments', parseInt(e.target.value) || 0)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="sla_compliance_rate">{t('slaCompliance')} (%)</Label>
+                  <Input
+                    id="sla_compliance_rate"
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={formData.sla_compliance_rate}
+                    onChange={(e) => handleInputChange('sla_compliance_rate', parseInt(e.target.value) || 100)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Certifications */}
+            <div className="space-y-4">
+              <h4 className="font-medium">{t('certifications')}</h4>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="electrical-safety"
+                    checked={formData.certifications.includes('Electrical Safety Certification')}
+                    onCheckedChange={(checked) => handleCertificationChange('Electrical Safety Certification', checked as boolean)}
+                  />
+                  <Label htmlFor="electrical-safety" className="text-sm">
+                    Electrical Safety Certification
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="structural-engineering"
+                    checked={formData.certifications.includes('Structural Engineering Certification')}
+                    onCheckedChange={(checked) => handleCertificationChange('Structural Engineering Certification', checked as boolean)}
+                  />
+                  <Label htmlFor="structural-engineering" className="text-sm">
+                    Structural Engineering Certification
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="general-maintenance"
+                    checked={formData.certifications.includes('General Maintenance License')}
+                    onCheckedChange={(checked) => handleCertificationChange('General Maintenance License', checked as boolean)}
+                  />
+                  <Label htmlFor="general-maintenance" className="text-sm">
+                    General Maintenance License
+                  </Label>
+                </div>
+              </div>
+            </div>
+
+            {/* Form Actions */}
+            <div className="flex justify-end gap-2 pt-4 border-t">
+              <Button type="button" variant="outline" onClick={() => setShowAddModal(false)} disabled>
+                Cancel
+              </Button>
+              <Button type="submit" disabled>
+                Create Employee
+              </Button>
+            </div>
+          </form>
         </DialogContent>
       </Dialog>
     </div>
