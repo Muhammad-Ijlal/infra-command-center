@@ -8,9 +8,6 @@ interface UseGisResult {
   
   // Actions
   fetchLayers: () => Promise<void>
-  listGdbLayers: (gdbPath: string) => Promise<GdbLayerInfo[]>
-  importLayer: (gdbPath: string, layerName: string, options?: GdbImportOptions) => Promise<GdbImportResult>
-  importAllLayers: (gdbPath: string, options?: GdbImportOptions) => Promise<GdbImportResult[]>
   getLayerFeatures: (layerId: string, limit?: number, offset?: number) => Promise<GisFeature[]>
   getLayerWithFeatures: (layerId: string) => Promise<GisLayer & { features: GisFeature[], feature_count: number }>
 }
@@ -31,7 +28,7 @@ export function useGis(): UseGisResult {
     setError(null)
     
     try {
-      const response = await fetch('/api/gis?action=layers')
+      const response = await fetch('/api/gis/layers?action=layers')
       const result = await response.json()
       
       if (result.success) {
@@ -46,112 +43,6 @@ export function useGis(): UseGisResult {
     }
   }, [])
 
-  const listGdbLayers = useCallback(async (gdbPath: string): Promise<GdbLayerInfo[]> => {
-    setLoading(true)
-    setError(null)
-    
-    try {
-      const response = await fetch('/api/gis', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'list-layers',
-          gdbPath
-        })
-      })
-      
-      const result = await response.json()
-      
-      if (result.success) {
-        return result.data
-      } else {
-        throw new Error(result.error)
-      }
-    } catch (err) {
-      handleError(err)
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  const importLayer = useCallback(async (
-    gdbPath: string, 
-    layerName: string, 
-    options?: GdbImportOptions
-  ): Promise<GdbImportResult> => {
-    setLoading(true)
-    setError(null)
-    
-    try {
-      const response = await fetch('/api/gis', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'import-layer',
-          gdbPath,
-          layerName,
-          options
-        })
-      })
-      
-      const result = await response.json()
-      
-      if (result.success) {
-        // Refresh layers list after successful import
-        await fetchLayers()
-        return result.data
-      } else {
-        throw new Error(result.error)
-      }
-    } catch (err) {
-      handleError(err)
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }, [fetchLayers])
-
-  const importAllLayers = useCallback(async (
-    gdbPath: string, 
-    options?: GdbImportOptions
-  ): Promise<GdbImportResult[]> => {
-    setLoading(true)
-    setError(null)
-    
-    try {
-      const response = await fetch('/api/gis', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'import-all-layers',
-          gdbPath,
-          options
-        })
-      })
-      
-      const result = await response.json()
-      
-      if (result.success) {
-        // Refresh layers list after successful import
-        await fetchLayers()
-        return result.data
-      } else {
-        throw new Error(result.error)
-      }
-    } catch (err) {
-      handleError(err)
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }, [fetchLayers])
 
   const getLayerFeatures = useCallback(async (
     layerId: string, 
@@ -163,7 +54,7 @@ export function useGis(): UseGisResult {
     
     try {
       const response = await fetch(
-        `/api/gis?action=layer-features&layerId=${layerId}&limit=${limit}&offset=${offset}`
+        `/api/gis/layers?action=layer-features&layerId=${layerId}&limit=${limit}&offset=${offset}`
       )
       
       const result = await response.json()
@@ -188,7 +79,7 @@ export function useGis(): UseGisResult {
     setError(null)
     
     try {
-      const response = await fetch(`/api/gis?action=layer-with-features&layerId=${layerId}`)
+      const response = await fetch(`/api/gis/layers?action=layer-with-features&layerId=${layerId}`)
       const result = await response.json()
       
       if (result.success) {
@@ -209,9 +100,6 @@ export function useGis(): UseGisResult {
     loading,
     error,
     fetchLayers,
-    listGdbLayers,
-    importLayer,
-    importAllLayers,
     getLayerFeatures,
     getLayerWithFeatures
   }

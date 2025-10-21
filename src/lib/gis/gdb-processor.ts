@@ -3,8 +3,9 @@ import { promisify } from 'util'
 import { readFile, writeFile, unlink } from 'fs/promises'
 import { join } from 'path'
 import { tmpdir } from 'os'
-import { GisLayer, GisFeature, GdbLayerInfo, GdbImportResult, GdbImportOptions } from '@/types/gis'
+import { GisLayer, GisFeature, GdbLayerInfo, GdbImportResult, GdbImportOptions, LayerType, GeometryType } from '@/types/gis'
 import { supabaseAdmin } from '@/lib/supabase/server'
+import { extractGdbZip, cleanupExtractedFiles } from './zip-processor'
 
 const execAsync = promisify(exec)
 
@@ -13,6 +14,22 @@ export class GdbProcessor {
 
   constructor() {
     this.tempDir = tmpdir()
+  }
+
+  /**
+   * Process ZIP file containing .gdb folder
+   */
+  async processZipFile(zipBuffer: Buffer, zipFileName: string): Promise<{ gdbPath: string; cleanup: () => Promise<void> }> {
+    const extractionResult = await extractGdbZip(zipBuffer, zipFileName)
+    
+    if (!extractionResult.success || !extractionResult.extractedPath) {
+      throw new Error(extractionResult.error || 'Failed to extract ZIP file')
+    }
+
+    return {
+      gdbPath: extractionResult.extractedPath,
+      cleanup: () => cleanupExtractedFiles(extractionResult.extractedPath!)
+    }
   }
 
   /**
@@ -25,40 +42,37 @@ export class GdbProcessor {
       
       const layers: GdbLayerInfo[] = []
       const lines = stdout.split('\n')
-      let currentLayer: Partial<GdbLayerInfo> | null = null
 
       for (const line of lines) {
         const trimmed = line.trim()
         
-        if (trimmed.startsWith('Layer name:')) {
-          if (currentLayer) {
-            layers.push(currentLayer as GdbLayerInfo)
-          }
-          currentLayer = {
-            name: trimmed.replace('Layer name:', '').trim(),
-            fields: []
-          }
-        } else if (currentLayer && trimmed.startsWith('Geometry:')) {
-          const geometryType = trimmed.replace('Geometry:', '').trim()
-          currentLayer.geometry_type = this.mapGeometryType(geometryType)
-          currentLayer.type = this.mapLayerType(geometryType)
-        } else if (currentLayer && trimmed.startsWith('Feature Count:')) {
-          currentLayer.feature_count = parseInt(trimmed.replace('Feature Count:', '').trim())
-        } else if (currentLayer && trimmed.includes(':')) {
-          // Field definition
-          const fieldMatch = trimmed.match(/^(\w+):\s*(.+)$/)
-          if (fieldMatch) {
-            currentLayer.fields!.push({
-              name: fieldMatch[1],
-              type: fieldMatch[2],
-              nullable: true
+        // Skip empty lines and info lines
+        if (!trimmed || trimmed.startsWith('INFO:') || trimmed.startsWith('Using driver')) {
+          continue
+        }
+
+        // Skip group definitions - we want a flat list
+        if (trimmed.startsWith('Group ')) {
+          continue
+        }
+
+        // Check if this is a layer definition
+        if (trimmed.startsWith('Layer:')) {
+          const layerMatch = trimmed.match(/Layer:\s*(.+?)\s*\((.+?)\)/)
+          if (layerMatch) {
+            const layerName = layerMatch[1].trim()
+            const geometryType = layerMatch[2].trim()
+            
+            layers.push({
+              name: layerName,
+              type: this.mapLayerType(geometryType),
+              geometry_type: this.mapGeometryType(geometryType),
+              feature_count: 0, // We'll get this from ogrinfo -al if needed
+              fields: [],
+              extent: undefined
             })
           }
         }
-      }
-
-      if (currentLayer) {
-        layers.push(currentLayer as GdbLayerInfo)
       }
 
       return layers
@@ -81,7 +95,10 @@ export class GdbProcessor {
     try {
       // Use ogr2ogr to convert the layer to GeoJSON
       const command = `ogr2ogr -f GeoJSON "${tempFile}" "${gdbPath}" "${layerName}"`
-      await execAsync(command)
+      console.log('Running ogr2ogr command:', command)
+      const { stdout, stderr } = await execAsync(command)
+      console.log('ogr2ogr stdout:', stdout)
+      console.log('ogr2ogr stderr:', stderr)
       
       return tempFile
     } catch (error) {
@@ -117,11 +134,13 @@ export class GdbProcessor {
 
       // Convert layer to GeoJSON
       const geoJsonPath = await this.convertLayerToGeoJSON(gdbPath, layerName)
+      console.log('GeoJSON path:', geoJsonPath)
       
       try {
         // Read the GeoJSON file
         const geoJsonContent = await readFile(geoJsonPath, 'utf-8')
         const geoJson = JSON.parse(geoJsonContent)
+        console.log('GeoJSON features count:', geoJson.features?.length || 0)
 
         // Create the layer record in Supabase
         const { data: layerData, error: layerError } = await supabaseAdmin
@@ -292,17 +311,32 @@ export class GdbProcessor {
    */
   private mapLayerType(geometryType: string): LayerType {
     const type = geometryType.toLowerCase()
+    if (type === 'none') return 'point' // Default for unknown types
     if (type.includes('point')) return 'point'
     if (type.includes('line')) return 'line'
     if (type.includes('polygon')) return 'polygon'
+    if (type.includes('multi')) {
+      if (type.includes('point')) return 'multipoint'
+      if (type.includes('line')) return 'multiline'
+      if (type.includes('polygon')) return 'multipolygon'
+    }
     return 'collection'
   }
 
   /**
    * Map PostGIS geometry type to our GeometryType
    */
-  private mapGeometryType(geometryType: string): string {
-    return geometryType.toUpperCase()
+  private mapGeometryType(geometryType: string): GeometryType {
+    const type = geometryType.toLowerCase()
+    if (type === 'none') return 'POINT' // Default for unknown types
+    if (type === 'point') return 'POINT'
+    if (type === 'line string') return 'LINESTRING'
+    if (type === 'polygon') return 'POLYGON'
+    if (type === 'multi point') return 'MULTIPOINT'
+    if (type === 'multi line string') return 'MULTILINESTRING'
+    if (type === 'multi polygon') return 'MULTIPOLYGON'
+    if (type === '3d point') return 'POINT'
+    return 'GEOMETRYCOLLECTION'
   }
 }
 

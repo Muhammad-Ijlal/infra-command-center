@@ -10,15 +10,13 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Progress } from '@/components/ui/progress'
-import { Upload, FileText, MapPin, CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
+import { Upload, FileText, MapPin, CheckCircle, AlertCircle, Loader2, Building } from 'lucide-react'
 import { GdbLayerInfo, GdbImportResult } from '@/types/gis'
 
 export function GdbUploader() {
-  const { loading, error, listGdbLayers, importLayer, importAllLayers } = useGis()
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const { loading, error } = useGis()
   
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [gdbPath, setGdbPath] = useState('')
   const [availableLayers, setAvailableLayers] = useState<GdbLayerInfo[]>([])
   const [selectedLayer, setSelectedLayer] = useState('')
   const [importOptions, setImportOptions] = useState({
@@ -35,56 +33,138 @@ export function GdbUploader() {
     const file = event.target.files?.[0]
     if (file) {
       setSelectedFile(file)
-      setGdbPath(file.path || file.name)
       setCurrentStep('select')
     }
   }
 
   const handleListLayers = async () => {
-    if (!gdbPath) return
+    if (!selectedFile) return
     
     try {
-      const layers = await listGdbLayers(gdbPath)
-      setAvailableLayers(layers)
-      setCurrentStep('select')
+      const formData = new FormData()
+      formData.append('file', selectedFile)
+      formData.append('action', 'list-layers')
+      
+      const response = await fetch('/api/gis/zip', {
+        method: 'POST',
+        body: formData
+      })
+      
+      const result = await response.json()
+      
+      if (result.success) {
+        setAvailableLayers(result.data)
+        setCurrentStep('select')
+      } else {
+        throw new Error(result.error)
+      }
     } catch (err) {
       console.error('Failed to list layers:', err)
     }
   }
 
   const handleImportLayer = async () => {
-    if (!gdbPath || !selectedLayer) return
+    if (!selectedFile || !selectedLayer) return
     
     try {
-      const result = await importLayer(gdbPath, selectedLayer, importOptions)
-      setImportResults([result])
-      setCurrentStep('complete')
+      const formData = new FormData()
+      formData.append('file', selectedFile)
+      formData.append('action', 'import-layer')
+      formData.append('layerName', selectedLayer)
+      formData.append('options', JSON.stringify(importOptions))
+      
+      const response = await fetch('/api/gis/zip', {
+        method: 'POST',
+        body: formData
+      })
+      
+      const result = await response.json()
+      
+      if (result.success) {
+        setImportResults([result.data])
+        setCurrentStep('complete')
+      } else {
+        throw new Error(result.error)
+      }
     } catch (err) {
       console.error('Failed to import layer:', err)
     }
   }
 
   const handleImportAllLayers = async () => {
-    if (!gdbPath) return
+    if (!selectedFile) return
     
     try {
-      const results = await importAllLayers(gdbPath, importOptions)
-      setImportResults(results)
-      setCurrentStep('complete')
+      const formData = new FormData()
+      formData.append('file', selectedFile)
+      formData.append('action', 'import-all-layers')
+      formData.append('options', JSON.stringify(importOptions))
+      
+      const response = await fetch('/api/gis/zip', {
+        method: 'POST',
+        body: formData
+      })
+      
+      const result = await response.json()
+      
+      if (result.success) {
+        setImportResults(result.data)
+        setCurrentStep('complete')
+      } else {
+        throw new Error(result.error)
+      }
     } catch (err) {
       console.error('Failed to import all layers:', err)
     }
   }
 
+  const handleConvertToAssets = async () => {
+    if (!selectedFile || !selectedLayer) return
+
+    try {
+      setLoading(true)
+      
+      const formData = new FormData()
+      formData.append('action', 'convert-to-assets')
+      formData.append('layerName', selectedLayer)
+      formData.append('file', selectedFile)
+      
+      const response = await fetch('/api/gis/convert-to-assets', {
+        method: 'POST',
+        body: formData
+      })
+      
+      const result = await response.json()
+      
+      if (result.success) {
+        setImportResults([{
+          success: true,
+          layer_id: result.data.layer_id,
+          features_imported: result.data.features_processed,
+          errors: [],
+          warnings: [`Created ${result.data.assets_created} assets from ${selectedLayer} layer`]
+        }])
+        setCurrentStep('complete')
+      } else {
+        throw new Error(result.error)
+      }
+    } catch (err) {
+      console.error('Failed to convert to assets:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const resetUploader = () => {
     setSelectedFile(null)
-    setGdbPath('')
     setAvailableLayers([])
     setSelectedLayer('')
     setImportResults([])
     setCurrentStep('upload')
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
+    // Reset file input
+    const fileInput = document.getElementById('zip-file') as HTMLInputElement
+    if (fileInput) {
+      fileInput.value = ''
     }
   }
 
@@ -110,20 +190,30 @@ export function GdbUploader() {
 
           {currentStep === 'upload' && (
             <div className="space-y-4">
-              <div>
-                <Label htmlFor="gdb-file">Select .GDB File</Label>
+              <div className="space-y-2">
+                <Label htmlFor="zip-file">Upload ZIP File</Label>
                 <Input
-                  id="gdb-file"
+                  id="zip-file"
                   type="file"
-                  accept=".gdb"
-                  ref={fileInputRef}
+                  accept=".zip"
                   onChange={handleFileSelect}
                   className="mt-1"
                 />
+                <p className="text-sm text-muted-foreground">
+                  Upload a ZIP file containing your .gdb folder
+                </p>
+                <div className="text-xs text-muted-foreground bg-blue-50 p-2 rounded">
+                  <strong>Instructions:</strong>
+                  <ol className="list-decimal list-inside mt-1 space-y-1">
+                    <li>Zip your .gdb folder (e.g., AlSaneem_AlWajba.gdb)</li>
+                    <li>Upload the ZIP file here</li>
+                    <li>The system will extract and process it automatically</li>
+                  </ol>
+                </div>
               </div>
               
               <div className="text-sm text-muted-foreground">
-                <p>Supported formats: ESRI File Geodatabase (.gdb)</p>
+                <p>Supported formats: ESRI File Geodatabase (.gdb) in ZIP format</p>
                 <p>Note: GDAL must be installed on the server to process .gdb files</p>
               </div>
             </div>
@@ -175,22 +265,50 @@ export function GdbUploader() {
                     </Select>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <Button 
-                      onClick={handleImportLayer}
-                      disabled={!selectedLayer || loading}
-                      className="w-full"
-                    >
-                      Import Selected Layer
-                    </Button>
-                    <Button 
-                      onClick={handleImportAllLayers}
-                      disabled={loading}
-                      variant="outline"
-                      className="w-full"
-                    >
-                      Import All Layers
-                    </Button>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <Button 
+                        onClick={handleImportLayer}
+                        disabled={!selectedLayer || loading}
+                        className="w-full"
+                      >
+                        Import Selected Layer
+                      </Button>
+                      <Button 
+                        onClick={handleImportAllLayers}
+                        disabled={loading}
+                        variant="outline"
+                        className="w-full"
+                      >
+                        Import All Layers
+                      </Button>
+                    </div>
+                    
+                    {(selectedLayer === 'Guardrail' || selectedLayer === 'Street_Light_Pole') && (
+                      <div className="border-t pt-4">
+                        <div className="text-sm text-muted-foreground mb-2">
+                          Convert to Assets: Create asset records from GDB features
+                        </div>
+                        <Button 
+                          onClick={handleConvertToAssets}
+                          disabled={!selectedLayer || loading}
+                          variant="secondary"
+                          className="w-full"
+                        >
+                          {loading ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Converting to Assets...
+                            </>
+                          ) : (
+                            <>
+                              <Building className="mr-2 h-4 w-4" />
+                              Convert {selectedLayer} to Assets
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
