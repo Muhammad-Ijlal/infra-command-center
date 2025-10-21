@@ -10,6 +10,7 @@ import {
   Brain,
   Building2,
   Wrench,
+  MapPin,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -61,6 +62,11 @@ export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typ
       title: t('assets'),
       url: `/${locale}/assets`,
       icon: Building2,
+    },
+    {
+      title: t('gisManagement'),
+      url: `/${locale}/gis-management`,
+      icon: MapPin,
     },
   ]
 

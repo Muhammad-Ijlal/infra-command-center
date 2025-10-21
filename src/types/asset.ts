@@ -1,5 +1,5 @@
-export type AssetCategory = 'road' | 'bridge' | 'lighting' | 'drainage' | 'signage' | 'building' | 'facility' | 'pipeline' | 'solar' | 'traffic_signal' | 'other'
-export type AssetStatus = 'operational' | 'maintenance_required' | 'under_maintenance' | 'decommissioned'
+export type AssetCategory = 'road' | 'bridge' | 'lighting' | 'other'
+export type AssetStatus = 'operational' | 'maintenance_required' | 'under_maintenance'
 
 export interface Asset {
   asset_id: string
@@ -44,4 +44,3 @@ export interface MaintenanceRecord {
   contractor?: string
   status: 'completed' | 'scheduled' | 'in_progress'
 }
-

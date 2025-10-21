@@ -6,6 +6,7 @@ import { locales } from '@/i18n/request';
 import "../globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { QueryProvider } from "@/lib/providers/query-provider";
+import { SupabaseProvider } from "@/lib/providers/supabase-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -82,14 +83,16 @@ export default async function LocaleLayout({
       >
         <NextIntlClientProvider messages={messages} locale={locale}>
           <QueryProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="light"
-              enableSystem={false}
-              disableTransitionOnChange
-            >
-              {children}
-            </ThemeProvider>
+            <SupabaseProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="light"
+                enableSystem={false}
+                disableTransitionOnChange
+              >
+                {children}
+              </ThemeProvider>
+            </SupabaseProvider>
           </QueryProvider>
         </NextIntlClientProvider>
       </body>

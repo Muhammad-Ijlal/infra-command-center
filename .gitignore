@@ -47,4 +47,5 @@ next-env.d.ts
 
 
 # theme
-launch-ui-pro/*
+launch-ui-pro/
+*.gdb/
