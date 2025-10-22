@@ -1,12 +1,18 @@
 "use client"
 
 import { useState, useCallback } from 'react'
-import Map, { Marker, Popup, NavigationControl, MarkerEvent, ViewStateChangeEvent } from 'react-map-gl/mapbox'
+import dynamic from 'next/dynamic'
 import { Asset } from '@/types/asset'
 import { AIDetection } from '@/types/detection'
 import { Badge } from '@/components/ui/badge'
 import { AlertTriangle, Clock, CheckCircle2 } from 'lucide-react'
 import 'mapbox-gl/dist/mapbox-gl.css'
+
+// Dynamically import Map components to avoid SSR issues
+const Map = dynamic(() => import('react-map-gl/mapbox').then(mod => mod.default), { ssr: false })
+const Marker = dynamic(() => import('react-map-gl/mapbox').then(mod => mod.Marker), { ssr: false })
+const Popup = dynamic(() => import('react-map-gl/mapbox').then(mod => mod.Popup), { ssr: false })
+const NavigationControl = dynamic(() => import('react-map-gl/mapbox').then(mod => mod.NavigationControl), { ssr: false })
 
 interface AssetMapProps {
   assets: Asset[]
@@ -37,6 +43,7 @@ const OSM_MAP_STYLE = {
 export function AssetMap({ assets, detections = [], height = '500px' }: AssetMapProps) {
   const [popupInfo, setPopupInfo] = useState<Asset | AIDetection | null>(null)
   const [popupType, setPopupType] = useState<'asset' | 'detection' | null>(null)
+  const [isMapLoaded, setIsMapLoaded] = useState(false)
   
   // Filter assets with valid location data
   const assetsWithLocation = assets.filter(asset => asset.location)
@@ -121,9 +128,18 @@ export function AssetMap({ assets, detections = [], height = '500px' }: AssetMap
 
   return (
     <div style={{ height, width: '100%', borderRadius: '12px', overflow: 'hidden' }}>
+      {!isMapLoaded && (
+        <div className="flex items-center justify-center h-full bg-gray-100">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+            <p className="text-sm text-gray-600">Loading map...</p>
+          </div>
+        </div>
+      )}
       <Map
         {...viewState}
-        onMove={(evt: ViewStateChangeEvent) => setViewState(evt.viewState)}
+        onMove={(evt: any) => setViewState(evt.viewState)}
+        onLoad={() => setIsMapLoaded(true)}
         mapStyle={OSM_MAP_STYLE}
         style={{ width: '100%', height: '100%' }}
       >
@@ -136,7 +152,7 @@ export function AssetMap({ assets, detections = [], height = '500px' }: AssetMap
             longitude={asset.location!.lng}
             latitude={asset.location!.lat}
             anchor="bottom"
-            onClick={(e: MarkerEvent<MouseEvent>) => {
+            onClick={(e: any) => {
               e.originalEvent.stopPropagation()
               onAssetMarkerClick(asset)
             }}
@@ -188,7 +204,7 @@ export function AssetMap({ assets, detections = [], height = '500px' }: AssetMap
             longitude={detection.location!.lng}
             latitude={detection.location!.lat}
             anchor="bottom"
-            onClick={(e: MarkerEvent<MouseEvent>) => {
+            onClick={(e: any) => {
               e.originalEvent.stopPropagation()
               onDetectionMarkerClick(detection)
             }}
