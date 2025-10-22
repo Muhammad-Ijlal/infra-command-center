@@ -112,11 +112,11 @@ export default function DashboardPage() {
       
       <Card>
         <CardHeader>
-          <CardTitle>Asset Locations</CardTitle>
-          <CardDescription>Interactive map showing all infrastructure assets</CardDescription>
+          <CardTitle>Asset Locations & Active Detections</CardTitle>
+          <CardDescription>Interactive map showing all infrastructure assets and active detections</CardDescription>
         </CardHeader>
         <CardContent>
-          <AssetMap assets={mockAssets} height="500px" />
+          <AssetMap assets={mockAssets} detections={mockDetections} height="500px" />
         </CardContent>
       </Card>
 

@@ -9,6 +9,35 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50')
     const offset = parseInt(searchParams.get('offset') || '0')
     const statsOnly = searchParams.get('stats') === 'true'
+    const assetId = searchParams.get('assetId')
+
+    // If fetching individual asset by ID
+    if (assetId) {
+      const { data: asset, error } = await supabaseAdmin
+        .from('assets')
+        .select('*')
+        .eq('asset_id', assetId)
+        .single()
+
+      if (error) {
+        return NextResponse.json(
+          { success: false, error: error.message },
+          { status: 500 }
+        )
+      }
+
+      if (!asset) {
+        return NextResponse.json(
+          { success: false, error: 'Asset not found' },
+          { status: 404 }
+        )
+      }
+
+      return NextResponse.json({
+        success: true,
+        data: asset
+      })
+    }
 
     // If only stats are requested, return status counts
     if (statsOnly) {

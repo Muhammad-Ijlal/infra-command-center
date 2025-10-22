@@ -1,23 +1,20 @@
-import { supabaseAdmin } from '@/lib/supabase/server'
 import { Asset, AssetCategory, AssetStatus } from '@/types/asset'
 
 /**
- * Fetch asset details from Supabase by asset ID
+ * Fetch asset details from API by asset ID
  * Used when opening detection detail modal to show real asset information
  */
 export async function fetchAssetById(assetId: string): Promise<Asset | null> {
   try {
-    const { data: asset, error } = await supabaseAdmin
-      .from('assets')
-      .select('*')
-      .eq('asset_id', assetId)
-      .single()
+    const response = await fetch(`/api/assets?assetId=${assetId}`)
+    const result = await response.json()
 
-    if (error) {
-      console.error(`Error fetching asset ${assetId}:`, error)
+    if (!result.success) {
+      console.error(`Error fetching asset ${assetId}:`, result.error)
       return null
     }
 
+    const asset = result.data
     if (!asset) {
       console.log(`Asset ${assetId} not found`)
       return null
