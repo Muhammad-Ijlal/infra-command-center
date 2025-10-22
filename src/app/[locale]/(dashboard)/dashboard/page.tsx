@@ -3,12 +3,20 @@
 import { useTranslations } from 'next-intl'
 import { Badge } from "@/components/ui/badge"
 import { mockAssets } from "@/data/mock-assets"
-import { AssetMap } from "@/components/asset-map"
 import { mockDetections } from "@/data/mock-detections"
 import { mockEngineers } from "@/data/mock-engineers"
 import { Brain, Users, AlertTriangle, CheckCircle2, Clock, Wrench, Activity, User } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { SummaryCard } from "@/components/summary-card"
+import dynamic from 'next/dynamic'
+import 'mapbox-gl/dist/mapbox-gl.css'
+
+// Dynamically import Map components to avoid SSR issues
+const Map = dynamic(() => import('react-map-gl/mapbox').then(mod => mod.default), { ssr: false })
+const Marker = dynamic(() => import('react-map-gl/mapbox').then(mod => mod.Marker), { ssr: false })
+const NavigationControl = dynamic(() => import('react-map-gl/mapbox').then(mod => mod.NavigationControl), { ssr: false })
+
+const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
 
 export default function DashboardPage() {
   const t = useTranslations('dashboard')
@@ -112,11 +120,74 @@ export default function DashboardPage() {
       
       <Card>
         <CardHeader>
-          <CardTitle>Asset Locations & Active Detections</CardTitle>
-          <CardDescription>Interactive map showing all infrastructure assets and active detections</CardDescription>
+          <CardTitle>Active Detections Map</CardTitle>
+          <CardDescription>Interactive map showing all active detections</CardDescription>
         </CardHeader>
         <CardContent>
-          <AssetMap assets={mockAssets} detections={mockDetections} height="500px" />
+          <div style={{ height: '500px', width: '100%', borderRadius: '12px', overflow: 'hidden', border: '1px solid hsl(var(--border))' }}>
+            <Map
+              initialViewState={{
+                longitude: 51.5304,
+                latitude: 25.2867,
+                zoom: 12
+              }}
+              mapStyle="mapbox://styles/mapbox/streets-v12"
+              mapboxAccessToken={MAPBOX_TOKEN}
+              style={{ width: '100%', height: '100%' }}
+            >
+              <NavigationControl position="top-right" />
+              
+              {/* Detection Markers */}
+              {mockDetections
+                .filter(detection => detection.location && detection.status !== 'completed' && detection.status !== 'resolved')
+                .map((detection) => (
+                  <Marker
+                    key={detection.detection_id}
+                    longitude={detection.location!.lng}
+                    latitude={detection.location!.lat}
+                    anchor="bottom"
+                  >
+                    <div
+                      className="cursor-pointer transition-transform hover:scale-110"
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: '28px',
+                          height: '28px',
+                          borderRadius: '50%',
+                          backgroundColor: detection.severity === 'critical' ? '#DC3545' : 
+                                         detection.status === 'in_progress' ? '#0055A4' : '#FFC107',
+                          border: '3px solid white',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: 'white'
+                        }}
+                      >
+                        <AlertTriangle className="h-4 w-4" />
+                      </div>
+                      <div
+                        style={{
+                          width: 0,
+                          height: 0,
+                          borderLeft: '5px solid transparent',
+                          borderRight: '5px solid transparent',
+                          borderTop: `7px solid ${detection.severity === 'critical' ? '#DC3545' : 
+                                                      detection.status === 'in_progress' ? '#0055A4' : '#FFC107'}`,
+                          marginTop: '-2px'
+                        }}
+                      />
+                    </div>
+                  </Marker>
+                ))}
+            </Map>
+          </div>
         </CardContent>
       </Card>
 

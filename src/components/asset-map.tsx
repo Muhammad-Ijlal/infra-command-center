@@ -1,12 +1,11 @@
 "use client"
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { Asset } from '@/types/asset'
 import { AIDetection } from '@/types/detection'
 import { Badge } from '@/components/ui/badge'
 import { AlertTriangle, Clock } from 'lucide-react'
-import 'mapbox-gl/dist/mapbox-gl.css'
 
 // Dynamically import Map components to avoid SSR issues
 const Map = dynamic(() => import('react-map-gl/mapbox').then(mod => mod.default), { ssr: false })
@@ -17,36 +16,21 @@ const NavigationControl = dynamic(() => import('react-map-gl/mapbox').then(mod =
 // Import types for proper typing
 import type { MarkerEvent, ViewStateChangeEvent } from 'react-map-gl/mapbox'
 
+// Mapbox token - same as detection modal
+const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
+
 interface AssetMapProps {
   assets: Asset[]
   detections?: AIDetection[]
   height?: string
 }
 
-// Use OpenStreetMap as base layer (no token required)
-const OSM_MAP_STYLE = {
-  version: 8 as const,
-  sources: {
-    'osm': {
-      type: 'raster' as const,
-      tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
-      tileSize: 256,
-      attribution: '© OpenStreetMap contributors'
-    }
-  },
-  layers: [
-    {
-      id: 'osm',
-      type: 'raster' as const,
-      source: 'osm'
-    }
-  ]
-}
 
 export function AssetMap({ assets, detections = [], height = '500px' }: AssetMapProps) {
   const [popupInfo, setPopupInfo] = useState<Asset | AIDetection | null>(null)
   const [popupType, setPopupType] = useState<'asset' | 'detection' | null>(null)
   const [isMapLoaded, setIsMapLoaded] = useState(false)
+  const [isClient, setIsClient] = useState(false)
   
   // Filter assets with valid location data
   const assetsWithLocation = assets.filter(asset => asset.location)
@@ -76,6 +60,11 @@ export function AssetMap({ assets, detections = [], height = '500px' }: AssetMap
     latitude: centerLat,
     zoom: 12
   })
+
+  // Ensure we're on the client side before rendering map
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   const getAssetMarkerColor = (status: Asset['status']) => {
     switch (status) {
@@ -129,6 +118,20 @@ export function AssetMap({ assets, detections = [], height = '500px' }: AssetMap
     setPopupType(null)
   }, [])
 
+  // Don't render map on server side
+  if (!isClient) {
+    return (
+      <div style={{ height, width: '100%', borderRadius: '12px', overflow: 'hidden' }}>
+        <div className="flex items-center justify-center h-full bg-gray-100">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+            <p className="text-sm text-gray-600">Loading map...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div style={{ height, width: '100%', borderRadius: '12px', overflow: 'hidden' }}>
       {!isMapLoaded && (
@@ -143,7 +146,8 @@ export function AssetMap({ assets, detections = [], height = '500px' }: AssetMap
         {...viewState}
         onMove={(evt: ViewStateChangeEvent) => setViewState(evt.viewState)}
         onLoad={() => setIsMapLoaded(true)}
-        mapStyle={OSM_MAP_STYLE}
+        mapStyle="mapbox://styles/mapbox/streets-v12"
+        mapboxAccessToken={MAPBOX_TOKEN}
         style={{ width: '100%', height: '100%' }}
       >
         <NavigationControl position="top-right" />
