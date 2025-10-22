@@ -85,26 +85,26 @@ CREATE POLICY "Users can view all GIS layers" ON gis_layers
   FOR SELECT USING (true);
 
 CREATE POLICY "Authenticated users can create GIS layers" ON gis_layers
-  FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+  FOR INSERT WITH CHECK (auth.uid() IS NOT NULL OR auth.role() = 'service_role');
 
 CREATE POLICY "Users can update their own GIS layers" ON gis_layers
-  FOR UPDATE USING (auth.uid() = created_by);
+  FOR UPDATE USING (auth.uid() = created_by OR auth.role() = 'service_role');
 
 CREATE POLICY "Users can delete their own GIS layers" ON gis_layers
-  FOR DELETE USING (auth.uid() = created_by);
+  FOR DELETE USING (auth.uid() = created_by OR auth.role() = 'service_role');
 
 -- Create policies for gis_features
 CREATE POLICY "Users can view all GIS features" ON gis_features
   FOR SELECT USING (true);
 
 CREATE POLICY "Authenticated users can create GIS features" ON gis_features
-  FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+  FOR INSERT WITH CHECK (auth.uid() IS NOT NULL OR auth.role() = 'service_role');
 
 CREATE POLICY "Users can update GIS features" ON gis_features
-  FOR UPDATE USING (auth.uid() IS NOT NULL);
+  FOR UPDATE USING (auth.uid() IS NOT NULL OR auth.role() = 'service_role');
 
 CREATE POLICY "Users can delete GIS features" ON gis_features
-  FOR DELETE USING (auth.uid() IS NOT NULL);
+  FOR DELETE USING (auth.uid() IS NOT NULL OR auth.role() = 'service_role');
 
 -- Create triggers to automatically update updated_at timestamps
 CREATE TRIGGER update_gis_layers_updated_at
@@ -114,6 +114,95 @@ CREATE TRIGGER update_gis_layers_updated_at
 
 CREATE TRIGGER update_gis_features_updated_at
   BEFORE UPDATE ON gis_features
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- Create assets table for storing infrastructure assets with integrated passport data
+CREATE TABLE IF NOT EXISTS assets (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  asset_id TEXT UNIQUE NOT NULL, -- Custom asset identifier (e.g., ASSET-GR-001)
+  name TEXT NOT NULL,
+  category TEXT NOT NULL, -- 'guardrail', 'street_light_pole', etc.
+  status TEXT NOT NULL DEFAULT 'operational', -- 'operational', 'maintenance_required', 'under_maintenance'
+  last_maintenance_date DATE,
+  next_maintenance_date DATE,
+  impact_score INTEGER DEFAULT 0,
+  location_lat DECIMAL(10, 8),
+  location_lng DECIMAL(11, 8),
+  location_address TEXT,
+  gis_layer_id UUID REFERENCES gis_layers(id) ON DELETE SET NULL,
+  gis_feature_id UUID REFERENCES gis_features(id) ON DELETE SET NULL,
+  -- Asset passport data stored as JSONB (all GDB properties + computed fields)
+  passport_data JSONB NOT NULL DEFAULT '{}', -- Contains all GDB properties and computed asset info
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL
+);
+
+-- Create maintenance_records table for storing maintenance history
+CREATE TABLE IF NOT EXISTS maintenance_records (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  asset_id UUID REFERENCES assets(id) ON DELETE CASCADE NOT NULL,
+  record_id TEXT NOT NULL,
+  date DATE NOT NULL,
+  type TEXT NOT NULL, -- 'routine', 'emergency', 'preventive'
+  description TEXT,
+  technician TEXT,
+  cost DECIMAL(10, 2),
+  status TEXT NOT NULL DEFAULT 'completed', -- 'completed', 'in_progress', 'scheduled'
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(asset_id, record_id)
+);
+
+-- Create indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_assets_category ON assets(category);
+CREATE INDEX IF NOT EXISTS idx_assets_status ON assets(status);
+CREATE INDEX IF NOT EXISTS idx_assets_location ON assets(location_lat, location_lng);
+CREATE INDEX IF NOT EXISTS idx_assets_gis_layer ON assets(gis_layer_id);
+CREATE INDEX IF NOT EXISTS idx_assets_gis_feature ON assets(gis_feature_id);
+CREATE INDEX IF NOT EXISTS idx_assets_passport_data ON assets USING GIN(passport_data);
+CREATE INDEX IF NOT EXISTS idx_maintenance_records_asset ON maintenance_records(asset_id);
+CREATE INDEX IF NOT EXISTS idx_maintenance_records_date ON maintenance_records(date);
+
+-- Enable Row Level Security for asset tables
+ALTER TABLE assets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE maintenance_records ENABLE ROW LEVEL SECURITY;
+
+-- Create policies for assets
+CREATE POLICY "Users can view all assets" ON assets
+  FOR SELECT USING (true);
+
+CREATE POLICY "Authenticated users can create assets" ON assets
+  FOR INSERT WITH CHECK (auth.uid() IS NOT NULL OR auth.role() = 'service_role');
+
+CREATE POLICY "Users can update assets" ON assets
+  FOR UPDATE USING (auth.uid() IS NOT NULL OR auth.role() = 'service_role');
+
+CREATE POLICY "Users can delete assets" ON assets
+  FOR DELETE USING (auth.uid() IS NOT NULL OR auth.role() = 'service_role');
+
+-- Create policies for maintenance_records
+CREATE POLICY "Users can view all maintenance records" ON maintenance_records
+  FOR SELECT USING (true);
+
+CREATE POLICY "Authenticated users can create maintenance records" ON maintenance_records
+  FOR INSERT WITH CHECK (auth.uid() IS NOT NULL OR auth.role() = 'service_role');
+
+CREATE POLICY "Users can update maintenance records" ON maintenance_records
+  FOR UPDATE USING (auth.uid() IS NOT NULL OR auth.role() = 'service_role');
+
+CREATE POLICY "Users can delete maintenance records" ON maintenance_records
+  FOR DELETE USING (auth.uid() IS NOT NULL OR auth.role() = 'service_role');
+
+-- Create triggers to automatically update updated_at timestamps
+CREATE TRIGGER update_assets_updated_at
+  BEFORE UPDATE ON assets
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_maintenance_records_updated_at
+  BEFORE UPDATE ON maintenance_records
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
