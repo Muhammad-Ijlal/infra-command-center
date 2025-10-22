@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -61,7 +61,7 @@ export default function AssetsPage() {
   }
 
   // Fetch assets from database with pagination
-  const fetchAssets = async (page: number = currentPage) => {
+  const fetchAssets = useCallback(async (page: number = currentPage) => {
     try {
       setLoading(true)
       const offset = (page - 1) * ITEMS_PER_PAGE
@@ -81,12 +81,12 @@ export default function AssetsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [currentPage])
 
   useEffect(() => {
     fetchStats() // Fetch stats first
     fetchAssets(currentPage)
-  }, [currentPage])
+  }, [currentPage, fetchAssets])
 
   // Handle GDB import completion
   const handleImportComplete = () => {

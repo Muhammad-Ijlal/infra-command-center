@@ -29,8 +29,8 @@ export function useSupabaseQuery({
   const [error, setError] = useState<PostgrestError | null>(null)
 
   // Memoize filters and orderBy to prevent unnecessary re-renders
-  const memoizedFilters = useMemo(() => filters, [JSON.stringify(filters)])
-  const memoizedOrderBy = useMemo(() => orderBy, [JSON.stringify(orderBy)])
+  const memoizedFilters = useMemo(() => filters, [filters])
+  const memoizedOrderBy = useMemo(() => orderBy, [orderBy])
 
   const fetchData = useCallback(async () => {
     try {

@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic'
 import { Asset } from '@/types/asset'
 import { AIDetection } from '@/types/detection'
 import { Badge } from '@/components/ui/badge'
-import { AlertTriangle, Clock, CheckCircle2 } from 'lucide-react'
+import { AlertTriangle, Clock } from 'lucide-react'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
 // Dynamically import Map components to avoid SSR issues
@@ -13,6 +13,9 @@ const Map = dynamic(() => import('react-map-gl/mapbox').then(mod => mod.default)
 const Marker = dynamic(() => import('react-map-gl/mapbox').then(mod => mod.Marker), { ssr: false })
 const Popup = dynamic(() => import('react-map-gl/mapbox').then(mod => mod.Popup), { ssr: false })
 const NavigationControl = dynamic(() => import('react-map-gl/mapbox').then(mod => mod.NavigationControl), { ssr: false })
+
+// Import types for proper typing
+import type { MarkerEvent, ViewStateChangeEvent } from 'react-map-gl/mapbox'
 
 interface AssetMapProps {
   assets: Asset[]
@@ -138,7 +141,7 @@ export function AssetMap({ assets, detections = [], height = '500px' }: AssetMap
       )}
       <Map
         {...viewState}
-        onMove={(evt: any) => setViewState(evt.viewState)}
+        onMove={(evt: ViewStateChangeEvent) => setViewState(evt.viewState)}
         onLoad={() => setIsMapLoaded(true)}
         mapStyle={OSM_MAP_STYLE}
         style={{ width: '100%', height: '100%' }}
@@ -152,7 +155,7 @@ export function AssetMap({ assets, detections = [], height = '500px' }: AssetMap
             longitude={asset.location!.lng}
             latitude={asset.location!.lat}
             anchor="bottom"
-            onClick={(e: any) => {
+            onClick={(e: MarkerEvent<MouseEvent>) => {
               e.originalEvent.stopPropagation()
               onAssetMarkerClick(asset)
             }}
@@ -204,7 +207,7 @@ export function AssetMap({ assets, detections = [], height = '500px' }: AssetMap
             longitude={detection.location!.lng}
             latitude={detection.location!.lat}
             anchor="bottom"
-            onClick={(e: any) => {
+            onClick={(e: MarkerEvent<MouseEvent>) => {
               e.originalEvent.stopPropagation()
               onDetectionMarkerClick(detection)
             }}
