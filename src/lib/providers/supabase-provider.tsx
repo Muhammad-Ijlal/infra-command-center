@@ -43,8 +43,12 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
+    let mounted = true
+
     // Get initial session
     supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!mounted) return
+      
       setSession(session)
       setUser(session?.user ?? null)
       
@@ -58,7 +62,14 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return
+      
+      // Only show loading for sign in/out events, not token refresh
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+        setLoading(true)
+      }
+      
       setSession(session)
       setUser(session?.user ?? null)
       
@@ -71,7 +82,10 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
       setLoading(false)
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
   }, [])
 
   const signIn = async (email: string, password: string) => {

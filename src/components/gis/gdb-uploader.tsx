@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useGis } from '@/hooks/use-gis'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -13,13 +12,17 @@ import { Progress } from '@/components/ui/progress'
 import { Upload, FileText, MapPin, CheckCircle, AlertCircle, Loader2, Building } from 'lucide-react'
 import { GdbLayerInfo, GdbImportResult } from '@/types/gis'
 
-export function GdbUploader() {
-  const { loading, error } = useGis()
-  
+interface GdbUploaderProps {
+  onImportComplete?: () => void
+}
+
+export function GdbUploader({ onImportComplete }: GdbUploaderProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [availableLayers, setAvailableLayers] = useState<GdbLayerInfo[]>([])
   const [selectedLayer, setSelectedLayer] = useState('')
   const [conversionLoading, setConversionLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [importOptions, setImportOptions] = useState({
     layer_name: '',
     description: '',
@@ -84,6 +87,7 @@ export function GdbUploader() {
       if (result.success) {
         setImportResults([result.data])
         setCurrentStep('complete')
+        onImportComplete?.()
       } else {
         throw new Error(result.error)
       }
@@ -111,6 +115,7 @@ export function GdbUploader() {
       if (result.success) {
         setImportResults(result.data)
         setCurrentStep('complete')
+        onImportComplete?.()
       } else {
         throw new Error(result.error)
       }
@@ -146,6 +151,7 @@ export function GdbUploader() {
           warnings: [`Created ${result.data.assets_created} assets from ${selectedLayer} layer`]
         }])
         setCurrentStep('complete')
+        onImportComplete?.()
       } else {
         throw new Error(result.error)
       }
@@ -243,14 +249,44 @@ export function GdbUploader() {
 
               {availableLayers.length > 0 && (
                 <div className="space-y-4">
-                  <div>
+                  {/* Layer Summary */}
+                  <div className="bg-blue-50 p-3 rounded-lg">
+                    <div className="text-sm font-medium text-blue-900 mb-1">Layer Analysis Complete</div>
+                    <div className="text-sm text-blue-700">
+                      Found {availableLayers.length} total layers
+                      {availableLayers.filter(l => l.feature_count > 0).length > 0 && (
+                        <span className="ml-2">
+                          • {availableLayers.filter(l => l.feature_count > 0).length} with data
+                        </span>
+                      )}
+                      {availableLayers.filter(l => l.feature_count === 0).length > 0 && (
+                        <span className="ml-2 text-blue-600">
+                          • {availableLayers.filter(l => l.feature_count === 0).length} empty (hidden)
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {availableLayers.filter(l => l.feature_count > 0).length === 0 ? (
+                    <div className="text-center py-8">
+                      <AlertCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                      <h3 className="text-lg font-semibold mb-2">No Data Found</h3>
+                      <p className="text-muted-foreground">
+                        All layers in this GDB file are empty. Please check your file or try a different one.
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <div>
                     <Label htmlFor="layer-select">Select Layer to Import</Label>
                     <Select value={selectedLayer} onValueChange={setSelectedLayer}>
                       <SelectTrigger>
                         <SelectValue placeholder="Choose a layer..." />
                       </SelectTrigger>
                       <SelectContent>
-                        {availableLayers.map((layer) => (
+                        {availableLayers
+                          .filter(layer => layer.feature_count > 0)
+                          .map((layer) => (
                           <SelectItem key={layer.name} value={layer.name}>
                             <div className="flex items-center gap-2">
                               <MapPin className="h-4 w-4" />
@@ -263,6 +299,9 @@ export function GdbUploader() {
                         ))}
                       </SelectContent>
                     </Select>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Only layers with data are shown. Empty layers are automatically filtered out.
+                    </p>
                   </div>
 
                   <div className="space-y-4">
@@ -280,7 +319,7 @@ export function GdbUploader() {
                         variant="outline"
                         className="w-full"
                       >
-                        Import All Layers
+                        Import All Layers with Data
                       </Button>
                     </div>
                     
@@ -310,6 +349,8 @@ export function GdbUploader() {
                       </div>
                     )}
                   </div>
+                    </>
+                  )}
                 </div>
               )}
             </div>

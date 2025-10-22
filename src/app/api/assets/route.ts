@@ -11,14 +11,7 @@ export async function GET(request: NextRequest) {
 
     let query = supabaseAdmin
       .from('assets')
-      .select(`
-        *,
-        gis_layers (
-          name,
-          layer_type,
-          geometry_type
-        )
-      `)
+      .select('*')
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1)
 

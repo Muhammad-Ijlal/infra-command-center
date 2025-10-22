@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { PostgrestError } from '@supabase/supabase-js'
 
@@ -28,7 +28,11 @@ export function useSupabaseQuery<T = Record<string, unknown>>({
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<PostgrestError | null>(null)
 
-  const fetchData = async () => {
+  // Memoize filters and orderBy to prevent unnecessary re-renders
+  const memoizedFilters = useMemo(() => filters, [JSON.stringify(filters)])
+  const memoizedOrderBy = useMemo(() => orderBy, [JSON.stringify(orderBy)])
+
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -36,15 +40,15 @@ export function useSupabaseQuery<T = Record<string, unknown>>({
       let query = supabase.from(table).select(select)
 
       // Apply filters
-      Object.entries(filters).forEach(([key, value]) => {
+      Object.entries(memoizedFilters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
           query = query.eq(key, value)
         }
       })
 
       // Apply ordering
-      if (orderBy) {
-        query = query.order(orderBy.column, { ascending: orderBy.ascending ?? true })
+      if (memoizedOrderBy) {
+        query = query.order(memoizedOrderBy.column, { ascending: memoizedOrderBy.ascending ?? true })
       }
 
       // Apply limit
@@ -65,11 +69,11 @@ export function useSupabaseQuery<T = Record<string, unknown>>({
     } finally {
       setLoading(false)
     }
-  }
+  }, [table, select, memoizedFilters, memoizedOrderBy, limit])
 
   useEffect(() => {
     fetchData()
-  }, [table, select, JSON.stringify(filters), JSON.stringify(orderBy), limit])
+  }, [fetchData])
 
   return {
     data,

@@ -3,19 +3,26 @@
 import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Upload, Layers, MapPin } from 'lucide-react'
+import { Upload, Building, MapPin } from 'lucide-react'
 import { GdbUploader } from '@/components/gis/gdb-uploader'
-import { GisLayersList } from '@/components/gis/gis-layers-list'
+import { ImportedAssetsList } from '@/components/gis/imported-assets-list'
 
 export default function GisManagementPage() {
   const [activeTab, setActiveTab] = useState('upload')
+  const [importCompleted, setImportCompleted] = useState(false)
+
+  const handleImportComplete = () => {
+    setImportCompleted(true)
+    // Switch to assets tab after import
+    setActiveTab('assets')
+  }
 
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold">GIS Data Management</h1>
         <p className="text-muted-foreground">
-          Upload, process, and manage GIS data from .GDB files in your Supabase database
+          Upload .GDB files and automatically create infrastructure assets
         </p>
       </div>
 
@@ -25,9 +32,9 @@ export default function GisManagementPage() {
             <Upload className="h-4 w-4" />
             Upload .GDB Files
           </TabsTrigger>
-          <TabsTrigger value="layers" className="flex items-center gap-2">
-            <Layers className="h-4 w-4" />
-            Manage Layers
+          <TabsTrigger value="assets" className="flex items-center gap-2">
+            <Building className="h-4 w-4" />
+            Imported Assets
           </TabsTrigger>
         </TabsList>
 
@@ -38,16 +45,20 @@ export default function GisManagementPage() {
                 <MapPin className="h-5 w-5" />
                 GIS Data Import
               </CardTitle>
+              <CardDescription>
+                Upload .GDB files to automatically create infrastructure assets. 
+                Each feature in your GIS data will become an asset with full passport information.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <GdbUploader />
+                <GdbUploader onImportComplete={handleImportComplete} />
               </div>
             </CardContent>
           </Card>
         </TabsContent>
-        <TabsContent value="layers" className="space-y-6">
-          <GisLayersList />
+        <TabsContent value="assets" className="space-y-6">
+          <ImportedAssetsList onImportComplete={importCompleted ? handleImportComplete : undefined} />
         </TabsContent>
       </Tabs>
     </div>

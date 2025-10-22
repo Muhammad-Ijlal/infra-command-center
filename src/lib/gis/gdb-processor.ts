@@ -3,17 +3,20 @@ import { promisify } from 'util'
 import { readFile, unlink } from 'fs/promises'
 import { join } from 'path'
 import { tmpdir } from 'os'
-import { GisLayer, GisFeature, GdbLayerInfo, GdbImportResult, GdbImportOptions, LayerType, GeometryType } from '@/types/gis'
+import { GisLayer, GisFeature, GdbLayerInfo, GdbImportResult, GdbImportOptions, LayerType, GeometryType, GdbFieldInfo, GeoJSONFeature } from '@/types/gis'
 import { supabaseAdmin } from '@/lib/supabase/server'
 import { extractGdbZip, cleanupExtractedFiles } from './zip-processor'
+import { AssetConverter, AssetFromGdb } from './asset-converter'
 
 const execAsync = promisify(exec)
 
 export class GdbProcessor {
   private tempDir: string
+  private assetConverter: AssetConverter
 
   constructor() {
     this.tempDir = tmpdir()
+    this.assetConverter = new AssetConverter()
   }
 
   /**
@@ -33,16 +36,17 @@ export class GdbProcessor {
   }
 
   /**
-   * List all layers in a .gdb file
+   * List all layers in a .gdb file with feature counts
    */
   async listLayers(gdbPath: string): Promise<GdbLayerInfo[]> {
     try {
-      // Use ogrinfo to get layer information
+      // First, get all layers with basic info
       const { stdout } = await execAsync(`ogrinfo -so "${gdbPath}"`)
       
       const layers: GdbLayerInfo[] = []
       const lines = stdout.split('\n')
 
+      // Parse layer information
       for (const line of lines) {
         const trimmed = line.trim()
         
@@ -67,10 +71,73 @@ export class GdbProcessor {
               name: layerName,
               type: this.mapLayerType(geometryType),
               geometry_type: this.mapGeometryType(geometryType),
-              feature_count: 0, // We'll get this from ogrinfo -al if needed
+              feature_count: 0, // Will be updated below
               fields: [],
               extent: undefined
             })
+          }
+        }
+      }
+
+      // Now get feature counts for all layers efficiently
+      if (layers.length > 0) {
+        try {
+          // Use ogrinfo with -al flag to get detailed info for all layers at once
+          const { stdout: detailStdout } = await execAsync(`ogrinfo -al "${gdbPath}"`)
+          const detailLines = detailStdout.split('\n')
+          
+          let currentLayerIndex = -1
+          for (const line of detailLines) {
+            const trimmed = line.trim()
+            
+            // Check if this is a layer header
+            if (trimmed.startsWith('Layer name:')) {
+              const layerNameMatch = trimmed.match(/Layer name:\s*(.+)/)
+              if (layerNameMatch) {
+                const layerName = layerNameMatch[1].trim()
+                currentLayerIndex = layers.findIndex(l => l.name === layerName)
+              }
+            }
+            
+            // Check for feature count
+            if (trimmed.startsWith('Feature Count:') && currentLayerIndex >= 0) {
+              const countMatch = trimmed.match(/Feature Count:\s*(\d+)/)
+              if (countMatch) {
+                layers[currentLayerIndex].feature_count = parseInt(countMatch[1], 10)
+              }
+            }
+          }
+        } catch (detailError) {
+          console.warn('Failed to get detailed layer info, falling back to individual queries:', detailError)
+          
+          // Fallback: get feature count for each layer individually
+          for (let i = 0; i < layers.length; i++) {
+            const layer = layers[i]
+            try {
+              const { stdout: countStdout } = await execAsync(`ogrinfo -so -al "${gdbPath}" "${layer.name}"`)
+              const countMatch = countStdout.match(/Feature Count:\s*(\d+)/)
+              if (countMatch) {
+                layer.feature_count = parseInt(countMatch[1], 10)
+              }
+            } catch (countError) {
+              console.warn(`Failed to get feature count for layer ${layer.name}:`, countError)
+              // Try alternative method using ogrinfo with -q flag
+              try {
+                const { stdout: altStdout } = await execAsync(`ogrinfo -q "${gdbPath}" "${layer.name}"`)
+                const altLines = altStdout.split('\n')
+                for (const line of altLines) {
+                  if (line.includes('Feature Count:')) {
+                    const match = line.match(/Feature Count:\s*(\d+)/)
+                    if (match) {
+                      layer.feature_count = parseInt(match[1], 10)
+                      break
+                    }
+                  }
+                }
+              } catch (altError) {
+                console.warn(`Alternative count method also failed for layer ${layer.name}:`, altError)
+              }
+            }
           }
         }
       }
@@ -79,6 +146,116 @@ export class GdbProcessor {
     } catch (error) {
       console.error('Error listing GDB layers:', error)
       throw new Error(`Failed to list layers from GDB file: ${error}`)
+    }
+  }
+
+  /**
+   * Get detailed information about a specific layer including fields
+   */
+  async getLayerDetails(gdbPath: string, layerName: string): Promise<GdbLayerInfo | null> {
+    try {
+      const { stdout } = await execAsync(`ogrinfo -so -al "${gdbPath}" "${layerName}"`)
+      const lines = stdout.split('\n')
+      
+      let layerInfo: GdbLayerInfo | null = null
+      let currentField: GdbFieldInfo | null = null
+      const fields: GdbFieldInfo[] = []
+      
+      for (const line of lines) {
+        const trimmed = line.trim()
+        
+        // Parse layer name and geometry type
+        if (trimmed.startsWith('Layer name:')) {
+          const nameMatch = trimmed.match(/Layer name:\s*(.+)/)
+          if (nameMatch) {
+            layerInfo = {
+              name: nameMatch[1].trim(),
+              type: 'point', // Will be updated below
+              geometry_type: 'POINT', // Will be updated below
+              feature_count: 0,
+              fields: [],
+              extent: undefined
+            }
+          }
+        }
+        
+        // Parse geometry type
+        if (trimmed.startsWith('Geometry:')) {
+          const geomMatch = trimmed.match(/Geometry:\s*(.+)/)
+          if (geomMatch && layerInfo) {
+            const geomType = geomMatch[1].trim()
+            layerInfo.type = this.mapLayerType(geomType)
+            layerInfo.geometry_type = this.mapGeometryType(geomType)
+          }
+        }
+        
+        // Parse feature count
+        if (trimmed.startsWith('Feature Count:')) {
+          const countMatch = trimmed.match(/Feature Count:\s*(\d+)/)
+          if (countMatch && layerInfo) {
+            layerInfo.feature_count = parseInt(countMatch[1], 10)
+          }
+        }
+        
+        // Parse extent
+        if (trimmed.startsWith('Extent:')) {
+          const extentMatch = trimmed.match(/Extent:\s*\(([^,]+),\s*([^)]+)\)\s*-\s*\(([^,]+),\s*([^)]+)\)/)
+          if (extentMatch && layerInfo) {
+            layerInfo.extent = {
+              min_x: parseFloat(extentMatch[1]),
+              min_y: parseFloat(extentMatch[2]),
+              max_x: parseFloat(extentMatch[3]),
+              max_y: parseFloat(extentMatch[4])
+            }
+          }
+        }
+        
+        // Parse fields
+        if (trimmed.startsWith('Field')) {
+          const fieldMatch = trimmed.match(/Field\s+(\d+):\s*(.+)/)
+          if (fieldMatch) {
+            currentField = {
+              name: fieldMatch[2].trim(),
+              type: '',
+              length: 0,
+              precision: 0,
+              nullable: true
+            }
+          }
+        }
+        
+        if (currentField && trimmed.startsWith('Type:')) {
+          const typeMatch = trimmed.match(/Type:\s*(.+)/)
+          if (typeMatch) {
+            currentField.type = typeMatch[1].trim()
+          }
+        }
+        
+        if (currentField && trimmed.startsWith('Width:')) {
+          const widthMatch = trimmed.match(/Width:\s*(\d+)/)
+          if (widthMatch) {
+            currentField.length = parseInt(widthMatch[1], 10)
+          }
+        }
+        
+        if (currentField && trimmed.startsWith('Precision:')) {
+          const precisionMatch = trimmed.match(/Precision:\s*(\d+)/)
+          if (precisionMatch) {
+            currentField.precision = parseInt(precisionMatch[1], 10)
+            fields.push(currentField)
+            currentField = null
+          }
+        }
+      }
+      
+      if (layerInfo) {
+        layerInfo.fields = fields
+      }
+      
+      return layerInfo
+    } catch (error) {
+      console.error(`Error getting layer details for ${layerName}:`, error)
+      return null
     }
   }
 
@@ -108,7 +285,7 @@ export class GdbProcessor {
   }
 
   /**
-   * Import a .gdb layer into Supabase
+   * Import a .gdb layer directly as assets (simplified flow)
    */
   async importLayer(
     gdbPath: string,
@@ -132,6 +309,8 @@ export class GdbProcessor {
         return result
       }
 
+      console.log(`Importing layer: ${layerName} with ${layerInfo.feature_count} features`)
+
       // Convert layer to GeoJSON
       const geoJsonPath = await this.convertLayerToGeoJSON(gdbPath, layerName)
       console.log('GeoJSON path:', geoJsonPath)
@@ -141,59 +320,64 @@ export class GdbProcessor {
         const geoJsonContent = await readFile(geoJsonPath, 'utf-8')
         const geoJson = JSON.parse(geoJsonContent)
         console.log('GeoJSON features count:', geoJson.features?.length || 0)
-
-        // Create the layer record in Supabase
-        const { data: layerData, error: layerError } = await supabaseAdmin
-          .from('gis_layers')
-          .insert({
-            name: options.layer_name || layerName,
-            description: options.description || `Imported from ${gdbPath}`,
-            source_file: gdbPath,
-            layer_type: layerInfo.type,
-            geometry_type: layerInfo.geometry_type,
-            srid: options.srid || 4326
-          })
-          .select()
-          .single()
-
-        if (layerError) {
-          result.errors.push(`Failed to create layer: ${layerError.message}`)
+        
+        if (!geoJson.features || geoJson.features.length === 0) {
+          result.errors.push('No features found in the layer')
           return result
         }
 
-        result.layer_id = layerData.id
+        // Convert features to GisFeature format for asset converter
+        const gisFeatures: GisFeature[] = geoJson.features.map((feature: GeoJSONFeature, index: number) => ({
+          id: `temp_${index}`,
+          layer_id: 'temp_layer',
+          feature_id: feature.id?.toString() || `feature_${index}`,
+          geometry: feature.geometry,
+          properties: feature.properties || {},
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }))
 
-        // Import features in batches
-        const batchSize = options.batch_size || 1000
-        const features = geoJson.features || []
-        
-        for (let i = 0; i < features.length; i += batchSize) {
-          const batch = features.slice(i, i + batchSize)
+        console.log(`Converting ${gisFeatures.length} features to assets...`)
+
+        // Convert features to assets
+        const assets = await this.assetConverter.convertGdbFeaturesToAssets(layerName, gisFeatures)
+        console.log(`Created ${assets.length} assets from features`)
+
+        // Set source information for all assets
+        assets.forEach(asset => {
+          asset.source_file = gdbPath
+          asset.source_layer = layerName
+        })
+
+        // Save assets to database in batches
+        const batchSize = options.batch_size || 100
+        let totalAssetsCreated = 0
+
+        for (let i = 0; i < assets.length; i += batchSize) {
+          const batch = assets.slice(i, i + batchSize)
           
-          const featuresToInsert = batch.map((feature: GisFeature) => ({
-            layer_id: layerData.id,
-            feature_id: feature.id?.toString() || `feature_${i + batch.indexOf(feature)}`,
-            geometry: feature.geometry,
-            properties: feature.properties || {}
-          }))
+          console.log(`Saving asset batch ${Math.floor(i / batchSize) + 1} with ${batch.length} assets`)
 
-          const { error: featuresError } = await supabaseAdmin
-            .from('gis_features')
-            .insert(featuresToInsert)
-
-          if (featuresError) {
+          const saveResult = await this.assetConverter.saveAssetsToDatabase(batch, gdbPath)
+          
+          if (saveResult.success) {
+            totalAssetsCreated += saveResult.assetIds.length
+            console.log(`Successfully saved ${saveResult.assetIds.length} assets`)
+          } else {
+            console.error('Asset save errors:', saveResult.errors)
             if (options.skip_errors) {
-              result.warnings.push(`Batch ${Math.floor(i / batchSize) + 1} failed: ${featuresError.message}`)
+              result.warnings.push(`Asset batch ${Math.floor(i / batchSize) + 1} failed: ${saveResult.errors.join(', ')}`)
             } else {
-              result.errors.push(`Failed to insert features batch: ${featuresError.message}`)
+              result.errors.push(`Failed to save asset batch: ${saveResult.errors.join(', ')}`)
               return result
             }
-          } else {
-            result.features_imported += featuresToInsert.length
           }
         }
 
         result.success = true
+        result.features_imported = totalAssetsCreated
+        console.log(`Import completed successfully. Created ${totalAssetsCreated} assets.`)
+
         return result
 
       } finally {
@@ -206,13 +390,14 @@ export class GdbProcessor {
       }
 
     } catch (error) {
+      console.error('Import failed:', error)
       result.errors.push(`Import failed: ${error}`)
       return result
     }
   }
 
   /**
-   * Import all layers from a .gdb file
+   * Import all layers from a .gdb file as assets
    */
   async importAllLayers(
     gdbPath: string,
@@ -221,7 +406,13 @@ export class GdbProcessor {
     const layers = await this.listLayers(gdbPath)
     const results: GdbImportResult[] = []
 
-    for (const layer of layers) {
+    // Only import layers that have features
+    const layersWithFeatures = layers.filter(layer => layer.feature_count > 0)
+    
+    console.log(`Found ${layersWithFeatures.length} layers with features to import`)
+
+    for (const layer of layersWithFeatures) {
+      console.log(`Importing layer: ${layer.name} (${layer.feature_count} features)`)
       const result = await this.importLayer(gdbPath, layer.name, {
         ...options,
         layer_name: options.layer_name ? `${options.layer_name}_${layer.name}` : layer.name

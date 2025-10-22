@@ -11,6 +11,7 @@ import {
   Building2,
   Wrench,
   MapPin,
+  ClipboardList,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -29,6 +30,7 @@ import {
 
 export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations('common')
+  const tLanding = useTranslations('landing')
   const locale = useLocale()
   const { theme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = React.useState(false)
@@ -67,6 +69,12 @@ export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typ
       title: t('gisManagement'),
       url: `/${locale}/gis-management`,
       icon: MapPin,
+    },
+    {
+      title: t('surveys'),
+      url: '#',
+      icon: ClipboardList,
+      disabled: true,
     },
   ]
 
@@ -112,7 +120,7 @@ export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typ
         {/* Standards & Compliance */}
         <div className="border-sidebar-border group-data-[collapsible=icon]:hidden border-t px-3 py-3">
           <p className="text-muted-foreground mb-2 text-[10px] font-semibold uppercase tracking-wider">
-            {t('landing.builtToMeetStandards')}
+            {tLanding('builtToMeetStandards')}
           </p>
           <div className="flex flex-wrap gap-1.5" dir="ltr">
             <div className="bg-sidebar-accent/50 border-sidebar-border flex items-center gap-1 rounded border px-2 py-0.5">

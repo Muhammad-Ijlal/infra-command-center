@@ -23,8 +23,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { CheckCircle2, AlertTriangle, Clock, Eye, MapPin, Activity, FileText, ArrowRight, Image as ImageIcon, ExternalLink, User } from "lucide-react"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { CheckCircle2, AlertTriangle, Clock, Eye, MapPin, Activity, FileText, ArrowRight, Image as ImageIcon, ExternalLink, User, Upload, Camera } from "lucide-react"
 import { SummaryCard } from "@/components/summary-card"
 import { mockDetections } from "@/data/mock-detections"
 import { mockAssets } from "@/data/mock-assets"
@@ -49,7 +59,12 @@ export default function AIDetectionsPage() {
   const searchParams = useSearchParams()
   const [detections, setDetections] = useState<AIDetection[]>(mockDetections)
   const [selectedDetection, setSelectedDetection] = useState<AIDetection | null>(null)
-  const [validatedDetections, setValidatedDetections] = useState<Set<string>>(new Set())
+  const [, setValidatedDetections] = useState<Set<string>>(new Set())
+  const [showEngineerModal, setShowEngineerModal] = useState(false)
+  const [selectedEngineer, setSelectedEngineer] = useState<string>('')
+  const [showRepairProofModal, setShowRepairProofModal] = useState(false)
+  const [repairImage, setRepairImage] = useState<File | null>(null)
+  const [repairComment, setRepairComment] = useState('')
 
   // Handle URL parameters to automatically open detection modal
   useEffect(() => {
@@ -82,35 +97,102 @@ export default function AIDetectionsPage() {
   }
 
   const handleAssignEngineer = () => {
-    // TODO: Implement engineer assignment logic
-    console.log('Assign engineer for detection:', selectedDetection?.detection_id)
+    setShowEngineerModal(true)
   }
 
-  const handleAssignSpecificEngineer = (engineerId: string, engineerName: string) => {
-    if (selectedDetection) {
-      // Update the detection with assigned engineer
+  const handleConfirmAssignment = () => {
+    if (selectedDetection && selectedEngineer) {
+      const engineer = mockEngineers.find(e => e.engineer_id === selectedEngineer)
+      if (engineer) {
+        // Update the detection with assigned engineer
+        setDetections(prev =>
+          prev.map(d =>
+            d.detection_id === selectedDetection.detection_id
+              ? { 
+                  ...d, 
+                  status: 'assigned' as const,
+                  assigned_engineer_id: selectedEngineer,
+                  assigned_engineer_name: engineer.name,
+                  assignment_timestamp: new Date().toISOString()
+                }
+              : d
+          )
+        )
+        // Update selected detection
+        setSelectedDetection({
+          ...selectedDetection,
+          status: 'assigned' as const,
+          assigned_engineer_id: selectedEngineer,
+          assigned_engineer_name: engineer.name,
+          assignment_timestamp: new Date().toISOString()
+        })
+        // Close modal and reset selection
+        setShowEngineerModal(false)
+        setSelectedEngineer('')
+      }
+    }
+  }
+
+  const handleCloseEngineerModal = () => {
+    setShowEngineerModal(false)
+    setSelectedEngineer('')
+  }
+
+  const handleUploadRepairProof = () => {
+    setShowRepairProofModal(true)
+  }
+
+  const handleRepairImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      setRepairImage(file)
+    }
+  }
+
+  const handleSubmitRepairProof = () => {
+    if (selectedDetection && repairImage) {
+      // Create a mock URL for the uploaded image
+      const imageUrl = URL.createObjectURL(repairImage)
+      
+      // Update the detection with repair completion
       setDetections(prev =>
         prev.map(d =>
           d.detection_id === selectedDetection.detection_id
-            ? { 
-                ...d, 
-                status: 'assigned' as const,
-                assigned_engineer_id: engineerId,
-                assigned_engineer_name: engineerName,
-                assignment_timestamp: new Date().toISOString()
+            ? {
+                ...d,
+                status: 'completed' as const,
+                repair_image_url: imageUrl,
+                repair_completed_at: new Date().toISOString(),
+                ai_validation_result: 'approved' as const,
+                validation_confidence: 0.95
               }
             : d
         )
       )
-      // Update selected detection
-      setSelectedDetection({
-        ...selectedDetection,
-        status: 'assigned' as const,
-        assigned_engineer_id: engineerId,
-        assigned_engineer_name: engineerName,
-        assignment_timestamp: new Date().toISOString()
-      })
+      
+      // Update selected detection if it's the same one
+      if (selectedDetection) {
+        setSelectedDetection({
+          ...selectedDetection,
+          status: 'completed' as const,
+          repair_image_url: imageUrl,
+          repair_completed_at: new Date().toISOString(),
+          ai_validation_result: 'approved' as const,
+          validation_confidence: 0.95
+        })
+      }
+      
+      // Close modal and reset form
+      setShowRepairProofModal(false)
+      setRepairImage(null)
+      setRepairComment('')
     }
+  }
+
+  const handleCloseRepairProofModal = () => {
+    setShowRepairProofModal(false)
+    setRepairImage(null)
+    setRepairComment('')
   }
 
   const handleViewEngineer = () => {
@@ -252,9 +334,9 @@ export default function AIDetectionsPage() {
                         <p className="text-muted-foreground text-xs">{detection.assigned_engineer_id}</p>
                       </div>
                     ) : (
-                      <Badge variant="outline" className="text-xs">
+                      <span className="text-sm text-muted-foreground">
                         {t('unassigned')}
-                      </Badge>
+                      </span>
                     )}
                   </TableCell>
                   <TableCell>
@@ -405,7 +487,18 @@ export default function AIDetectionsPage() {
                       <ArrowRight className="h-4 w-4" />
                     </Button>
                   )}
-                  {selectedDetection.assigned_engineer_id && (
+                  {selectedDetection.status === 'in_progress' && selectedDetection.assigned_engineer_id && (
+                    <Button
+                      onClick={() => handleUploadRepairProof()}
+                      className="gap-2"
+                      variant="default"
+                    >
+                      <Camera className="h-4 w-4" />
+                      Upload Repair Proof
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  )}
+                  {selectedDetection.status === 'assigned' && selectedDetection.assigned_engineer_id && (
                       <Button
                         onClick={() => handleViewEngineer()}
                         className="gap-2"
@@ -479,6 +572,14 @@ export default function AIDetectionsPage() {
                     <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                       <User className="h-5 w-5" />
                       {t('engineerAssignment')}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleViewEngineer()}
+                        className="h-6 w-6 p-0 hover:bg-muted"
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                      </Button>
                     </h3>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
@@ -524,72 +625,6 @@ export default function AIDetectionsPage() {
                 </>
               )}
 
-              {/* Suitable Engineers for Pending/Validated Detections */}
-              {(selectedDetection.status === 'pending' || selectedDetection.status === 'validated') && selectedDetection.suitable_engineers && selectedDetection.suitable_engineers.length > 0 && (
-                <>
-                  <div>
-                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                      <User className="h-5 w-5" />
-                      {t('suitableEngineers')}
-                    </h3>
-                    <div className="space-y-3">
-                      {selectedDetection.suitable_engineers.map((engineerId) => {
-                        const engineer = mockEngineers.find(e => e.engineer_id === engineerId)
-                        if (!engineer) return null
-                        
-                        return (
-                          <div key={engineerId} className="flex items-center justify-between p-3 border rounded-lg">
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                <User className="h-5 w-5 text-blue-600" />
-                              </div>
-                              <div>
-                                <p className="font-medium">{engineer.name}</p>
-                                <p className="text-sm text-muted-foreground">{engineerId}</p>
-                                <div className="flex gap-2 mt-1">
-                                  {engineer.specialization.map((spec) => (
-                                    <Badge key={spec} variant="outline" className="text-xs">
-                                      {spec.replace(/_/g, ' ')}
-                                    </Badge>
-                                  ))}
-                                </div>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <Badge 
-                                variant={engineer.status === 'available' ? 'default' : 'secondary'}
-                                className="text-xs"
-                              >
-                                {engineer.status}
-                              </Badge>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {engineer.current_assignments}
-                              </p>
-                              {validatedDetections.has(selectedDetection.detection_id) ? (
-                                <Button
-                                  onClick={() => handleAssignSpecificEngineer(engineerId, engineer.name)}
-                                  className="gap-2 mt-2"
-                                  variant="default"
-                                  size="sm"
-                                  disabled={engineer.status === 'offline'}
-                                >
-                                  <User className="h-4 w-4" />
-                                  {t('assignEngineer')}
-                                </Button>
-                              ) : (
-                                <p className="text-xs text-muted-foreground mt-2">
-                                  {t('validateFirst')}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                  <Separator />
-                </>
-              )}
 
               {/* Repair Validation */}
               {selectedDetection.repair_image_url && (
@@ -836,6 +871,198 @@ export default function AIDetectionsPage() {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Engineer Assignment Modal */}
+      <Dialog open={showEngineerModal} onOpenChange={setShowEngineerModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <User className="h-5 w-5" />
+              {t('assignEngineer')}
+            </DialogTitle>
+            <DialogDescription>
+              Select an engineer to assign to this detection
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {/* Engineer Selection */}
+            <div>
+              <label className="text-sm font-medium mb-2 block">
+                Select Engineer
+              </label>
+              <Select value={selectedEngineer} onValueChange={setSelectedEngineer}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose an engineer..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {mockEngineers.map((engineer) => (
+                    <SelectItem key={engineer.engineer_id} value={engineer.engineer_id}>
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${
+                          engineer.status === 'available' ? 'bg-green-500' : 
+                          engineer.status === 'busy' ? 'bg-yellow-500' : 'bg-gray-500'
+                        }`} />
+                        {engineer.name} ({engineer.engineer_id})
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Selected Engineer Details */}
+            {selectedEngineer && (
+              <div className="border rounded-lg p-4 bg-muted/50">
+                {(() => {
+                  const engineer = mockEngineers.find(e => e.engineer_id === selectedEngineer)
+                  if (!engineer) return null
+                  
+                  return (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                          <User className="h-5 w-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium">{engineer.name}</p>
+                          <p className="text-sm text-muted-foreground">{engineer.engineer_id}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <p className="text-muted-foreground">Status</p>
+                          <Badge 
+                            variant={engineer.status === 'available' ? 'default' : 'secondary'}
+                            className="text-xs"
+                          >
+                            {engineer.status}
+                          </Badge>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">Current Assignments</p>
+                          <p className="font-medium">{engineer.current_assignments}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">SLA Compliance</p>
+                          <p className="font-medium">{engineer.sla_compliance_rate}%</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">Completed</p>
+                          <p className="font-medium">{engineer.completed_assignments}</p>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <p className="text-muted-foreground text-sm mb-1">Specializations</p>
+                        <div className="flex flex-wrap gap-1">
+                          {engineer.specialization.map((spec) => (
+                            <Badge key={spec} variant="outline" className="text-xs">
+                              {spec.replace(/_/g, ' ')}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })()}
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex gap-2 pt-4">
+              <Button
+                onClick={handleConfirmAssignment}
+                disabled={!selectedEngineer}
+                className="flex-1"
+              >
+                <User className="h-4 w-4 mr-2" />
+                Confirm Assignment
+              </Button>
+              <Button
+                onClick={handleCloseEngineerModal}
+                variant="outline"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Repair Proof Upload Modal */}
+      <Dialog open={showRepairProofModal} onOpenChange={setShowRepairProofModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Camera className="h-5 w-5" />
+              Upload Repair Proof
+            </DialogTitle>
+            <DialogDescription>
+              Upload an image showing the completed repair work
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {/* Image Upload */}
+            <div>
+              <Label htmlFor="repair-image" className="text-sm font-medium mb-2 block">
+                Repair Image
+              </Label>
+              <Input
+                id="repair-image"
+                type="file"
+                accept="image/*"
+                onChange={handleRepairImageChange}
+                className="cursor-pointer"
+              />
+              {repairImage && (
+                <div className="mt-2 p-2 bg-muted/50 rounded-lg">
+                  <p className="text-sm text-muted-foreground">
+                    Selected: {repairImage.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Size: {(repairImage.size / 1024 / 1024).toFixed(2)} MB
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Comment */}
+            <div>
+              <Label htmlFor="repair-comment" className="text-sm font-medium mb-2 block">
+                Repair Notes (Optional)
+              </Label>
+              <Textarea
+                id="repair-comment"
+                placeholder="Describe the repair work completed..."
+                value={repairComment}
+                onChange={(e) => setRepairComment(e.target.value)}
+                rows={3}
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-2 pt-4">
+              <Button
+                onClick={handleSubmitRepairProof}
+                disabled={!repairImage}
+                className="flex-1"
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Submit Repair Proof
+              </Button>
+              <Button
+                onClick={handleCloseRepairProofModal}
+                variant="outline"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

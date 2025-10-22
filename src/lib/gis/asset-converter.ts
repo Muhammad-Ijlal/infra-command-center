@@ -12,8 +12,8 @@ export interface AssetFromGdb {
   location_lat?: number
   location_lng?: number
   location_address?: string
-  gis_layer_id: string
-  gis_feature_id: string
+  source_file?: string
+  source_layer?: string
   passport_data: Record<string, string | number | boolean | null | undefined | string[]> // All GDB properties + computed fields
 }
 
@@ -102,8 +102,6 @@ export class AssetConverter {
       location_lat: location?.lat,
       location_lng: location?.lng,
       location_address: this.generateAddress(properties),
-      gis_layer_id: '', // Will be set when saving to database
-      gis_feature_id: feature.id,
       passport_data: passportData
     }
   }
@@ -354,16 +352,13 @@ export class AssetConverter {
    */
   async saveAssetsToDatabase(
     assets: AssetFromGdb[],
-    gisLayerId: string
+    sourceFile?: string
   ): Promise<{ success: boolean; assetIds: string[]; errors: string[] }> {
     const assetIds: string[] = []
     const errors: string[] = []
 
     try {
       for (const asset of assets) {
-        // Update asset with GIS layer ID
-        asset.gis_layer_id = gisLayerId
-
         // Insert asset with integrated passport data
         const { data: assetData, error: assetError } = await supabaseAdmin
           .from('assets')
@@ -378,8 +373,8 @@ export class AssetConverter {
             location_lat: asset.location_lat,
             location_lng: asset.location_lng,
             location_address: asset.location_address,
-            gis_layer_id: asset.gis_layer_id,
-            gis_feature_id: asset.gis_feature_id,
+            source_file: asset.source_file || sourceFile,
+            source_layer: asset.source_layer,
             passport_data: asset.passport_data
           })
           .select()
