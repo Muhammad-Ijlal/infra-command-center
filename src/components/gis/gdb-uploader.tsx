@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { useGis } from '@/hooks/use-gis'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -19,6 +19,7 @@ export function GdbUploader() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [availableLayers, setAvailableLayers] = useState<GdbLayerInfo[]>([])
   const [selectedLayer, setSelectedLayer] = useState('')
+  const [conversionLoading, setConversionLoading] = useState(false)
   const [importOptions, setImportOptions] = useState({
     layer_name: '',
     description: '',
@@ -122,7 +123,7 @@ export function GdbUploader() {
     if (!selectedFile || !selectedLayer) return
 
     try {
-      setLoading(true)
+      setConversionLoading(true)
       
       const formData = new FormData()
       formData.append('action', 'convert-to-assets')
@@ -151,7 +152,7 @@ export function GdbUploader() {
     } catch (err) {
       console.error('Failed to convert to assets:', err)
     } finally {
-      setLoading(false)
+      setConversionLoading(false)
     }
   }
 

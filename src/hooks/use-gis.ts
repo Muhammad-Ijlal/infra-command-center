@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { GisLayer, GisFeature, GdbLayerInfo, GdbImportResult, GdbImportOptions } from '@/types/gis'
+import { GisLayer, GisFeature } from '@/types/gis'
 
 interface UseGisResult {
   layers: GisLayer[]

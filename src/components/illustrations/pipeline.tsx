@@ -1,6 +1,5 @@
 import { Brain, Search, CheckCircle, Play } from "lucide-react";
 import * as React from "react";
-import { Beam } from "../ui/beam";
 import Glow from "../ui/glow";
 
 function PipelineIllustration() {

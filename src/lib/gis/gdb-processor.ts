@@ -1,6 +1,6 @@
 import { exec } from 'child_process'
 import { promisify } from 'util'
-import { readFile, writeFile, unlink } from 'fs/promises'
+import { readFile, unlink } from 'fs/promises'
 import { join } from 'path'
 import { tmpdir } from 'os'
 import { GisLayer, GisFeature, GdbLayerInfo, GdbImportResult, GdbImportOptions, LayerType, GeometryType } from '@/types/gis'
@@ -20,7 +20,7 @@ export class GdbProcessor {
    * Process ZIP file containing .gdb folder
    */
   async processZipFile(zipBuffer: Buffer, zipFileName: string): Promise<{ gdbPath: string; cleanup: () => Promise<void> }> {
-    const extractionResult = await extractGdbZip(zipBuffer, zipFileName)
+    const extractionResult = await extractGdbZip(zipBuffer)
     
     if (!extractionResult.success || !extractionResult.extractedPath) {
       throw new Error(extractionResult.error || 'Failed to extract ZIP file')
@@ -170,7 +170,7 @@ export class GdbProcessor {
         for (let i = 0; i < features.length; i += batchSize) {
           const batch = features.slice(i, i + batchSize)
           
-          const featuresToInsert = batch.map((feature: any) => ({
+          const featuresToInsert = batch.map((feature: GisFeature) => ({
             layer_id: layerData.id,
             feature_id: feature.id?.toString() || `feature_${i + batch.indexOf(feature)}`,
             geometry: feature.geometry,

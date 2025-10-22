@@ -1,5 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabase/server'
-import { GisFeature } from '@/types/gis'
+import { GisFeature, GeoJSONGeometry } from '@/types/gis'
 
 export interface AssetFromGdb {
   asset_id: string
@@ -14,7 +14,7 @@ export interface AssetFromGdb {
   location_address?: string
   gis_layer_id: string
   gis_feature_id: string
-  passport_data: Record<string, any> // All GDB properties + computed fields
+  passport_data: Record<string, string | number | boolean | null | undefined | string[]> // All GDB properties + computed fields
 }
 
 export class AssetConverter {
@@ -150,7 +150,7 @@ export class AssetConverter {
   /**
    * Generate asset name from properties
    */
-  private generateAssetName(category: string, properties: Record<string, any>, featureId: string): string {
+  private generateAssetName(category: string, properties: Record<string, string | number | boolean | null | undefined | string[]>, featureId: string): string {
     // Try to use ASSET_TAG or similar field
     if (properties.ASSET_TAG) {
       return `${category.replace('_', ' ').toUpperCase()}: ${properties.ASSET_TAG}`
@@ -168,30 +168,34 @@ export class AssetConverter {
   /**
    * Extract location from geometry
    */
-  private extractLocationFromGeometry(geometry: any): { lat: number; lng: number } | null {
+  private extractLocationFromGeometry(geometry: GeoJSONGeometry): { lat: number; lng: number } | null {
     if (!geometry || !geometry.coordinates) return null
 
     let coords: number[]
     
     switch (geometry.type) {
       case 'Point':
-        coords = geometry.coordinates
+        coords = geometry.coordinates as number[]
         break
       case 'LineString':
         // Use first point of line
-        coords = geometry.coordinates[0]
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        coords = (geometry.coordinates as any)[0]
         break
       case 'MultiLineString':
         // Use first point of first line
-        coords = geometry.coordinates[0][0]
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        coords = (geometry.coordinates as any)[0][0]
         break
       case 'Polygon':
         // Use first point of first ring
-        coords = geometry.coordinates[0][0]
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        coords = (geometry.coordinates as any)[0][0]
         break
       case 'MultiPolygon':
         // Use first point of first ring of first polygon
-        coords = geometry.coordinates[0][0][0]
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        coords = (geometry.coordinates as any)[0][0][0]
         break
       default:
         return null
@@ -208,9 +212,9 @@ export class AssetConverter {
   /**
    * Determine asset status from properties
    */
-  private determineAssetStatus(properties: Record<string, any>): 'operational' | 'maintenance_required' | 'under_maintenance' {
-    const condition = properties.ASSET_CONDITION?.toLowerCase()
-    const status = properties.MXSTATUS?.toLowerCase()
+  private determineAssetStatus(properties: Record<string, string | number | boolean | null | undefined | string[]>): 'operational' | 'maintenance_required' | 'under_maintenance' {
+    const condition = typeof properties.ASSET_CONDITION === 'string' ? properties.ASSET_CONDITION.toLowerCase() : ''
+    const status = typeof properties.MXSTATUS === 'string' ? properties.MXSTATUS.toLowerCase() : ''
     
     if (condition === 'poor' || condition === 'critical') return 'maintenance_required'
     if (status === 'maintenance' || status === 'repair') return 'under_maintenance'
@@ -221,11 +225,11 @@ export class AssetConverter {
   /**
    * Calculate impact score based on properties
    */
-  private calculateImpactScore(properties: Record<string, any>): number {
+  private calculateImpactScore(properties: Record<string, string | number | boolean | null | undefined | string[]>): number {
     let score = 50 // Base score
     
     // Increase score based on priority
-    if (properties.ASSET_PRIORITY) {
+    if (typeof properties.ASSET_PRIORITY === 'number') {
       score += properties.ASSET_PRIORITY * 5
     }
     
@@ -235,7 +239,7 @@ export class AssetConverter {
     }
     
     // Decrease score for poor condition
-    const condition = properties.ASSET_CONDITION?.toLowerCase()
+    const condition = typeof properties.ASSET_CONDITION === 'string' ? properties.ASSET_CONDITION.toLowerCase() : ''
     if (condition === 'poor') score -= 15
     if (condition === 'critical') score -= 25
     
@@ -245,7 +249,7 @@ export class AssetConverter {
   /**
    * Extract date from properties
    */
-  private extractDate(properties: Record<string, any>, fieldName: string): string | undefined {
+  private extractDate(properties: Record<string, string | number | boolean | null | undefined | string[]>, fieldName: string): string | undefined {
     const dateValue = properties[fieldName]
     if (!dateValue) return undefined
     
@@ -260,7 +264,7 @@ export class AssetConverter {
   /**
    * Calculate next maintenance date
    */
-  private calculateNextMaintenanceDate(properties: Record<string, any>): string | undefined {
+  private calculateNextMaintenanceDate(properties: Record<string, string | number | boolean | null | undefined | string[]>): string | undefined {
     const lastUpdate = this.extractDate(properties, 'LAST_UPDATED_DATE')
     if (!lastUpdate) return undefined
     
@@ -274,7 +278,7 @@ export class AssetConverter {
   /**
    * Generate address from properties
    */
-  private generateAddress(properties: Record<string, any>): string | undefined {
+  private generateAddress(properties: Record<string, string | number | boolean | null | undefined | string[]>): string | undefined {
     const parts = []
     
     if (properties.DISTRICT) parts.push(properties.DISTRICT)
@@ -287,12 +291,12 @@ export class AssetConverter {
   /**
    * Extract secondary materials from properties
    */
-  private extractSecondaryMaterials(properties: Record<string, any>): string[] | undefined {
-    const materials = []
+  private extractSecondaryMaterials(properties: Record<string, string | number | boolean | null | undefined | string[]>): string[] | undefined {
+    const materials: string[] = []
     
-    if (properties.MATERIAL) materials.push(properties.MATERIAL)
-    if (properties.GURAIL_TYPE) materials.push(properties.GURAIL_TYPE)
-    if (properties.FOUNDATION) materials.push(`Foundation: ${properties.FOUNDATION}`)
+    if (typeof properties.MATERIAL === 'string') materials.push(properties.MATERIAL)
+    if (typeof properties.GURAIL_TYPE === 'string') materials.push(properties.GURAIL_TYPE)
+    if (typeof properties.FOUNDATION === 'string') materials.push(`Foundation: ${properties.FOUNDATION}`)
     
     return materials.length > 0 ? materials : undefined
   }
@@ -300,10 +304,10 @@ export class AssetConverter {
   /**
    * Check Vision 2030 compliance
    */
-  private checkVision2030Compliance(properties: Record<string, any>): boolean {
+  private checkVision2030Compliance(properties: Record<string, string | number | boolean | null | undefined | string[]>): boolean {
     // Simple heuristic based on installation date and condition
     const installDate = this.extractDate(properties, 'INSTALLATIONDATE')
-    const condition = properties.ASSET_CONDITION?.toLowerCase()
+    const condition = typeof properties.ASSET_CONDITION === 'string' ? properties.ASSET_CONDITION.toLowerCase() : ''
     
     if (installDate && new Date(installDate) > new Date('2020-01-01')) {
       return condition !== 'poor' && condition !== 'critical'
@@ -315,9 +319,9 @@ export class AssetConverter {
   /**
    * Check QCS certification
    */
-  private checkQcsCertification(properties: Record<string, any>): boolean {
+  private checkQcsCertification(properties: Record<string, string | number | boolean | null | undefined | string[]>): boolean {
     // Simple heuristic based on manufacturer and installation date
-    const manufacturer = properties.MANUFACTURER?.toLowerCase()
+    const manufacturer = typeof properties.MANUFACTURER === 'string' ? properties.MANUFACTURER.toLowerCase() : ''
     const installDate = this.extractDate(properties, 'INSTALLATIONDATE')
     
     if (manufacturer && installDate && new Date(installDate) > new Date('2015-01-01')) {
@@ -330,7 +334,7 @@ export class AssetConverter {
   /**
    * Extract certifications from properties
    */
-  private extractCertifications(properties: Record<string, any>): string[] | undefined {
+  private extractCertifications(properties: Record<string, string | number | boolean | null | undefined | string[]>): string[] | undefined {
     const certifications = []
     
     // Add default certifications based on compliance

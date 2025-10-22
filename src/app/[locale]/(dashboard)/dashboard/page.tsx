@@ -170,7 +170,7 @@ export default function DashboardPage() {
                       {engineer.status}
                     </Badge>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {engineer.current_assignments}/{engineer.max_assignments} assignments
+                      {engineer.current_assignments}
                     </p>
                   </div>
                 </div>

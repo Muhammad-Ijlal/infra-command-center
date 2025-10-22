@@ -1,5 +1,5 @@
 export type AssetCategory = 'road' | 'bridge' | 'lighting' | 'other'
-export type AssetStatus = 'operational' | 'maintenance_required' | 'under_maintenance'
+export type AssetStatus = 'operational' | 'maintenance_required' | 'under_maintenance' | 'decommissioned'
 
 export interface Asset {
   asset_id: string

@@ -27,7 +27,7 @@ export function LoginForm() {
       if (error) {
         setError(error.message)
       }
-    } catch (err) {
+    } catch {
       setError('An unexpected error occurred')
     } finally {
       setIsLoading(false)

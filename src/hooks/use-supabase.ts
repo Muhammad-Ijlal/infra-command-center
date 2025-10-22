@@ -5,7 +5,7 @@ import { PostgrestError } from '@supabase/supabase-js'
 interface UseSupabaseQueryOptions<T> {
   table: string
   select?: string
-  filters?: Record<string, any>
+  filters?: Record<string, string | number | boolean>
   orderBy?: { column: string; ascending?: boolean }
   limit?: number
 }
@@ -17,7 +17,7 @@ interface UseSupabaseQueryResult<T> {
   refetch: () => Promise<void>
 }
 
-export function useSupabaseQuery<T = any>({
+export function useSupabaseQuery<T = Record<string, unknown>>({
   table,
   select = '*',
   filters = {},
@@ -90,7 +90,7 @@ interface UseSupabaseMutationResult<T> {
   loading: boolean
 }
 
-export function useSupabaseMutation<T = any>({
+export function useSupabaseMutation<T = Record<string, unknown>>({
   table,
   onSuccess,
   onError
@@ -139,7 +139,7 @@ interface UseSupabaseUpdateResult<T> {
   loading: boolean
 }
 
-export function useSupabaseUpdate<T = any>({
+export function useSupabaseUpdate<T = Record<string, unknown>>({
   table,
   onSuccess,
   onError

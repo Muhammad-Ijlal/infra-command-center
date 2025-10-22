@@ -38,7 +38,7 @@ import {
 import { SummaryCard } from "@/components/summary-card"
 import { mockEngineers } from "@/data/mock-engineers"
 import { mockDetections } from "@/data/mock-detections"
-import { Engineer } from "@/types/engineer"
+import { Engineer, EngineerSpecialization } from "@/types/engineer"
 
 export default function EngineersPage() {
   const t = useTranslations('engineers')
@@ -98,7 +98,7 @@ export default function EngineersPage() {
 
   
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
@@ -130,7 +130,7 @@ export default function EngineersPage() {
       name: formData.name,
       email: formData.email,
       phone: formData.phone || undefined,
-      specialization: formData.specialization as any[],
+      specialization: formData.specialization as EngineerSpecialization[],
       status: formData.status,
       current_assignments: formData.current_assignments,
       completed_assignments: formData.completed_assignments,

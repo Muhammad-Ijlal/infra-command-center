@@ -1,5 +1,6 @@
 import AdmZip from 'adm-zip'
-import { writeFile, mkdir, rm } from 'fs/promises'
+import { mkdir, rm } from 'fs/promises'
+import { readdirSync } from 'fs'
 import { join } from 'path'
 import { tmpdir } from 'os'
 
@@ -13,8 +14,7 @@ export interface ZipExtractionResult {
  * Extract ZIP file containing .gdb folder to temporary directory
  */
 export async function extractGdbZip(
-  zipBuffer: Buffer,
-  zipFileName: string
+  zipBuffer: Buffer
 ): Promise<ZipExtractionResult> {
   try {
     // Create temporary directory
@@ -39,8 +39,7 @@ export async function extractGdbZip(
 
     // If no .gdb folder found, check if the root contains .gdb files
     if (!gdbFolderPath) {
-      const fs = require('fs')
-      const files = fs.readdirSync(tempDir)
+      const files = readdirSync(tempDir)
       const gdbFolder = files.find((file: string) => file.includes('.gdb'))
       if (gdbFolder) {
         gdbFolderPath = join(tempDir, gdbFolder)

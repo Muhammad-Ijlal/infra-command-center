@@ -563,7 +563,7 @@ export default function AIDetectionsPage() {
                                 {engineer.status}
                               </Badge>
                               <p className="text-xs text-muted-foreground mt-1">
-                                {engineer.current_assignments}/{engineer.max_assignments} assignments
+                                {engineer.current_assignments}
                               </p>
                               {validatedDetections.has(selectedDetection.detection_id) ? (
                                 <Button

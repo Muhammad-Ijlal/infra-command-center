@@ -33,8 +33,8 @@ export interface GisFeature {
   id: string
   layer_id: string
   feature_id: string
-  geometry: GeoJSON.Geometry
-  properties: Record<string, any>
+  geometry: GeoJSONGeometry
+  properties: Record<string, string | number | boolean | null>
   created_at: string
   updated_at: string
 }
@@ -83,56 +83,63 @@ export interface GdbImportOptions {
 }
 
 // GeoJSON types for geometry handling
-export namespace GeoJSON {
-  export interface Geometry {
-    type: string
-    coordinates: any[]
-  }
+export interface GeoJSONGeometry {
+  type: string
+  coordinates: number[] | number[][] | number[][][] | number[][][][]
+}
 
-  export interface Point extends Geometry {
-    type: 'Point'
-    coordinates: [number, number]
-  }
+export interface GeoJSONPoint extends GeoJSONGeometry {
+  type: 'Point'
+  coordinates: [number, number]
+}
 
-  export interface LineString extends Geometry {
-    type: 'LineString'
-    coordinates: [number, number][]
-  }
+export interface GeoJSONLineString extends GeoJSONGeometry {
+  type: 'LineString'
+  coordinates: [number, number][]
+}
 
-  export interface Polygon extends Geometry {
-    type: 'Polygon'
-    coordinates: [number, number][][]
-  }
+export interface GeoJSONPolygon extends GeoJSONGeometry {
+  type: 'Polygon'
+  coordinates: [number, number][][]
+}
 
-  export interface MultiPoint extends Geometry {
-    type: 'MultiPoint'
-    coordinates: [number, number][]
-  }
+export interface GeoJSONMultiPoint extends GeoJSONGeometry {
+  type: 'MultiPoint'
+  coordinates: [number, number][]
+}
 
-  export interface MultiLineString extends Geometry {
-    type: 'MultiLineString'
-    coordinates: [number, number][][]
-  }
+export interface GeoJSONMultiLineString extends GeoJSONGeometry {
+  type: 'MultiLineString'
+  coordinates: [number, number][][]
+}
 
-  export interface MultiPolygon extends Geometry {
-    type: 'MultiPolygon'
-    coordinates: [number, number][][][]
-  }
+export interface GeoJSONMultiPolygon extends GeoJSONGeometry {
+  type: 'MultiPolygon'
+  coordinates: [number, number][][][]
+}
 
-  export interface GeometryCollection extends Geometry {
-    type: 'GeometryCollection'
-    geometries: Geometry[]
-  }
+export interface GeoJSONGeometryCollection extends GeoJSONGeometry {
+  type: 'GeometryCollection'
+  geometries: GeoJSONGeometry[]
+}
 
-  export interface Feature {
-    type: 'Feature'
-    geometry: Geometry
-    properties: Record<string, any>
-    id?: string | number
-  }
+export type Geometry = 
+  | GeoJSONPoint 
+  | GeoJSONLineString 
+  | GeoJSONPolygon 
+  | GeoJSONMultiPoint 
+  | GeoJSONMultiLineString 
+  | GeoJSONMultiPolygon 
+  | GeoJSONGeometryCollection
 
-  export interface FeatureCollection {
-    type: 'FeatureCollection'
-    features: Feature[]
-  }
+export interface GeoJSONFeature {
+  type: 'Feature'
+  geometry: Geometry
+  properties: Record<string, string | number | boolean | null>
+  id?: string | number
+}
+
+export interface GeoJSONFeatureCollection {
+  type: 'FeatureCollection'
+  features: GeoJSONFeature[]
 }

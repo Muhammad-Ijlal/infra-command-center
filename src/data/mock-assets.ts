@@ -4,7 +4,7 @@ export const mockAssets: Asset[] = [
   {
     asset_id: 'ASSET-T-001',
     name: 'Doha Corniche Traffic Signal System',
-    category: 'traffic_signal',
+    category: 'lighting',
     last_maintenance_date: '2024-07-10',
     next_maintenance_date: '2025-01-10',
     status: 'maintenance_required',

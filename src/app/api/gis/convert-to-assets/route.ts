@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
       // Convert features to assets with integrated passport data
       const assets = await assetConverter.convertGdbFeaturesToAssets(
         layerName,
-        features as any[]
+        features
       )
 
       // Save to database
