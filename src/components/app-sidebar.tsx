@@ -112,7 +112,7 @@ export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typ
         {/* Standards & Compliance */}
         <div className="border-sidebar-border group-data-[collapsible=icon]:hidden border-t px-3 py-3">
           <p className="text-muted-foreground mb-2 text-[10px] font-semibold uppercase tracking-wider">
-            {t('builtToMeetStandards')}
+            {t('landing.builtToMeetStandards')}
           </p>
           <div className="flex flex-wrap gap-1.5" dir="ltr">
             <div className="bg-sidebar-accent/50 border-sidebar-border flex items-center gap-1 rounded border px-2 py-0.5">
