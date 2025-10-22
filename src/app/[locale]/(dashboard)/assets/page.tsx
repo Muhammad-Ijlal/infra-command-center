@@ -306,12 +306,6 @@ export default function AssetsPage() {
           )}
         </DialogContent>
       </Dialog>
-
-      {/* Integration Logos Section */}
-      <IntegrationLogos 
-        title="Seamlessly integrates with your existing tools"
-        description="Connect with the platforms and systems you already use"
-      />
     </div>
   )
 }

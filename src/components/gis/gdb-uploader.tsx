@@ -215,7 +215,6 @@ export function GdbUploader() {
               
               <div className="text-sm text-muted-foreground">
                 <p>Supported formats: ESRI File Geodatabase (.gdb) in ZIP format</p>
-                <p>Note: GDAL must be installed on the server to process .gdb files</p>
               </div>
             </div>
           )}

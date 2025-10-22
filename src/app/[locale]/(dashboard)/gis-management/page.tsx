@@ -38,62 +38,14 @@ export default function GisManagementPage() {
                 <MapPin className="h-5 w-5" />
                 GIS Data Import
               </CardTitle>
-              <CardDescription>
-                Upload ESRI File Geodatabase (.gdb) files and import them into your Supabase database with PostGIS support.
-              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-muted rounded-lg">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600">1</div>
-                    <div className="text-sm font-medium">Upload File</div>
-                    <div className="text-xs text-muted-foreground">Select your .gdb file</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600">2</div>
-                    <div className="text-sm font-medium">Analyze Layers</div>
-                    <div className="text-xs text-muted-foreground">Review available layers</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-purple-600">3</div>
-                    <div className="text-sm font-medium">Import Data</div>
-                    <div className="text-xs text-muted-foreground">Store in Supabase</div>
-                  </div>
-                </div>
-                
                 <GdbUploader />
               </div>
             </CardContent>
           </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Requirements</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span>PostGIS extension enabled in Supabase</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span>GDAL library installed on server</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span>ESRI File Geodatabase (.gdb) format</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                  <span>Large files may take time to process</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </TabsContent>
-
         <TabsContent value="layers" className="space-y-6">
           <GisLayersList />
         </TabsContent>
