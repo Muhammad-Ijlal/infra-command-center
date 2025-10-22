@@ -164,7 +164,10 @@ export function AssetMap({ assets, height = '500px' }: AssetMapProps) {
                   <div>
                     <span className="text-muted-foreground">Last Maint.</span>
                     <p className="font-semibold">
-                      {new Date(popupInfo.last_maintenance_date).toLocaleDateString()}
+                      {popupInfo.last_updated_date ? 
+                        new Date(popupInfo.last_updated_date).toLocaleDateString() : 
+                        'Not available'
+                      }
                     </p>
                   </div>
                 </div>

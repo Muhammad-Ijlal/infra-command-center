@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { PostgrestError } from '@supabase/supabase-js'
 
-interface UseSupabaseQueryOptions<T> {
+interface UseSupabaseQueryOptions {
   table: string
   select?: string
   filters?: Record<string, string | number | boolean>
@@ -10,21 +10,21 @@ interface UseSupabaseQueryOptions<T> {
   limit?: number
 }
 
-interface UseSupabaseQueryResult<T> {
-  data: T[] | null
+interface UseSupabaseQueryResult {
+  data: Record<string, unknown>[] | null
   loading: boolean
   error: PostgrestError | null
   refetch: () => Promise<void>
 }
 
-export function useSupabaseQuery<T = Record<string, unknown>>({
+export function useSupabaseQuery({
   table,
   select = '*',
   filters = {},
   orderBy,
   limit
-}: UseSupabaseQueryOptions<T>): UseSupabaseQueryResult<T> {
-  const [data, setData] = useState<T[] | null>(null)
+}: UseSupabaseQueryOptions): UseSupabaseQueryResult {
+  const [data, setData] = useState<Record<string, unknown>[] | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<PostgrestError | null>(null)
 
@@ -62,7 +62,7 @@ export function useSupabaseQuery<T = Record<string, unknown>>({
         setError(queryError)
         setData(null)
       } else {
-        setData(result as T[])
+        setData(result as unknown as Record<string, unknown>[])
       }
     } catch (err) {
       setError(err as PostgrestError)

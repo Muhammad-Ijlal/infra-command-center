@@ -2,14 +2,13 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Progress } from '@/components/ui/progress'
-import { Upload, FileText, MapPin, CheckCircle, AlertCircle, Loader2, Building } from 'lucide-react'
+import { Upload, FileText, MapPin, CheckCircle, AlertCircle, Loader2, Building, X } from 'lucide-react'
 import { GdbLayerInfo, GdbImportResult } from '@/types/gis'
 
 interface GdbUploaderProps {
@@ -20,7 +19,6 @@ export function GdbUploader({ onImportComplete }: GdbUploaderProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [availableLayers, setAvailableLayers] = useState<GdbLayerInfo[]>([])
   const [selectedLayer, setSelectedLayer] = useState('')
-  const [conversionLoading, setConversionLoading] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [importOptions, setImportOptions] = useState({
@@ -41,10 +39,27 @@ export function GdbUploader({ onImportComplete }: GdbUploaderProps) {
     }
   }
 
+  const handleClearFile = () => {
+    setSelectedFile(null)
+    setAvailableLayers([])
+    setSelectedLayer('')
+    setImportResults([])
+    setError(null)
+    setCurrentStep('upload')
+    // Reset the file input
+    const fileInput = document.getElementById('gdb-file') as HTMLInputElement
+    if (fileInput) {
+      fileInput.value = ''
+    }
+  }
+
   const handleListLayers = async () => {
     if (!selectedFile) return
     
     try {
+      setLoading(true)
+      setError(null)
+      
       const formData = new FormData()
       formData.append('file', selectedFile)
       formData.append('action', 'list-layers')
@@ -64,6 +79,9 @@ export function GdbUploader({ onImportComplete }: GdbUploaderProps) {
       }
     } catch (err) {
       console.error('Failed to list layers:', err)
+      setError(err instanceof Error ? err.message : 'Failed to analyze layers')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -71,6 +89,9 @@ export function GdbUploader({ onImportComplete }: GdbUploaderProps) {
     if (!selectedFile || !selectedLayer) return
     
     try {
+      setLoading(true)
+      setError(null)
+      
       const formData = new FormData()
       formData.append('file', selectedFile)
       formData.append('action', 'import-layer')
@@ -93,6 +114,9 @@ export function GdbUploader({ onImportComplete }: GdbUploaderProps) {
       }
     } catch (err) {
       console.error('Failed to import layer:', err)
+      setError(err instanceof Error ? err.message : 'Failed to import layer')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -100,6 +124,9 @@ export function GdbUploader({ onImportComplete }: GdbUploaderProps) {
     if (!selectedFile) return
     
     try {
+      setLoading(true)
+      setError(null)
+      
       const formData = new FormData()
       formData.append('file', selectedFile)
       formData.append('action', 'import-all-layers')
@@ -121,6 +148,9 @@ export function GdbUploader({ onImportComplete }: GdbUploaderProps) {
       }
     } catch (err) {
       console.error('Failed to import all layers:', err)
+      setError(err instanceof Error ? err.message : 'Failed to import layers')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -128,7 +158,7 @@ export function GdbUploader({ onImportComplete }: GdbUploaderProps) {
     if (!selectedFile || !selectedLayer) return
 
     try {
-      setConversionLoading(true)
+      setLoading(true)
       
       const formData = new FormData()
       formData.append('action', 'convert-to-assets')
@@ -158,7 +188,7 @@ export function GdbUploader({ onImportComplete }: GdbUploaderProps) {
     } catch (err) {
       console.error('Failed to convert to assets:', err)
     } finally {
-      setConversionLoading(false)
+      setLoading(false)
     }
   }
 
@@ -181,11 +211,8 @@ export function GdbUploader({ onImportComplete }: GdbUploaderProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Upload className="h-5 w-5" />
-            Upload .GDB File
+            Upload .gdb.zip File
           </CardTitle>
-          <CardDescription>
-            Upload and process ESRI File Geodatabase (.gdb) files to store GIS data in Supabase
-          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {error && (
@@ -198,7 +225,6 @@ export function GdbUploader({ onImportComplete }: GdbUploaderProps) {
           {currentStep === 'upload' && (
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="zip-file">Upload ZIP File</Label>
                 <Input
                   id="zip-file"
                   type="file"
@@ -206,46 +232,43 @@ export function GdbUploader({ onImportComplete }: GdbUploaderProps) {
                   onChange={handleFileSelect}
                   className="mt-1"
                 />
-                <p className="text-sm text-muted-foreground">
-                  Upload a ZIP file containing your .gdb folder
-                </p>
-                <div className="text-xs text-muted-foreground bg-blue-50 p-2 rounded">
-                  <strong>Instructions:</strong>
-                  <ol className="list-decimal list-inside mt-1 space-y-1">
-                    <li>Zip your .gdb folder (e.g., AlSaneem_AlWajba.gdb)</li>
-                    <li>Upload the ZIP file here</li>
-                    <li>The system will extract and process it automatically</li>
-                  </ol>
-                </div>
-              </div>
-              
-              <div className="text-sm text-muted-foreground">
-                <p>Supported formats: ESRI File Geodatabase (.gdb) in ZIP format</p>
               </div>
             </div>
           )}
 
           {currentStep === 'select' && (
             <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                <span className="font-medium">File: {selectedFile?.name}</span>
+              <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  <span className="font-medium">File: {selectedFile?.name}</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleClearFile}
+                  className="h-6 w-6 p-0 hover:bg-red-100 hover:text-red-600"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
 
-              <Button 
-                onClick={handleListLayers}
-                disabled={loading}
-                className="w-full"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Analyzing Layers...
-                  </>
-                ) : (
-                  'Analyze Layers'
-                )}
-              </Button>
+              {availableLayers.length === 0 && (
+                <Button 
+                  onClick={handleListLayers}
+                  disabled={loading}
+                  className="w-full"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Analyzing Layers...
+                    </>
+                  ) : (
+                    'Analyze Layers'
+                  )}
+                </Button>
+              )}
 
               {availableLayers.length > 0 && (
                 <div className="space-y-4">
@@ -311,7 +334,14 @@ export function GdbUploader({ onImportComplete }: GdbUploaderProps) {
                         disabled={!selectedLayer || loading}
                         className="w-full"
                       >
-                        Import Selected Layer
+                        {loading ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Importing...
+                          </>
+                        ) : (
+                          'Import Selected Layer'
+                        )}
                       </Button>
                       <Button 
                         onClick={handleImportAllLayers}
@@ -319,7 +349,14 @@ export function GdbUploader({ onImportComplete }: GdbUploaderProps) {
                         variant="outline"
                         className="w-full"
                       >
-                        Import All Layers with Data
+                        {loading ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Importing All...
+                          </>
+                        ) : (
+                          'Import All Layers with Data'
+                        )}
                       </Button>
                     </div>
                     
@@ -461,14 +498,6 @@ export function GdbUploader({ onImportComplete }: GdbUploaderProps) {
             </div>
           )}
 
-          {loading && (
-            <div className="space-y-2">
-              <Progress value={undefined} className="w-full" />
-              <p className="text-sm text-muted-foreground text-center">
-                Processing...
-              </p>
-            </div>
-          )}
         </CardContent>
       </Card>
     </div>

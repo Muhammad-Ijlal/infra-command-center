@@ -3,7 +3,7 @@ import { AIDetection } from '@/types/detection'
 export const mockDetections: AIDetection[] = [
   {
     detection_id: 'DET-008',
-    asset_id: 'RD-BAR-008',
+    asset_id: 'ASSET-RML-689utn', // Road marking line asset
     defect_type: 'barrier_damage',
     confidence_score: 0.86,
     timestamp: new Date(Date.now() - 14 * 60 * 60 * 1000).toISOString(), // 14 hours ago
@@ -22,7 +22,7 @@ export const mockDetections: AIDetection[] = [
   },
   {
     detection_id: 'DET-007',
-    asset_id: 'SL-STR-002',
+    asset_id: 'ASSET-TS-2hq00j', // Traffic sign asset
     defect_type: 'electrical',
     confidence_score: 0.89,
     timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(), // 8 hours ago
@@ -41,7 +41,7 @@ export const mockDetections: AIDetection[] = [
   },
   {
     detection_id: 'DET-006',
-    asset_id: 'RD-BAR-006',
+    asset_id: 'ASSET-RML-689uun', // Road marking line asset
     defect_type: 'barrier_damage',
     confidence_score: 0.93,
     timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(), // 12 hours ago
@@ -60,7 +60,7 @@ export const mockDetections: AIDetection[] = [
   },
   {
     detection_id: 'DET-005',
-    asset_id: 'SL-STR-007',
+    asset_id: 'ASSET-TS-2hpzz1', // Traffic sign asset
     defect_type: 'electrical',
     confidence_score: 0.95,
     timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
@@ -83,7 +83,7 @@ export const mockDetections: AIDetection[] = [
   },
   {
     detection_id: 'DET-004',
-    asset_id: 'RD-BAR-004',
+    asset_id: 'ASSET-RML-689uve', // Road marking line asset
     defect_type: 'barrier_damage',
     confidence_score: 0.88,
     timestamp: new Date(Date.now() - 16 * 60 * 60 * 1000).toISOString(), // 16 hours ago
@@ -102,7 +102,7 @@ export const mockDetections: AIDetection[] = [
   },
   {
     detection_id: 'DET-003',
-    asset_id: 'RD-BAR-003',
+    asset_id: 'ASSET-RML-689uuq', // Road marking line asset
     defect_type: 'barrier_damage',
     confidence_score: 0.91,
     timestamp: new Date(Date.now() - 10 * 60 * 60 * 1000).toISOString(), // 10 hours ago
@@ -125,7 +125,7 @@ export const mockDetections: AIDetection[] = [
   },
   {
     detection_id: 'DET-002',
-    asset_id: 'SL-STR-002',
+    asset_id: 'ASSET-TS-2hq00j', // Traffic sign asset
     defect_type: 'electrical',
     confidence_score: 0.97,
     timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000 + 19 * 60 * 60 * 1000 + 45 * 60 * 1000).toISOString(), // 7 days ago at 7:45 PM
@@ -152,7 +152,7 @@ export const mockDetections: AIDetection[] = [
   },
   {
     detection_id: 'DET-001',
-    asset_id: 'RD-BAR-001',
+    asset_id: 'ASSET-RML-689uvg', // Road marking line asset
     defect_type: 'barrier_damage',
     confidence_score: 0.94,
     timestamp: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000 + 8 * 60 * 60 * 1000 + 30 * 60 * 1000).toISOString(), // 8 days ago at 8:30 AM

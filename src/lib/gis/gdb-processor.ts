@@ -6,7 +6,7 @@ import { tmpdir } from 'os'
 import { GisLayer, GisFeature, GdbLayerInfo, GdbImportResult, GdbImportOptions, LayerType, GeometryType, GdbFieldInfo, GeoJSONFeature } from '@/types/gis'
 import { supabaseAdmin } from '@/lib/supabase/server'
 import { extractGdbZip, cleanupExtractedFiles } from './zip-processor'
-import { AssetConverter, AssetFromGdb } from './asset-converter'
+import { AssetConverter } from './asset-converter'
 
 const execAsync = promisify(exec)
 
@@ -22,7 +22,7 @@ export class GdbProcessor {
   /**
    * Process ZIP file containing .gdb folder
    */
-  async processZipFile(zipBuffer: Buffer, zipFileName: string): Promise<{ gdbPath: string; cleanup: () => Promise<void> }> {
+  async processZipFile(zipBuffer: Buffer): Promise<{ gdbPath: string; cleanup: () => Promise<void> }> {
     const extractionResult = await extractGdbZip(zipBuffer)
     
     if (!extractionResult.success || !extractionResult.extractedPath) {

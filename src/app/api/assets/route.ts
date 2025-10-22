@@ -8,6 +8,35 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status')
     const limit = parseInt(searchParams.get('limit') || '50')
     const offset = parseInt(searchParams.get('offset') || '0')
+    const statsOnly = searchParams.get('stats') === 'true'
+
+    // If only stats are requested, return status counts
+    if (statsOnly) {
+      const { data: statusCounts, error } = await supabaseAdmin
+        .from('assets')
+        .select('status')
+        .not('status', 'is', null)
+
+      if (error) {
+        return NextResponse.json(
+          { success: false, error: error.message },
+          { status: 500 }
+        )
+      }
+
+      const counts = {
+        operational: statusCounts?.filter(a => a.status === 'operational').length || 0,
+        maintenance_required: statusCounts?.filter(a => a.status === 'maintenance_required').length || 0,
+        under_maintenance: statusCounts?.filter(a => a.status === 'under_maintenance').length || 0,
+        decommissioned: statusCounts?.filter(a => a.status === 'decommissioned').length || 0,
+        total: statusCounts?.length || 0
+      }
+
+      return NextResponse.json({
+        success: true,
+        stats: counts
+      })
+    }
 
     let query = supabaseAdmin
       .from('assets')
@@ -33,9 +62,30 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Get total count for pagination
+    let countQuery = supabaseAdmin
+      .from('assets')
+      .select('*', { count: 'exact', head: true })
+
+    if (category) {
+      countQuery = countQuery.eq('category', category)
+    }
+    
+    if (status) {
+      countQuery = countQuery.eq('status', status)
+    }
+
+    const { count } = await countQuery
+
     return NextResponse.json({
       success: true,
-      data: assets || []
+      data: assets || [],
+      pagination: {
+        total: count || 0,
+        limit,
+        offset,
+        hasMore: (offset + limit) < (count || 0)
+      }
     })
 
   } catch (error) {

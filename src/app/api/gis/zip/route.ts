@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     switch (action) {
       case 'list-layers':
         try {
-          const { gdbPath, cleanup } = await gdbProcessor.processZipFile(zipBuffer, file.name)
+          const { gdbPath, cleanup } = await gdbProcessor.processZipFile(zipBuffer)
           const layers = await gdbProcessor.listLayers(gdbPath)
           await cleanup() // Clean up extracted files
           
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         }
 
         try {
-          const { gdbPath, cleanup } = await gdbProcessor.processZipFile(zipBuffer, file.name)
+          const { gdbPath, cleanup } = await gdbProcessor.processZipFile(zipBuffer)
           const result = await gdbProcessor.importLayer(gdbPath, layerName, options as GdbImportOptions)
           await cleanup() // Clean up extracted files
           
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
 
       case 'import-all-layers':
         try {
-          const { gdbPath, cleanup } = await gdbProcessor.processZipFile(zipBuffer, file.name)
+          const { gdbPath, cleanup } = await gdbProcessor.processZipFile(zipBuffer)
           const results = await gdbProcessor.importAllLayers(gdbPath, options as GdbImportOptions)
           await cleanup() // Clean up extracted files
           

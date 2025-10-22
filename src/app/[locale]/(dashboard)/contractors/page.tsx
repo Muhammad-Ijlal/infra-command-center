@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
   Table,
   TableBody,
@@ -12,39 +11,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
 import { Star, Trophy, TrendingUp, Award, Shield, AlertTriangle, CheckCircle } from "lucide-react"
 import { SummaryCard } from "@/components/summary-card"
 import { mockContractors } from "@/data/mock-contractors"
-import { Contractor, ContractorMatch } from "@/types/contractor"
+import { Contractor } from "@/types/contractor"
 
 export default function ContractorsPage() {
   const [contractors] = useState<Contractor[]>(mockContractors)
-  const [matchedContractors, setMatchedContractors] = useState<ContractorMatch[] | null>(null)
-  const [showMatchDialog, setShowMatchDialog] = useState(false)
-
-  const handleAIMatch = () => {
-    // Simulate AI matching with random scores
-    const matches: ContractorMatch[] = contractors
-      .map((contractor) => ({
-        contractor,
-        match_score: Math.floor(Math.random() * 30) + 70, // 70-100
-        availability: contractor.capacity > 70 ? 'limited' : contractor.capacity > 40 ? 'available' : 'available',
-        estimated_response: `${contractor.avg_response_time}h`,
-        estimated_cost: Math.floor(Math.random() * 150000) + 50000
-      }))
-      .sort((a, b) => b.match_score - a.match_score)
-      .slice(0, 3) as ContractorMatch[]
-
-    setMatchedContractors(matches)
-    setShowMatchDialog(true)
-  }
 
   const getComplianceIcon = (compliance: Contractor['sla_compliance']) => {
     switch (compliance) {
@@ -216,83 +189,6 @@ export default function ContractorsPage() {
           </div>
         </CardContent>
       </Card>
-
-      {/* AI Match Dialog */}
-      <Dialog open={showMatchDialog} onOpenChange={setShowMatchDialog}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>AI Contractor Matching Results</DialogTitle>
-            <DialogDescription>
-              Top 3 contractors matched based on scope, availability, and performance
-            </DialogDescription>
-          </DialogHeader>
-
-          {matchedContractors && (
-            <div className="space-y-4">
-              {matchedContractors.map((match, index) => (
-                <Card key={match.contractor.contractor_id}>
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className={`flex items-center justify-center w-10 h-10 rounded-full ${
-                          index === 0 ? 'bg-yellow-100 text-yellow-700' :
-                          index === 1 ? 'bg-gray-100 text-gray-700' :
-                          'bg-orange-100 text-orange-700'
-                        }`}>
-                          <Trophy className="h-5 w-5" />
-                        </div>
-                        <div>
-                          <CardTitle className="text-lg">{match.contractor.name}</CardTitle>
-                          <CardDescription>Match Score: {match.match_score}%</CardDescription>
-                        </div>
-                      </div>
-                    <div className="flex items-center gap-2">
-                      {getComplianceIcon(match.contractor.sla_compliance)}
-                      <span className="text-sm font-medium capitalize">{match.contractor.sla_compliance}</span>
-                    </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-sm text-muted-foreground">Estimated Response</p>
-                        <p className="font-medium">{match.estimated_response}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Availability</p>
-                        <Badge variant={match.availability === 'available' ? 'default' : 'secondary'} size="status">
-                          {match.availability}
-                        </Badge>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Rating</p>
-                        <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          <span className="font-medium">{match.contractor.rating}</span>
-                        </div>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Estimated Cost</p>
-                        <p className="font-medium">
-                          {match.estimated_cost?.toLocaleString()} SAR
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setShowMatchDialog(false)}>
-                  Close
-                </Button>
-                <Button onClick={() => setShowMatchDialog(false)}>
-                  Proceed to Contract
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }

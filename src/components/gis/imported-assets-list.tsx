@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { MapPin, Building, Eye, Download, RefreshCw, AlertCircle, Loader2, CheckCircle2, Wrench } from 'lucide-react'
+import { Building, Eye, Download, RefreshCw, AlertCircle, Loader2, CheckCircle2, Wrench } from 'lucide-react'
 import { Asset } from '@/types/asset'
 
 interface ImportedAssetsListProps {
@@ -285,7 +285,7 @@ export function ImportedAssetsList({ onImportComplete }: ImportedAssetsListProps
                         )}
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
-                        {formatDate(asset.last_maintenance_date)}
+                        {asset.last_updated_date ? formatDate(asset.last_updated_date) : 'Not available'}
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2">

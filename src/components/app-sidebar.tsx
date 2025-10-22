@@ -10,7 +10,6 @@ import {
   Brain,
   Building2,
   Wrench,
-  MapPin,
   ClipboardList,
 } from "lucide-react"
 
@@ -64,11 +63,6 @@ export function AppSidebar({ side = "left", ...props }: React.ComponentProps<typ
       title: t('assets'),
       url: `/${locale}/assets`,
       icon: Building2,
-    },
-    {
-      title: t('gisManagement'),
-      url: `/${locale}/gis-management`,
-      icon: MapPin,
     },
     {
       title: t('surveys'),

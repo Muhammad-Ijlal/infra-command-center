@@ -34,14 +34,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { CheckCircle2, AlertTriangle, Clock, Eye, MapPin, Activity, FileText, ArrowRight, Image as ImageIcon, ExternalLink, User, Upload, Camera } from "lucide-react"
+import { CheckCircle2, AlertTriangle, Clock, Eye, MapPin, Activity, FileText, ArrowRight, Image as ImageIcon, ExternalLink, User, Upload, Camera, Loader2 } from "lucide-react"
 import { SummaryCard } from "@/components/summary-card"
+import { Asset } from "@/types/asset"
 import { mockDetections } from "@/data/mock-detections"
+import { fetchAssetById } from "@/lib/assets/asset-fetcher"
 import { mockAssets } from "@/data/mock-assets"
-import { mockContracts } from "@/data/mock-contracts"
 import { mockEngineers } from "@/data/mock-engineers"
 import { AIDetection } from "@/types/detection"
-import { Contract } from "@/types/contract"
 import 'mapbox-gl/dist/mapbox-gl.css'
 
 // Dynamically import Map components to avoid SSR issues
@@ -59,6 +59,8 @@ export default function AIDetectionsPage() {
   const searchParams = useSearchParams()
   const [detections, setDetections] = useState<AIDetection[]>(mockDetections)
   const [selectedDetection, setSelectedDetection] = useState<AIDetection | null>(null)
+  const [linkedAsset, setLinkedAsset] = useState<Asset | null>(null)
+  const [assetLoading, setAssetLoading] = useState(false)
   const [, setValidatedDetections] = useState<Set<string>>(new Set())
   const [showEngineerModal, setShowEngineerModal] = useState(false)
   const [selectedEngineer, setSelectedEngineer] = useState<string>('')
@@ -210,12 +212,29 @@ export default function AIDetectionsPage() {
     router.replace(url.pathname + url.search)
   }
 
-  const getLinkedAsset = (assetId: string) => {
-    return mockAssets.find(a => a.asset_id === assetId)
-  }
+  // Fetch asset details when detection is selected
+  useEffect(() => {
+    if (selectedDetection) {
+      const fetchAsset = async () => {
+        setAssetLoading(true)
+        try {
+          const asset = await fetchAssetById(selectedDetection.asset_id)
+          setLinkedAsset(asset)
+        } catch (error) {
+          console.error('Error fetching asset:', error)
+          // Fallback to mock asset if fetch fails
+          const mockAsset = mockAssets.find(a => a.asset_id === selectedDetection.asset_id)
+          setLinkedAsset(mockAsset || null)
+        } finally {
+          setAssetLoading(false)
+        }
+      }
+      fetchAsset()
+    }
+  }, [selectedDetection])
 
-  const getLinkedContract = (detectionId: string): Contract | undefined => {
-    return mockContracts.find(c => c.detection_id === detectionId)
+  const getLinkedAsset = () => {
+    return linkedAsset
   }
 
   const getStatusColor = (status: AIDetection['status']) => {
@@ -786,8 +805,21 @@ export default function AIDetectionsPage() {
 
               {/* Linked Asset Information */}
               {(() => {
-                const linkedAsset = getLinkedAsset(selectedDetection.asset_id)
-                return linkedAsset ? (
+                const linkedAsset = getLinkedAsset()
+                return assetLoading ? (
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <FileText className="h-5 w-5" />
+                      {t('linkedAsset')}
+                    </h3>
+                    <div className="flex items-center justify-center py-8">
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span>Loading asset details...</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : linkedAsset ? (
                   <div>
                     <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                       <FileText className="h-5 w-5" />
@@ -802,36 +834,43 @@ export default function AIDetectionsPage() {
                       </Button>
                     </h3>
                     <div className="bg-muted/50 p-4 rounded-lg space-y-3">
-                      <div className="flex items-center justify-between">
+                      <div className="space-y-4">
                         <div>
                           <p className="text-sm text-muted-foreground">{t('assetName')}</p>
                           <p className="font-semibold text-lg">{linkedAsset.name}</p>
                         </div>
-                        <Badge variant="outline" className="capitalize" size="table">
-                          {linkedAsset.category}
-                        </Badge>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
+                        
                         <div>
-                          <p className="text-sm text-muted-foreground">{t('assetStatus')}</p>
-                          <p className="font-medium capitalize">{linkedAsset.status.replace(/_/g, ' ')}</p>
+                          <p className="text-sm text-muted-foreground mb-2">{t('assetCategory')}</p>
+                          <Badge 
+                            variant="outline" 
+                            className="capitalize text-sm px-3 py-1"
+                          >
+                            {linkedAsset.category.replace(/_/g, ' ')}
+                          </Badge>
                         </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">{t('impactScore')}</p>
-                          <p className="font-medium">{linkedAsset.impact_score}/100</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">{t('lastMaintenance')}</p>
-                          <p className="font-medium">
-                            {new Date(linkedAsset.last_maintenance_date).toLocaleDateString()}
-                          </p>
-                        </div>
-                        {linkedAsset.location?.address && (
+                        
+                        <div className="grid grid-cols-1 gap-4">
                           <div>
-                            <p className="text-sm text-muted-foreground">{t('location')}</p>
-                            <p className="font-medium">{linkedAsset.location.address}</p>
+                            <p className="text-sm text-muted-foreground">{t('assetStatus')}</p>
+                            <p className="font-medium capitalize">{linkedAsset.status.replace(/_/g, ' ')}</p>
                           </div>
-                        )}
+                          <div>
+                            <p className="text-sm text-muted-foreground">{t('lastMaintenance')}</p>
+                            <p className="font-medium">
+                              {linkedAsset.last_updated_date ? 
+                                new Date(linkedAsset.last_updated_date).toLocaleDateString() : 
+                                'Not available'
+                              }
+                            </p>
+                          </div>
+                          {linkedAsset.location?.address && (
+                            <div>
+                              <p className="text-sm text-muted-foreground">{t('location')}</p>
+                              <p className="font-medium">{linkedAsset.location.address}</p>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -843,25 +882,19 @@ export default function AIDetectionsPage() {
               })()}
 
               {/* Validation Success Message */}
-              {selectedDetection.status === 'validated' && (() => {
-                const linkedContract = getLinkedContract(selectedDetection.detection_id)
-                return (
-                  <div className="bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 p-4 rounded-lg flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5" />
-                    <div>
-                      <p className="font-medium text-green-900 dark:text-green-100">
-                        {t('detectionsValidated')}
-                      </p>
-                      <p className="text-sm text-green-700 dark:text-green-300 mt-1">
-                        {linkedContract 
-                          ? `A contract (${linkedContract.contract_id}) has been created for this detection`
-                          : 'You can now create a tender/contract for this detection'
-                        }
-                      </p>
-                    </div>
+              {selectedDetection.status === 'validated' && (
+                <div className="bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 p-4 rounded-lg flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-green-900 dark:text-green-100">
+                      {t('detectionsValidated')}
+                    </p>
+                    <p className="text-sm text-green-700 dark:text-green-300 mt-1">
+                      Detection has been validated and is ready for further action.
+                    </p>
                   </div>
-                )
-              })()}
+                </div>
+              )}
 
               {/* Close Button */}
               <div className="flex justify-end pt-4">
