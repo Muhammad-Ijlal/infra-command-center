@@ -1,25 +1,28 @@
+version: '3.8'
+
 services:
-  peak-and-peer:
+  infra-command-center:
     restart: unless-stopped
     env_file: .env
     environment:
       - PORT=3000
+      - NODE_ENV=production
     build:
       context: .
       dockerfile: Dockerfile
-    #volumes:
-     # - ./node_modules:/app/node_modules
-      # - .:/app
     ports:
       - "${HOST_PORT:-3000}:3000"
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
     networks:
       - app-network
+    # Add volume for temporary file processing if needed
+    volumes:
+      - /tmp/gis-uploads:/tmp/gis-uploads
 
 networks:
   app-network:

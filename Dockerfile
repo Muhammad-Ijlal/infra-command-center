@@ -30,8 +30,8 @@ COPY . .
 COPY --from=deps /app/node_modules ./node_modules
 RUN pnpm run build
 
-# Production image, copy all the files and run next
-FROM node:lts-alpine AS runner
+# Production image with GDAL support
+FROM node:18-slim AS runner
 
 ARG X_TAG
 WORKDIR /app
@@ -39,9 +39,25 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
+# Install GDAL and required dependencies
+RUN apt-get update && apt-get install -y \
+    gdal-bin \
+    libgdal-dev \
+    python3-gdal \
+    python3-pip \
+    python3-dev \
+    build-essential \
+    wget \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set GDAL environment variables
+ENV GDAL_DATA=/usr/share/gdal
+ENV GDAL_DRIVER_PATH=/usr/lib/gdalplugins
+
 # Create a non-root user
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN groupadd --system --gid 1001 nodejs
+RUN useradd --system --uid 1001 nextjs
 
 # Copy necessary files
 COPY --from=builder /app/next.config.ts ./
